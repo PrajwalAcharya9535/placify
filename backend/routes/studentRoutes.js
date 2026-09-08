@@ -27,6 +27,10 @@ const {
   getReadiness,
 } = require("../controllers/student/readinessController");
 
+const {
+  analyzeSkillGap,
+} = require("../controllers/student/skillGapController");
+
 // ==============================
 // LEARNING CONTROLLERS
 // ==============================
@@ -253,6 +257,17 @@ router.get(
   protect,
   authorizeRoles("student"),
   getReadiness
+);
+
+// ==============================
+// SKILL GAP ANALYSIS
+// ==============================
+
+router.get(
+  "/skill-gap",
+  protect,
+  authorizeRoles("student"),
+  analyzeSkillGap
 );
 
 // ==============================

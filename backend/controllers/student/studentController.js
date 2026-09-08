@@ -4,64 +4,108 @@ const StudentGoal = require("../../models/StudentGoal");
 const Readiness = require("../../models/Readiness");
 const LearningProgress = require("../../models/LearningProgress");
 const PracticeAttempt = require("../../models/PracticeAttempt");
+const Resume = require("../../models/Resume");
+const MockAttempt = require("../../models/MockAttempt");
 const User = require("../../models/User");
+
+// ==============================
+// HELPER - ADD UNIQUE VALUE
+// ==============================
+const addUnique = (array, value) => {
+  if (!value) return;
+
+  const exists = array.some(
+    (item) =>
+      item.toLowerCase() === value.toLowerCase()
+  );
+
+  if (!exists) {
+    array.push(value);
+  }
+};
 
 // ==============================
 // STUDENT DASHBOARD
 // ==============================
 const getStudentDashboard = async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select(
-      "name email role"
-    );
+    const userId = req.user.id;
 
-    const profile = await StudentProfile.findOne({
-      user: req.user.id,
-    });
+    const [
+      user,
+      profile,
+      skills,
+      goal,
+      readiness,
+      learningProgress,
+      practiceAttempts,
+      resume,
+      mockAttempts,
+    ] = await Promise.all([
+      User.findById(userId).select(
+        "name email role"
+      ),
 
-    const skills = await Skill.find({
-      user: req.user.id,
-    }).sort({ createdAt: -1 });
+      StudentProfile.findOne({
+        user: userId,
+      }),
 
-    const goal = await StudentGoal.findOne({
-      user: req.user.id,
-    });
+      Skill.find({
+        user: userId,
+      }).sort({ createdAt: -1 }),
 
-    const readiness = await Readiness.findOne({
-      user: req.user.id,
-    });
+      StudentGoal.findOne({
+        user: userId,
+      }),
 
-    const learningProgress = await LearningProgress.find({
-      user: req.user.id,
-    }).populate(
-      "topic",
-      "title category difficulty estimatedMinutes skillsCovered"
-    );
+      Readiness.findOne({
+        user: userId,
+      }),
 
-    const practiceAttempts = await PracticeAttempt.find({
-      user: req.user.id,
-    });
+      LearningProgress.find({
+        user: userId,
+      }).populate(
+        "topic",
+        "title category difficulty estimatedMinutes skillsCovered"
+      ),
+
+      PracticeAttempt.find({
+        user: userId,
+      }),
+
+      Resume.findOne({
+        user: userId,
+      }),
+
+      MockAttempt.find({
+        user: userId,
+      }),
+    ]);
 
     // ==============================
     // LEARNING SUMMARY
     // ==============================
 
-    const completedTopics = learningProgress.filter(
-      (item) => item.status === "Completed"
-    ).length;
+    const completedTopics =
+      learningProgress.filter(
+        (item) => item.status === "Completed"
+      ).length;
 
-    const inProgressTopics = learningProgress.filter(
-      (item) => item.status === "In Progress"
-    ).length;
+    const inProgressTopics =
+      learningProgress.filter(
+        (item) => item.status === "In Progress"
+      ).length;
 
-    const totalLearningTopicsStarted = learningProgress.length;
+    const totalLearningTopicsStarted =
+      learningProgress.length;
 
     const averageLearningProgress =
       learningProgress.length > 0
         ? Math.round(
             learningProgress.reduce(
               (total, item) =>
-                total + item.progressPercentage,
+                total +
+                (item.progressPercentage || 0),
               0
             ) / learningProgress.length
           )
@@ -153,7 +197,9 @@ const getStudentDashboard = async (req, res) => {
       Object.entries(categoryMap).map(
         ([category, data]) => ({
           category,
-          totalAttempts: data.totalAttempts,
+
+          totalAttempts:
+            data.totalAttempts,
 
           accuracy:
             data.totalAttempts > 0
@@ -185,6 +231,195 @@ const getStudentDashboard = async (req, res) => {
         .map((item) => item.category);
 
     // ==============================
+    // SKILL GAP ANALYSIS
+    // ==============================
+
+    const currentSkillNames =
+      skills.map((skill) => skill.name);
+
+    const currentSkillsLower =
+      currentSkillNames.map((skill) =>
+        skill.toLowerCase()
+      );
+
+    const preferredSkills =
+      goal?.preferredSkills || [];
+
+    const missingSkills = [];
+    const skillGapWeakAreas = [];
+    const priorityAreas = [];
+    const skillGapRecommendations = [];
+
+    // ------------------------------
+    // Goal-based missing skills
+    // ------------------------------
+
+    preferredSkills.forEach(
+      (preferredSkill) => {
+        const alreadyOwned =
+          currentSkillsLower.includes(
+            preferredSkill.toLowerCase()
+          );
+
+        if (!alreadyOwned) {
+          addUnique(
+            missingSkills,
+            preferredSkill
+          );
+        }
+      }
+    );
+
+    // ------------------------------
+    // ATS-based missing skills
+    // ------------------------------
+
+    if (
+      resume &&
+      resume.analysisStatus === "Analyzed" &&
+      Array.isArray(resume.missingSkills)
+    ) {
+      resume.missingSkills.forEach(
+        (missingSkill) => {
+          addUnique(
+            missingSkills,
+            missingSkill
+          );
+        }
+      );
+    }
+
+    // ------------------------------
+    // Practice weaknesses
+    // ------------------------------
+
+    categoryPerformance.forEach(
+      (item) => {
+        if (
+          item.totalAttempts >= 1 &&
+          item.accuracy < 60
+        ) {
+          addUnique(
+            skillGapWeakAreas,
+            `${item.category} practice performance (${item.accuracy}% accuracy)`
+          );
+
+          addUnique(
+            priorityAreas,
+            item.category
+          );
+        }
+      }
+    );
+
+    // ------------------------------
+    // Mock placement weakness
+    // ------------------------------
+
+    const completedMocks =
+      mockAttempts.filter(
+        (attempt) =>
+          attempt.status === "Completed" ||
+          attempt.completedAt
+      );
+
+    if (completedMocks.length > 0) {
+      const mockScores =
+        completedMocks.map((attempt) => {
+          if (
+            typeof attempt.percentage ===
+            "number"
+          ) {
+            return attempt.percentage;
+          }
+
+          if (
+            typeof attempt.score === "number"
+          ) {
+            return attempt.score;
+          }
+
+          return 0;
+        });
+
+      const averageMockScore =
+        mockScores.reduce(
+          (total, score) =>
+            total + score,
+          0
+        ) / mockScores.length;
+
+      if (averageMockScore < 60) {
+        addUnique(
+          skillGapWeakAreas,
+          `Mock placement performance (${Math.round(
+            averageMockScore
+          )}%)`
+        );
+
+        addUnique(
+          priorityAreas,
+          "Mock Placement Preparation"
+        );
+      }
+    }
+
+    // ------------------------------
+    // Skill recommendations
+    // ------------------------------
+
+    missingSkills.forEach((skill) => {
+      skillGapRecommendations.push(
+        `Learn and practice ${skill} based on your placement requirements.`
+      );
+    });
+
+    // ------------------------------
+    // Weak-area recommendations
+    // ------------------------------
+
+    skillGapWeakAreas.forEach(
+      (area) => {
+        skillGapRecommendations.push(
+          `Improve ${area} through targeted learning and practice.`
+        );
+      }
+    );
+
+    // ------------------------------
+    // Goal recommendation
+    // ------------------------------
+
+    if (!goal) {
+      skillGapRecommendations.push(
+        "Set a placement goal or target role to receive more accurate skill-gap recommendations."
+      );
+    }
+
+    // ------------------------------
+    // Resume recommendation
+    // ------------------------------
+
+    if (!resume) {
+      skillGapRecommendations.push(
+        "Upload and analyze your resume to identify ATS-based missing skills."
+      );
+    } else if (
+      resume.analysisStatus !== "Analyzed"
+    ) {
+      skillGapRecommendations.push(
+        "Run ATS analysis on your resume to identify missing skills."
+      );
+    }
+
+    const uniqueSkillGapRecommendations =
+      [
+        ...new Set(
+          skillGapRecommendations
+        ),
+      ];
+
+    // ==============================
     // DASHBOARD RESPONSE
     // ==============================
 
@@ -204,10 +439,14 @@ const getStudentDashboard = async (req, res) => {
 
       learning: {
         progress: learningProgress,
+
         totalStarted:
           totalLearningTopicsStarted,
+
         completedTopics,
+
         inProgressTopics,
+
         averageProgress:
           averageLearningProgress,
       },
@@ -241,6 +480,30 @@ const getStudentDashboard = async (req, res) => {
 
         strengths:
           practiceStrengths,
+      },
+
+      // ==============================
+      // MODULE 6 - SKILL GAP
+      // ==============================
+
+      skillGap: {
+        targetRole:
+          goal?.targetRole || null,
+
+        currentSkills:
+          currentSkillNames,
+
+        preferredSkills,
+
+        missingSkills,
+
+        weakAreas:
+          skillGapWeakAreas,
+
+        priorityAreas,
+
+        recommendations:
+          uniqueSkillGapRecommendations,
       },
 
       summary: {
@@ -287,12 +550,23 @@ const getStudentDashboard = async (req, res) => {
 
         practiceStrengths:
           practiceStrengths,
+
+        // Skill Gap summary
+        missingSkillsCount:
+          missingSkills.length,
+
+        weakAreasCount:
+          skillGapWeakAreas.length,
+
+        priorityAreasCount:
+          priorityAreas.length,
       },
     });
   } catch (error) {
     res.status(500).json({
       message:
         "Failed to load student dashboard",
+
       error: error.message,
     });
   }
@@ -301,7 +575,11 @@ const getStudentDashboard = async (req, res) => {
 // ==============================
 // CREATE / UPDATE STUDENT PROFILE
 // ==============================
-const saveStudentProfile = async (req, res) => {
+
+const saveStudentProfile = async (
+  req,
+  res
+) => {
   try {
     const {
       phone,
@@ -316,7 +594,9 @@ const saveStudentProfile = async (req, res) => {
 
     const profile =
       await StudentProfile.findOneAndUpdate(
-        { user: req.user.id },
+        {
+          user: req.user.id,
+        },
         {
           user: req.user.id,
           phone,
@@ -338,12 +618,14 @@ const saveStudentProfile = async (req, res) => {
     res.status(200).json({
       message:
         "Student profile saved successfully",
+
       profile,
     });
   } catch (error) {
     res.status(500).json({
       message:
         "Failed to save student profile",
+
       error: error.message,
     });
   }
@@ -352,7 +634,11 @@ const saveStudentProfile = async (req, res) => {
 // ==============================
 // GET STUDENT PROFILE
 // ==============================
-const getStudentProfile = async (req, res) => {
+
+const getStudentProfile = async (
+  req,
+  res
+) => {
   try {
     const profile =
       await StudentProfile.findOne({
@@ -372,12 +658,14 @@ const getStudentProfile = async (req, res) => {
     res.status(200).json({
       message:
         "Student profile fetched successfully",
+
       profile,
     });
   } catch (error) {
     res.status(500).json({
       message:
         "Failed to fetch student profile",
+
       error: error.message,
     });
   }
