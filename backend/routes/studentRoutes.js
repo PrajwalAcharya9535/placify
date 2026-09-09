@@ -151,6 +151,56 @@ const {
 } = require("../controllers/student/resumeController");
 
 // ==============================
+// INTERVIEW PREPARATION CONTROLLER
+// ==============================
+
+const {
+  startInterviewSession,
+  getInterviewQuestions,
+  submitInterviewAnswer,
+  completeInterviewSession,
+} = require("../controllers/student/interviewController");
+
+const {
+  getInterviewHistory,
+  getInterviewResult,
+} = require("../controllers/student/interviewHistoryController");
+
+const {
+  submitVoiceInterviewAnswer,
+} = require("../controllers/student/interviewVoiceController");
+
+// ==============================
+// GROUP DISCUSSION CONTROLLER
+// ==============================
+
+const {
+  getGDTopics,
+  startGDSession,
+  joinGDSession,
+} = require("../controllers/student/gdController");
+
+// ==============================
+// GD MATCHMAKING CONTROLLER
+// ==============================
+
+const {
+  joinGDQueue,
+} = require("../controllers/student/gdMatchmakingController");
+
+// ==============================
+// GD ROOM LIFECYCLE CONTROLLER
+// ==============================
+
+const {
+  getGDRoomDetails,
+  markGDParticipantReady,
+  startGDRoom,
+  leaveGDRoom,
+  completeGDRoom,
+} = require("../controllers/student/gdRoomController");
+
+// ==============================
 // MIDDLEWARE
 // ==============================
 
@@ -159,6 +209,8 @@ const protect = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 
 const resumeUpload = require("../middleware/resumeUploadMiddleware");
+
+const interviewAudioUpload = require("../middleware/interviewAudioUploadMiddleware");
 
 const router = express.Router();
 
@@ -554,7 +606,6 @@ router.post(
 // RESUME & ATS MODULE
 // ==============================
 
-// Upload / update resume
 router.post(
   "/resume",
   protect,
@@ -563,7 +614,6 @@ router.post(
   saveResumeDetails
 );
 
-// Analyze uploaded resume
 router.post(
   "/resume/analyze",
   protect,
@@ -571,7 +621,6 @@ router.post(
   analyzeStudentResume
 );
 
-// Get resume and ATS information
 router.get(
   "/resume",
   protect,
@@ -579,12 +628,140 @@ router.get(
   getResume
 );
 
-// Delete resume
 router.delete(
   "/resume",
   protect,
   authorizeRoles("student"),
   deleteResume
+);
+
+// ==============================
+// INTERVIEW PREPARATION MODULE
+// ==============================
+
+router.post(
+  "/interview/start",
+  protect,
+  authorizeRoles("student"),
+  startInterviewSession
+);
+
+router.get(
+  "/interview/history",
+  protect,
+  authorizeRoles("student"),
+  getInterviewHistory
+);
+
+router.get(
+  "/interview/:sessionId/result",
+  protect,
+  authorizeRoles("student"),
+  getInterviewResult
+);
+
+router.get(
+  "/interview/:sessionId/questions",
+  protect,
+  authorizeRoles("student"),
+  getInterviewQuestions
+);
+
+router.post(
+  "/interview/:sessionId/questions/:questionId/answer",
+  protect,
+  authorizeRoles("student"),
+  submitInterviewAnswer
+);
+
+router.post(
+  "/interview/:sessionId/complete",
+  protect,
+  authorizeRoles("student"),
+  completeInterviewSession
+);
+
+router.post(
+  "/interview/:sessionId/questions/:questionId/voice-answer",
+  protect,
+  authorizeRoles("student"),
+  interviewAudioUpload.single("audio"),
+  submitVoiceInterviewAnswer
+);
+
+// ==============================
+// GROUP DISCUSSION MODULE
+// ==============================
+
+router.get(
+  "/gd/topics",
+  protect,
+  authorizeRoles("student"),
+  getGDTopics
+);
+
+router.post(
+  "/gd/sessions",
+  protect,
+  authorizeRoles("student"),
+  startGDSession
+);
+
+router.post(
+  "/gd/sessions/join",
+  protect,
+  authorizeRoles("student"),
+  joinGDSession
+);
+
+// ==============================
+// GD MATCHMAKING
+// ==============================
+
+router.post(
+  "/gd/matchmaking/join",
+  protect,
+  authorizeRoles("student"),
+  joinGDQueue
+);
+
+// ==============================
+// GD ROOM LIFECYCLE
+// ==============================
+
+router.get(
+  "/gd/rooms/:roomCode",
+  protect,
+  authorizeRoles("student"),
+  getGDRoomDetails
+);
+
+router.post(
+  "/gd/rooms/:roomCode/ready",
+  protect,
+  authorizeRoles("student"),
+  markGDParticipantReady
+);
+
+router.post(
+  "/gd/rooms/:roomCode/start",
+  protect,
+  authorizeRoles("student"),
+  startGDRoom
+);
+
+router.post(
+  "/gd/rooms/:roomCode/leave",
+  protect,
+  authorizeRoles("student"),
+  leaveGDRoom
+);
+
+router.post(
+  "/gd/rooms/:roomCode/complete",
+  protect,
+  authorizeRoles("student"),
+  completeGDRoom
 );
 
 module.exports = router;

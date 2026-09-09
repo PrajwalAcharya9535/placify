@@ -95,6 +95,16 @@ const readinessSchema = new mongoose.Schema(
     },
 
     // ==============================
+    // INTERVIEW PREPARATION
+    // ==============================
+    interviewScore: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: 0,
+    },
+
+    // ==============================
     // ANALYSIS
     // ==============================
     weakAreas: [

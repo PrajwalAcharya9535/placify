@@ -9,6 +9,7 @@ const CodingAttempt = require("../../models/CodingAttempt");
 const SqlAttempt = require("../../models/SqlAttempt");
 const DebuggingAttempt = require("../../models/DebuggingAttempt");
 const MockAttempt = require("../../models/MockAttempt");
+const InterviewSession = require("../../models/InterviewSession");
 
 // ==============================
 // CALCULATE PLACEMENT READINESS
@@ -57,6 +58,12 @@ const calculateReadiness = async (req, res) => {
       status: "Completed",
     });
 
+    const interviewSessions =
+      await InterviewSession.find({
+        user: userId,
+        status: "Completed",
+      });
+
     // ==============================
     // SCORE VARIABLES
     // ==============================
@@ -72,6 +79,7 @@ const calculateReadiness = async (req, res) => {
 
     let practiceScore = 0;
     let mockScore = 0;
+    let interviewScore = 0;
 
     const weakAreas = [];
     const strengths = [];
@@ -570,15 +578,60 @@ const calculateReadiness = async (req, res) => {
     }
 
     // ==============================
+    // INTERVIEW PREPARATION SCORE
+    // ==============================
+    if (interviewSessions.length > 0) {
+      interviewScore = Math.round(
+        interviewSessions.reduce(
+          (total, session) =>
+            total +
+            Number(
+              session.overallScore || 0
+            ),
+          0
+        ) / interviewSessions.length
+      );
+
+      if (interviewScore >= 80) {
+        strengths.push(
+          "Interview performance"
+        );
+      } else if (
+        interviewScore < 60
+      ) {
+        weakAreas.push(
+          "Interview performance"
+        );
+
+        recommendations.push(
+          "Practice more technical, HR, behavioral and communication interview questions"
+        );
+      } else {
+        recommendations.push(
+          "Continue interview practice to improve your communication and interview performance"
+        );
+      }
+    } else {
+      weakAreas.push(
+        "No completed interview practice"
+      );
+
+      recommendations.push(
+        "Complete interview practice sessions to improve your placement readiness"
+      );
+    }
+
+    // ==============================
     // OVERALL READINESS SCORE
     // ==============================
     /*
       Profile         = 10%
-      Skills          = 25%
+      Skills          = 20%
       Goals           = 10%
-      Practice        = 25%
+      Practice        = 20%
       Mock Placement  = 20%
       Resume ATS      = 10%
+      Interview       = 10%
 
       Total           = 100%
     */
@@ -586,11 +639,12 @@ const calculateReadiness = async (req, res) => {
     const overallScore =
       Math.round(
         profileScore * 0.1 +
-        skillScore * 0.25 +
+        skillScore * 0.2 +
         goalScore * 0.1 +
-        practiceScore * 0.25 +
+        practiceScore * 0.2 +
         mockScore * 0.2 +
-        atsScore * 0.1
+        atsScore * 0.1 +
+        interviewScore * 0.1
       );
 
     // ==============================
@@ -602,13 +656,19 @@ const calculateReadiness = async (req, res) => {
     if (overallScore >= 85) {
       readinessLevel =
         "Highly Ready";
-    } else if (overallScore >= 70) {
+    } else if (
+      overallScore >= 70
+    ) {
       readinessLevel =
         "Placement Ready";
-    } else if (overallScore >= 50) {
+    } else if (
+      overallScore >= 50
+    ) {
       readinessLevel =
         "Developing";
-    } else if (overallScore >= 25) {
+    } else if (
+      overallScore >= 25
+    ) {
       readinessLevel =
         "Beginner";
     }
@@ -639,6 +699,7 @@ const calculateReadiness = async (req, res) => {
           debuggingScore,
 
           mockScore,
+          interviewScore,
 
           weakAreas,
           strengths,
