@@ -105,6 +105,16 @@ const readinessSchema = new mongoose.Schema(
     },
 
     // ==============================
+    // GROUP DISCUSSION
+    // ==============================
+    gdScore: {
+      type: Number,
+      min: 0,
+      max: 100,
+      default: 0,
+    },
+
+    // ==============================
     // ANALYSIS
     // ==============================
     weakAreas: [

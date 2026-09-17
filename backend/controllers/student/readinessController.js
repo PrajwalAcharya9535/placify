@@ -10,6 +10,7 @@ const SqlAttempt = require("../../models/SqlAttempt");
 const DebuggingAttempt = require("../../models/DebuggingAttempt");
 const MockAttempt = require("../../models/MockAttempt");
 const InterviewSession = require("../../models/InterviewSession");
+const GDSession = require("../../models/GDSession");
 
 // ==============================
 // CALCULATE PLACEMENT READINESS
@@ -64,6 +65,11 @@ const calculateReadiness = async (req, res) => {
         status: "Completed",
       });
 
+    const gdSessions = await GDSession.find({
+      status: "Completed",
+      "participants.user": userId,
+    });
+
     // ==============================
     // SCORE VARIABLES
     // ==============================
@@ -80,6 +86,7 @@ const calculateReadiness = async (req, res) => {
     let practiceScore = 0;
     let mockScore = 0;
     let interviewScore = 0;
+    let gdScore = 0;
 
     const weakAreas = [];
     const strengths = [];
@@ -622,18 +629,102 @@ const calculateReadiness = async (req, res) => {
     }
 
     // ==============================
+    // GROUP DISCUSSION SCORE
+    // ==============================
+    const gdParticipantResults = [];
+
+    gdSessions.forEach((session) => {
+      const participant =
+        session.participants.find(
+          (item) =>
+            item.user.toString() ===
+            userId.toString()
+        );
+
+      if (
+        participant &&
+        participant.transcript &&
+        participant.transcript.trim()
+          .length > 0
+      ) {
+        gdParticipantResults.push({
+          overallScore: Number(
+            participant.overallScore || 0
+          ),
+
+          communicationScore: Number(
+            participant.communicationScore ||
+              0
+          ),
+
+          relevanceScore: Number(
+            participant.relevanceScore || 0
+          ),
+
+          structureScore: Number(
+            participant.structureScore || 0
+          ),
+
+          participationScore: Number(
+            participant.participationScore ||
+              0
+          ),
+        });
+      }
+    });
+
+    if (gdParticipantResults.length > 0) {
+      gdScore = Math.round(
+        gdParticipantResults.reduce(
+          (total, result) =>
+            total +
+            result.overallScore,
+          0
+        ) /
+          gdParticipantResults.length
+      );
+
+      if (gdScore >= 80) {
+        strengths.push(
+          "Group discussion performance"
+        );
+      } else if (gdScore < 60) {
+        weakAreas.push(
+          "Group discussion performance"
+        );
+
+        recommendations.push(
+          "Practice contributing relevant, structured and clear points during group discussions"
+        );
+      } else {
+        recommendations.push(
+          "Continue group discussion practice to improve structure, participation and communication"
+        );
+      }
+    } else {
+      weakAreas.push(
+        "No completed group discussion practice"
+      );
+
+      recommendations.push(
+        "Complete a group discussion practice session to improve communication and placement readiness"
+      );
+    }
+
+    // ==============================
     // OVERALL READINESS SCORE
     // ==============================
     /*
-      Profile         = 10%
-      Skills          = 20%
-      Goals           = 10%
-      Practice        = 20%
-      Mock Placement  = 20%
-      Resume ATS      = 10%
-      Interview       = 10%
+      Profile          = 10%
+      Skills           = 20%
+      Goals            = 10%
+      Practice         = 20%
+      Mock Placement   = 20%
+      Resume ATS       = 10%
+      Interview        = 7%
+      Group Discussion = 3%
 
-      Total           = 100%
+      Total            = 100%
     */
 
     const overallScore =
@@ -644,7 +735,8 @@ const calculateReadiness = async (req, res) => {
         practiceScore * 0.2 +
         mockScore * 0.2 +
         atsScore * 0.1 +
-        interviewScore * 0.1
+        interviewScore * 0.07 +
+        gdScore * 0.03
       );
 
     // ==============================
@@ -700,6 +792,7 @@ const calculateReadiness = async (req, res) => {
 
           mockScore,
           interviewScore,
+          gdScore,
 
           weakAreas,
           strengths,

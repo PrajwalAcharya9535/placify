@@ -212,6 +212,21 @@ const resumeUpload = require("../middleware/resumeUploadMiddleware");
 
 const interviewAudioUpload = require("../middleware/interviewAudioUploadMiddleware");
 
+const gdAudioUpload = require("../middleware/gdAudioUploadMiddleware");
+
+const {
+  transcribeGDAudio,
+} = require("../controllers/student/gdTranscriptionController");
+
+
+// ==============================
+// GD EVALUATION CONTROLLER
+// ==============================
+
+const {
+  evaluateGDParticipantPerformance,
+} = require("../controllers/student/gdEvaluationController");
+
 const router = express.Router();
 
 // ==============================
@@ -762,6 +777,29 @@ router.post(
   protect,
   authorizeRoles("student"),
   completeGDRoom
+);
+
+// ==============================
+// GD AUDIO TRANSCRIPTION
+// ==============================
+
+router.post(
+  "/gd/rooms/:roomCode/transcribe",
+  protect,
+  authorizeRoles("student"),
+  gdAudioUpload.single("audio"),
+  transcribeGDAudio
+);
+
+// ==============================
+// GD PARTICIPANT EVALUATION
+// ==============================
+
+router.post(
+  "/gd/rooms/:roomCode/evaluate",
+  protect,
+  authorizeRoles("student"),
+  evaluateGDParticipantPerformance
 );
 
 module.exports = router;

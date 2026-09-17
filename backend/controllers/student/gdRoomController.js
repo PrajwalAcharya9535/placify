@@ -11,6 +11,33 @@ const getActiveParticipants = (session) => {
 };
 
 // ==============================
+// HELPER: CHECK PARTICIPANT EVALUATION
+// ==============================
+
+const hasParticipantEvaluation = (
+  participant
+) => {
+  /*
+    A participant with no transcript did not
+    make a recorded contribution.
+
+    A participant with a transcript must have
+    been evaluated before the room is completed.
+  */
+
+  if (
+    !participant.transcript ||
+    participant.transcript.trim().length === 0
+  ) {
+    return true;
+  }
+
+  return (
+    Number(participant.overallScore || 0) > 0
+  );
+};
+
+// ==============================
 // GET GD ROOM DETAILS
 // ==============================
 
@@ -43,8 +70,11 @@ const getGDRoomDetails = async (req, res) => {
       session.participants.find(
         (item) =>
           item.user &&
-          item.user._id.toString() ===
-            userId.toString()
+          (
+            item.user._id
+              ? item.user._id.toString()
+              : item.user.toString()
+          ) === userId.toString()
       );
 
     if (!participant) {
@@ -86,8 +116,10 @@ const getGDRoomDetails = async (req, res) => {
           session.audioEnabled,
         maxParticipants:
           session.maxParticipants,
+
         currentParticipants:
           activeParticipants.length,
+
         readyParticipants:
           readyParticipants.length,
 
@@ -98,8 +130,10 @@ const getGDRoomDetails = async (req, res) => {
 
         scheduledAt:
           session.scheduledAt,
+
         startedAt:
           session.startedAt,
+
         completedAt:
           session.completedAt,
 
@@ -130,6 +164,22 @@ const getGDRoomDetails = async (req, res) => {
 
               leftAt:
                 item.leftAt,
+
+              contributionCount:
+                item.contributionCount,
+
+              speakingTimeSeconds:
+                item.speakingTimeSeconds,
+
+              evaluated:
+                Boolean(
+                  item.transcript &&
+                    item.transcript.trim()
+                      .length > 0 &&
+                    Number(
+                      item.overallScore || 0
+                    ) > 0
+                ),
             })
           ),
       },
@@ -174,20 +224,12 @@ const markGDParticipantReady = async (
       });
     }
 
-    // ==============================
-    // ROOM MUST BE WAITING
-    // ==============================
-
     if (session.status !== "Waiting") {
       return res.status(400).json({
         message:
           "Students can only become ready while the GD room is waiting",
       });
     }
-
-    // ==============================
-    // FIND PARTICIPANT
-    // ==============================
 
     const participant =
       session.participants.find(
@@ -209,10 +251,6 @@ const markGDParticipantReady = async (
           "You must be present in the room before becoming ready",
       });
     }
-
-    // ==============================
-    // ALREADY READY
-    // ==============================
 
     if (participant.isReady) {
       const activeParticipants =
@@ -244,10 +282,6 @@ const markGDParticipantReady = async (
         },
       });
     }
-
-    // ==============================
-    // MARK READY
-    // ==============================
 
     participant.isReady = true;
     participant.readyAt = new Date();
@@ -322,20 +356,12 @@ const startGDRoom = async (
       });
     }
 
-    // ==============================
-    // ROOM MUST BE WAITING
-    // ==============================
-
     if (session.status !== "Waiting") {
       return res.status(400).json({
         message:
           "GD room cannot be started because it is not waiting",
       });
     }
-
-    // ==============================
-    // VERIFY REQUESTING STUDENT
-    // ==============================
 
     const participant =
       session.participants.find(
@@ -358,10 +384,6 @@ const startGDRoom = async (
       });
     }
 
-    // ==============================
-    // GET ACTIVE PARTICIPANTS
-    // ==============================
-
     const activeParticipants =
       getActiveParticipants(session);
 
@@ -371,10 +393,6 @@ const startGDRoom = async (
           "No active participants are available in the GD room",
       });
     }
-
-    // ==============================
-    // CHECK ALL STUDENTS READY
-    // ==============================
 
     const readyParticipants =
       activeParticipants.filter(
@@ -401,10 +419,6 @@ const startGDRoom = async (
         },
       });
     }
-
-    // ==============================
-    // START GD ROUND
-    // ==============================
 
     session.status = "Started";
     session.startedAt = new Date();
@@ -474,10 +488,6 @@ const leaveGDRoom = async (
       });
     }
 
-    // ==============================
-    // COMPLETED/CANCELLED CHECK
-    // ==============================
-
     if (
       session.status === "Completed" ||
       session.status === "Cancelled"
@@ -487,10 +497,6 @@ const leaveGDRoom = async (
           "You cannot leave a completed or cancelled GD room",
       });
     }
-
-    // ==============================
-    // FIND PARTICIPANT
-    // ==============================
 
     const participant =
       session.participants.find(
@@ -505,10 +511,6 @@ const leaveGDRoom = async (
           "You are not a participant of this GD room",
       });
     }
-
-    // ==============================
-    // ALREADY LEFT
-    // ==============================
 
     if (!participant.isPresent) {
       return res.status(200).json({
@@ -529,10 +531,6 @@ const leaveGDRoom = async (
         },
       });
     }
-
-    // ==============================
-    // MARK PARTICIPANT LEFT
-    // ==============================
 
     participant.isPresent = false;
     participant.isReady = false;
@@ -620,7 +618,7 @@ const completeGDRoom = async (
     }
 
     // ==============================
-    // HANDLE COMPLETED ROOM
+    // HANDLE ALREADY COMPLETED
     // ==============================
 
     if (session.status === "Completed") {
@@ -642,7 +640,7 @@ const completeGDRoom = async (
     }
 
     // ==============================
-    // CANCELLED ROOM CANNOT COMPLETE
+    // CANCELLED CHECK
     // ==============================
 
     if (session.status === "Cancelled") {
@@ -667,13 +665,67 @@ const completeGDRoom = async (
     }
 
     // ==============================
-    // REQUESTER MUST STILL BE PRESENT
+    // REQUESTER MUST BE PRESENT
     // ==============================
 
     if (!participant.isPresent) {
       return res.status(400).json({
         message:
           "You must be present in the GD room to complete the round",
+      });
+    }
+
+    // ==============================
+    // ONLY ROOM CREATOR CAN COMPLETE
+    // ==============================
+
+    if (
+      session.createdBy.toString() !==
+      userId.toString()
+    ) {
+      return res.status(403).json({
+        message:
+          "Only the GD room creator can complete the round",
+      });
+    }
+
+    // ==============================
+    // CHECK PARTICIPANT EVALUATIONS
+    // ==============================
+
+    const participantsWithTranscript =
+      session.participants.filter(
+        (item) =>
+          item.transcript &&
+          item.transcript.trim().length > 0
+      );
+
+    if (
+      participantsWithTranscript.length ===
+      0
+    ) {
+      return res.status(400).json({
+        message:
+          "GD round cannot be completed because no participant contributions were recorded",
+      });
+    }
+
+    const pendingEvaluations =
+      participantsWithTranscript.filter(
+        (item) =>
+          !hasParticipantEvaluation(item)
+      );
+
+    if (pendingEvaluations.length > 0) {
+      return res.status(400).json({
+        message:
+          "GD round cannot be completed until all recorded participant contributions are evaluated",
+
+        pendingEvaluations:
+          pendingEvaluations.map(
+            (item) =>
+              item.user.toString()
+          ),
       });
     }
 
@@ -686,8 +738,56 @@ const completeGDRoom = async (
 
     await session.save();
 
-    const activeParticipants =
-      getActiveParticipants(session);
+    // ==============================
+    // SAFE RESULT SUMMARY
+    // ==============================
+
+    const participantResults =
+      session.participants.map(
+        (item) => ({
+          user: item.user,
+
+          contributed:
+            Boolean(
+              item.transcript &&
+                item.transcript.trim()
+                  .length > 0
+            ),
+
+          contributionCount:
+            item.contributionCount,
+
+          speakingTimeSeconds:
+            item.speakingTimeSeconds,
+
+          overallScore:
+            item.overallScore,
+
+          communicationScore:
+            item.communicationScore,
+
+          relevanceScore:
+            item.relevanceScore,
+
+          structureScore:
+            item.structureScore,
+
+          participationScore:
+            item.participationScore,
+
+          strengths:
+            item.strengths,
+
+          weakAreas:
+            item.weakAreas,
+
+          feedback:
+            item.feedback,
+
+          recommendations:
+            item.recommendations,
+        })
+      );
 
     return res.status(200).json({
       message:
@@ -702,11 +802,11 @@ const completeGDRoom = async (
         durationMinutes:
           session.durationMinutes,
 
-        currentParticipants:
-          activeParticipants.length,
-
         totalParticipants:
           session.participants.length,
+
+        evaluatedParticipants:
+          participantsWithTranscript.length,
 
         startedAt:
           session.startedAt,
@@ -714,6 +814,8 @@ const completeGDRoom = async (
         completedAt:
           session.completedAt,
       },
+
+      participantResults,
     });
   } catch (error) {
     console.error(
