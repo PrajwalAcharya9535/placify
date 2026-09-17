@@ -151,7 +151,7 @@ const {
 } = require("../controllers/student/resumeController");
 
 // ==============================
-// INTERVIEW PREPARATION CONTROLLER
+// INTERVIEW PREPARATION CONTROLLERS
 // ==============================
 
 const {
@@ -171,7 +171,7 @@ const {
 } = require("../controllers/student/interviewVoiceController");
 
 // ==============================
-// GROUP DISCUSSION CONTROLLER
+// GROUP DISCUSSION CONTROLLERS
 // ==============================
 
 const {
@@ -180,17 +180,9 @@ const {
   joinGDSession,
 } = require("../controllers/student/gdController");
 
-// ==============================
-// GD MATCHMAKING CONTROLLER
-// ==============================
-
 const {
   joinGDQueue,
 } = require("../controllers/student/gdMatchmakingController");
-
-// ==============================
-// GD ROOM LIFECYCLE CONTROLLER
-// ==============================
 
 const {
   getGDRoomDetails,
@@ -199,6 +191,19 @@ const {
   leaveGDRoom,
   completeGDRoom,
 } = require("../controllers/student/gdRoomController");
+
+const {
+  transcribeGDAudio,
+} = require("../controllers/student/gdTranscriptionController");
+
+const {
+  evaluateGDParticipantPerformance,
+} = require("../controllers/student/gdEvaluationController");
+
+const {
+  getGDHistory,
+  getGDResult,
+} = require("../controllers/student/gdHistoryController");
 
 // ==============================
 // MIDDLEWARE
@@ -210,22 +215,13 @@ const authorizeRoles = require("../middleware/roleMiddleware");
 
 const resumeUpload = require("../middleware/resumeUploadMiddleware");
 
-const interviewAudioUpload = require("../middleware/interviewAudioUploadMiddleware");
+const interviewAudioUpload = require(
+  "../middleware/interviewAudioUploadMiddleware"
+);
 
-const gdAudioUpload = require("../middleware/gdAudioUploadMiddleware");
-
-const {
-  transcribeGDAudio,
-} = require("../controllers/student/gdTranscriptionController");
-
-
-// ==============================
-// GD EVALUATION CONTROLLER
-// ==============================
-
-const {
-  evaluateGDParticipantPerformance,
-} = require("../controllers/student/gdEvaluationController");
+const gdAudioUpload = require(
+  "../middleware/gdAudioUploadMiddleware"
+);
 
 const router = express.Router();
 
@@ -708,6 +704,23 @@ router.post(
 // GROUP DISCUSSION MODULE
 // ==============================
 
+// GD HISTORY
+router.get(
+  "/gd/history",
+  protect,
+  authorizeRoles("student"),
+  getGDHistory
+);
+
+// GD RESULT
+router.get(
+  "/gd/rooms/:roomCode/result",
+  protect,
+  authorizeRoles("student"),
+  getGDResult
+);
+
+// GD TOPICS
 router.get(
   "/gd/topics",
   protect,
@@ -715,6 +728,7 @@ router.get(
   getGDTopics
 );
 
+// MANUAL GD SESSION
 router.post(
   "/gd/sessions",
   protect,
