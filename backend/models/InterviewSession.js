@@ -50,6 +50,14 @@ const interviewSessionSchema =
         default: "Started",
       },
 
+      // Exact questions assigned to this interview session
+      assignedQuestions: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "InterviewQuestion",
+        },
+      ],
+
       totalQuestions: {
         type: Number,
         default: 0,
@@ -125,6 +133,11 @@ const interviewSessionSchema =
       timestamps: true,
     }
   );
+
+interviewSessionSchema.index({
+  user: 1,
+  createdAt: -1,
+});
 
 module.exports = mongoose.model(
   "InterviewSession",

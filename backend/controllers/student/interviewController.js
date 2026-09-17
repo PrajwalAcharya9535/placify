@@ -96,6 +96,8 @@ const startInterviewSession = async (
 
         status: "Started",
 
+        assignedQuestions: [],
+
         totalQuestions: 0,
 
         answeredQuestions: 0,
@@ -172,63 +174,120 @@ const getInterviewQuestions = async (
       });
     }
 
-    const query = {
-      interviewType:
-        session.interviewType,
+    let questions = [];
 
-      difficulty:
-        session.difficulty,
-
-      isActive: true,
-    };
-
-    if (session.targetRole) {
-      query.$or = [
-        {
-          targetRole:
-            session.targetRole,
-        },
-        {
-          targetRole: {
-            $in: [null, ""],
-          },
-        },
-      ];
-    }
-
-    let questions =
-      await InterviewQuestion.find(query)
-        .select(
-          "_id question interviewType category targetRole targetCompany difficulty maxScore"
-        )
-        .sort({
-          createdAt: 1,
-        });
-
-    if (session.targetCompany) {
-      questions = questions.filter(
-        (question) =>
-          !question.targetCompany ||
-          question.targetCompany ===
-            session.targetCompany
-      );
-    }
-
-    const totalQuestions =
-      questions.length;
+    // ==============================
+    // RETURN EXISTING ASSIGNMENT
+    // ==============================
 
     if (
-      session.totalQuestions !==
-        totalQuestions ||
-      session.status === "Started"
+      Array.isArray(
+        session.assignedQuestions
+      ) &&
+      session.assignedQuestions.length > 0
     ) {
+      questions =
+        await InterviewQuestion.find({
+          _id: {
+            $in:
+              session.assignedQuestions,
+          },
+        }).select(
+          "_id question interviewType category targetRole targetCompany difficulty maxScore"
+        );
+
+      // Preserve original assigned order
+      const questionMap = new Map(
+        questions.map((question) => [
+          question._id.toString(),
+          question,
+        ])
+      );
+
+      questions =
+        session.assignedQuestions
+          .map((questionId) =>
+            questionMap.get(
+              questionId.toString()
+            )
+          )
+          .filter(Boolean);
+    } else {
+      // ==============================
+      // FIRST QUESTION ASSIGNMENT
+      // ==============================
+
+      const query = {
+        interviewType:
+          session.interviewType,
+
+        difficulty:
+          session.difficulty,
+
+        isActive: true,
+      };
+
+      if (session.targetRole) {
+        query.$or = [
+          {
+            targetRole:
+              session.targetRole,
+          },
+          {
+            targetRole: {
+              $in: [null, ""],
+            },
+          },
+        ];
+      }
+
+      questions =
+        await InterviewQuestion.find(
+          query
+        )
+          .select(
+            "_id question interviewType category targetRole targetCompany difficulty maxScore"
+          )
+          .sort({
+            createdAt: 1,
+          });
+
+      if (session.targetCompany) {
+        questions =
+          questions.filter(
+            (question) =>
+              !question.targetCompany ||
+              question.targetCompany ===
+                session.targetCompany
+          );
+      }
+
+      // Permanently store the exact
+      // questions assigned to this session.
+      session.assignedQuestions =
+        questions.map(
+          (question) => question._id
+        );
+
       session.totalQuestions =
-        totalQuestions;
+        questions.length;
 
       session.status =
-        totalQuestions > 0
+        questions.length > 0
           ? "In Progress"
           : "Started";
+
+      await session.save();
+    }
+
+    // Keep totalQuestions synchronized
+    // with the persisted assignment.
+    if (
+      session.totalQuestions !==
+      session.assignedQuestions.length
+    ) {
+      session.totalQuestions =
+        session.assignedQuestions.length;
 
       await session.save();
     }
@@ -347,6 +406,32 @@ const submitInterviewAnswer = async (
         success: false,
         message:
           "Interview session is already completed",
+      });
+    }
+
+    if (
+      !session.assignedQuestions ||
+      session.assignedQuestions.length === 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Interview questions have not been assigned yet",
+      });
+    }
+
+    const isAssigned =
+      session.assignedQuestions.some(
+        (assignedQuestionId) =>
+          assignedQuestionId.toString() ===
+          questionId.toString()
+      );
+
+    if (!isAssigned) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "This question is not assigned to this interview session",
       });
     }
 
@@ -614,6 +699,17 @@ const completeInterviewSession = async (
       });
     }
 
+    if (
+      !session.assignedQuestions ||
+      session.assignedQuestions.length === 0
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Interview session has no assigned questions",
+      });
+    }
+
     if (session.totalQuestions === 0) {
       return res.status(400).json({
         success: false,
@@ -626,6 +722,10 @@ const completeInterviewSession = async (
       await InterviewAnswer.find({
         user: userId,
         session: sessionId,
+        question: {
+          $in:
+            session.assignedQuestions,
+        },
       }).populate({
         path: "question",
         select:
@@ -727,8 +827,9 @@ const completeInterviewSession = async (
         ? overallScore
         : 0;
 
-    // Voice-based confidence analysis
-    // will be implemented later.
+    // Keep confidenceScore at 0 until
+    // an objectively defensible analysis
+    // method is implemented.
     const confidenceScore = 0;
 
     const uniqueStrengths = [
