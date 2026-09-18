@@ -2,6 +2,14 @@ const InterviewQuestion = require(
   "../../models/InterviewQuestion"
 );
 
+const CodingProblem = require(
+  "../../models/CodingProblem"
+);
+
+const SqlProblem = require(
+  "../../models/SqlProblem"
+);
+
 // ==============================
 // CREATE INTERVIEW QUESTION
 // ==============================
@@ -13,6 +21,9 @@ const createInterviewQuestion = async (
     const {
       question,
       interviewType,
+      questionMode,
+      codingProblem,
+      sqlProblem,
       category,
       targetRole,
       targetCompany,
@@ -23,6 +34,9 @@ const createInterviewQuestion = async (
       maxScore,
     } = req.body;
 
+    // ==============================
+    // BASIC VALIDATION
+    // ==============================
     if (!question || !interviewType) {
       return res.status(400).json({
         success: false,
@@ -69,14 +83,158 @@ const createInterviewQuestion = async (
       });
     }
 
+    // ==============================
+    // QUESTION MODE VALIDATION
+    // ==============================
+    const selectedQuestionMode =
+      questionMode || "Theory";
+
+    const allowedQuestionModes = [
+      "Theory",
+      "Coding",
+      "SQL",
+    ];
+
+    if (
+      !allowedQuestionModes.includes(
+        selectedQuestionMode
+      )
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid question mode",
+      });
+    }
+
+    // Coding and SQL are only allowed
+    // for Technical interviews.
+    if (
+      ["Coding", "SQL"].includes(
+        selectedQuestionMode
+      ) &&
+      interviewType !== "Technical"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Coding and SQL questions are allowed only for Technical interviews",
+      });
+    }
+
+    let validatedCodingProblem = null;
+    let validatedSqlProblem = null;
+
+    // ==============================
+    // CODING PROBLEM VALIDATION
+    // ==============================
+    if (
+      selectedQuestionMode === "Coding"
+    ) {
+      if (!codingProblem) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Coding problem is required for Coding interview questions",
+        });
+      }
+
+      const existingCodingProblem =
+        await CodingProblem.findOne({
+          _id: codingProblem,
+          isActive: true,
+        });
+
+      if (!existingCodingProblem) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Active coding problem not found",
+        });
+      }
+
+      validatedCodingProblem =
+        existingCodingProblem._id;
+    }
+
+    // ==============================
+    // SQL PROBLEM VALIDATION
+    // ==============================
+    if (
+      selectedQuestionMode === "SQL"
+    ) {
+      if (!sqlProblem) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "SQL problem is required for SQL interview questions",
+        });
+      }
+
+      const existingSqlProblem =
+        await SqlProblem.findOne({
+          _id: sqlProblem,
+          isActive: true,
+        });
+
+      if (!existingSqlProblem) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Active SQL problem not found",
+        });
+      }
+
+      validatedSqlProblem =
+        existingSqlProblem._id;
+    }
+
+    // ==============================
+    // MAX SCORE VALIDATION
+    // ==============================
+    const parsedMaxScore =
+      maxScore !== undefined
+        ? Number(maxScore)
+        : 10;
+
+    if (
+      !Number.isFinite(parsedMaxScore) ||
+      parsedMaxScore < 1
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Max score must be a number greater than or equal to 1",
+      });
+    }
+
+    // ==============================
+    // CREATE QUESTION
+    // ==============================
     const interviewQuestion =
       await InterviewQuestion.create({
-        question,
+        question: question.trim(),
+
         interviewType,
-        category: category || null,
-        targetRole: targetRole || null,
+
+        questionMode:
+          selectedQuestionMode,
+
+        codingProblem:
+          validatedCodingProblem,
+
+        sqlProblem:
+          validatedSqlProblem,
+
+        category:
+          category || null,
+
+        targetRole:
+          targetRole || null,
+
         targetCompany:
           targetCompany || null,
+
         difficulty:
           difficulty || "Medium",
 
@@ -94,7 +252,7 @@ const createInterviewQuestion = async (
             : [],
 
         maxScore:
-          maxScore || 10,
+          parsedMaxScore,
 
         isActive: true,
       });
@@ -106,6 +264,28 @@ const createInterviewQuestion = async (
       question: interviewQuestion,
     });
   } catch (error) {
+    // Invalid MongoDB ObjectId
+    if (
+      error.name === "CastError"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          "Invalid problem ID",
+      });
+    }
+
+    // Mongoose schema validation
+    if (
+      error.name === "ValidationError"
+    ) {
+      return res.status(400).json({
+        success: false,
+        message:
+          error.message,
+      });
+    }
+
     return res.status(500).json({
       success: false,
       message:

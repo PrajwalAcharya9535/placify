@@ -10,11 +10,218 @@ const InterviewAnswer = require(
   "../../models/InterviewAnswer"
 );
 
+const CodingProblem = require(
+  "../../models/CodingProblem"
+);
+
+const SqlProblem = require(
+  "../../models/SqlProblem"
+);
+
 const {
   evaluateInterviewAnswer,
 } = require(
   "../../services/interviewEvaluationService"
 );
+
+// ==============================
+// BUILD SAFE INTERVIEW QUESTION
+// ==============================
+const buildSafeQuestion = async (
+  question
+) => {
+  const safeQuestion = {
+    _id: question._id,
+
+    question:
+      question.question,
+
+    interviewType:
+      question.interviewType,
+
+    questionMode:
+      question.questionMode ||
+      "Theory",
+
+    category:
+      question.category,
+
+    targetRole:
+      question.targetRole,
+
+    targetCompany:
+      question.targetCompany,
+
+    difficulty:
+      question.difficulty,
+
+    maxScore:
+      question.maxScore,
+  };
+
+  // ==============================
+  // CODING QUESTION
+  // ==============================
+  if (
+    question.questionMode ===
+      "Coding" &&
+    question.codingProblem
+  ) {
+    const problem =
+      await CodingProblem.findOne({
+        _id:
+          question.codingProblem,
+
+        isActive: true,
+      });
+
+    if (problem) {
+      const publicTestCases =
+        Array.isArray(
+          problem.testCases
+        )
+          ? problem.testCases
+              .filter(
+                (testCase) =>
+                  !testCase.isHidden
+              )
+              .map(
+                (testCase) => ({
+                  input:
+                    testCase.input,
+
+                  expectedOutput:
+                    testCase.expectedOutput,
+                })
+              )
+          : [];
+
+      safeQuestion.codingProblem = {
+        _id:
+          problem._id,
+
+        title:
+          problem.title,
+
+        description:
+          problem.description,
+
+        difficulty:
+          problem.difficulty,
+
+        category:
+          problem.category,
+
+        supportedLanguages:
+          problem.supportedLanguages,
+
+        inputFormat:
+          problem.inputFormat,
+
+        outputFormat:
+          problem.outputFormat,
+
+        constraints:
+          problem.constraints,
+
+        sampleInput:
+          problem.sampleInput,
+
+        sampleOutput:
+          problem.sampleOutput,
+
+        testCases:
+          publicTestCases,
+
+        marks:
+          question.maxScore,
+
+        timeLimitSeconds:
+          problem.timeLimitSeconds,
+
+        skillsCovered:
+          problem.skillsCovered,
+
+        companyTags:
+          problem.companyTags,
+      };
+    } else {
+      safeQuestion.codingProblem =
+        null;
+    }
+  }
+
+  // ==============================
+  // SQL QUESTION
+  // ==============================
+  if (
+    question.questionMode ===
+      "SQL" &&
+    question.sqlProblem
+  ) {
+    const problem =
+      await SqlProblem.findOne({
+        _id:
+          question.sqlProblem,
+
+        isActive: true,
+      }).select(
+        "-expectedQuery -expectedResult"
+      );
+
+    if (problem) {
+      safeQuestion.sqlProblem = {
+        _id:
+          problem._id,
+
+        title:
+          problem.title,
+
+        description:
+          problem.description,
+
+        difficulty:
+          problem.difficulty,
+
+        category:
+          problem.category,
+
+        tables:
+          problem.tables,
+
+        marks:
+          question.maxScore,
+
+        timeLimitSeconds:
+          problem.timeLimitSeconds,
+
+        skillsCovered:
+          problem.skillsCovered,
+
+        companyTags:
+          problem.companyTags,
+      };
+    } else {
+      safeQuestion.sqlProblem =
+        null;
+    }
+  }
+
+  return safeQuestion;
+};
+
+// ==============================
+// BUILD SAFE QUESTION LIST
+// ==============================
+const buildSafeQuestions = async (
+  questions
+) => {
+  return Promise.all(
+    questions.map((question) =>
+      buildSafeQuestion(question)
+    )
+  );
+};
 
 // ==============================
 // START INTERVIEW SESSION
@@ -36,6 +243,7 @@ const startInterviewSession = async (
     if (!interviewType) {
       return res.status(400).json({
         success: false,
+
         message:
           "Interview type is required",
       });
@@ -55,6 +263,7 @@ const startInterviewSession = async (
     ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Invalid interview type",
       });
@@ -74,6 +283,7 @@ const startInterviewSession = async (
     ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Invalid difficulty level",
       });
@@ -116,9 +326,11 @@ const startInterviewSession = async (
 
         recommendations: [],
 
-        startedAt: new Date(),
+        startedAt:
+          new Date(),
 
-        completedAt: null,
+        completedAt:
+          null,
       });
 
     return res.status(201).json({
@@ -136,7 +348,8 @@ const startInterviewSession = async (
       message:
         "Failed to start interview session",
 
-      error: error.message,
+      error:
+        error.message,
     });
   }
 };
@@ -149,26 +362,38 @@ const getInterviewQuestions = async (
   res
 ) => {
   try {
-    const userId = req.user.id;
-    const { sessionId } = req.params;
+    const userId =
+      req.user.id;
+
+    const {
+      sessionId,
+    } = req.params;
 
     const session =
       await InterviewSession.findOne({
-        _id: sessionId,
-        user: userId,
+        _id:
+          sessionId,
+
+        user:
+          userId,
       });
 
     if (!session) {
       return res.status(404).json({
         success: false,
+
         message:
           "Interview session not found",
       });
     }
 
-    if (session.status === "Completed") {
+    if (
+      session.status ===
+      "Completed"
+    ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Interview session is already completed",
       });
@@ -179,12 +404,12 @@ const getInterviewQuestions = async (
     // ==============================
     // RETURN EXISTING ASSIGNMENT
     // ==============================
-
     if (
       Array.isArray(
         session.assignedQuestions
       ) &&
-      session.assignedQuestions.length > 0
+      session.assignedQuestions
+        .length > 0
     ) {
       questions =
         await InterviewQuestion.find({
@@ -192,31 +417,37 @@ const getInterviewQuestions = async (
             $in:
               session.assignedQuestions,
           },
+
+          isActive: true,
         }).select(
-          "_id question interviewType category targetRole targetCompany difficulty maxScore"
+          "_id question interviewType questionMode codingProblem sqlProblem category targetRole targetCompany difficulty maxScore"
         );
 
-      // Preserve original assigned order
-      const questionMap = new Map(
-        questions.map((question) => [
-          question._id.toString(),
-          question,
-        ])
-      );
+      // Preserve exact original
+      // assignment order.
+      const questionMap =
+        new Map(
+          questions.map(
+            (question) => [
+              question._id.toString(),
+              question,
+            ]
+          )
+        );
 
       questions =
         session.assignedQuestions
-          .map((questionId) =>
-            questionMap.get(
-              questionId.toString()
-            )
+          .map(
+            (questionId) =>
+              questionMap.get(
+                questionId.toString()
+              )
           )
           .filter(Boolean);
     } else {
       // ==============================
       // FIRST QUESTION ASSIGNMENT
       // ==============================
-
       const query = {
         interviewType:
           session.interviewType,
@@ -227,7 +458,9 @@ const getInterviewQuestions = async (
         isActive: true,
       };
 
-      if (session.targetRole) {
+      if (
+        session.targetRole
+      ) {
         query.$or = [
           {
             targetRole:
@@ -235,7 +468,10 @@ const getInterviewQuestions = async (
           },
           {
             targetRole: {
-              $in: [null, ""],
+              $in: [
+                null,
+                "",
+              ],
             },
           },
         ];
@@ -246,13 +482,15 @@ const getInterviewQuestions = async (
           query
         )
           .select(
-            "_id question interviewType category targetRole targetCompany difficulty maxScore"
+            "_id question interviewType questionMode codingProblem sqlProblem category targetRole targetCompany difficulty maxScore"
           )
           .sort({
             createdAt: 1,
           });
 
-      if (session.targetCompany) {
+      if (
+        session.targetCompany
+      ) {
         questions =
           questions.filter(
             (question) =>
@@ -262,11 +500,12 @@ const getInterviewQuestions = async (
           );
       }
 
-      // Permanently store the exact
-      // questions assigned to this session.
+      // Permanently store exact
+      // assignment for this session.
       session.assignedQuestions =
         questions.map(
-          (question) => question._id
+          (question) =>
+            question._id
         );
 
       session.totalQuestions =
@@ -280,17 +519,28 @@ const getInterviewQuestions = async (
       await session.save();
     }
 
-    // Keep totalQuestions synchronized
-    // with the persisted assignment.
+    // ==============================
+    // KEEP TOTAL SYNCHRONIZED
+    // ==============================
     if (
       session.totalQuestions !==
-      session.assignedQuestions.length
+      session.assignedQuestions
+        .length
     ) {
       session.totalQuestions =
-        session.assignedQuestions.length;
+        session.assignedQuestions
+          .length;
 
       await session.save();
     }
+
+    // ==============================
+    // SAFE FRONTEND QUESTIONS
+    // ==============================
+    const safeQuestions =
+      await buildSafeQuestions(
+        questions
+      );
 
     return res.status(200).json({
       success: true,
@@ -299,7 +549,8 @@ const getInterviewQuestions = async (
         "Interview questions fetched successfully",
 
       session: {
-        id: session._id,
+        id:
+          session._id,
 
         interviewType:
           session.interviewType,
@@ -323,7 +574,8 @@ const getInterviewQuestions = async (
           session.answeredQuestions,
       },
 
-      questions,
+      questions:
+        safeQuestions,
     });
   } catch (error) {
     return res.status(500).json({
@@ -332,20 +584,22 @@ const getInterviewQuestions = async (
       message:
         "Failed to fetch interview questions",
 
-      error: error.message,
+      error:
+        error.message,
     });
   }
 };
 
 // ==============================
-// SUBMIT INTERVIEW ANSWER
+// SUBMIT THEORY INTERVIEW ANSWER
 // ==============================
 const submitInterviewAnswer = async (
   req,
   res
 ) => {
   try {
-    const userId = req.user.id;
+    const userId =
+      req.user.id;
 
     const {
       sessionId,
@@ -364,6 +618,7 @@ const submitInterviewAnswer = async (
     ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Interview answer is required",
       });
@@ -382,6 +637,7 @@ const submitInterviewAnswer = async (
     ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Invalid answer type",
       });
@@ -389,21 +645,29 @@ const submitInterviewAnswer = async (
 
     const session =
       await InterviewSession.findOne({
-        _id: sessionId,
-        user: userId,
+        _id:
+          sessionId,
+
+        user:
+          userId,
       });
 
     if (!session) {
       return res.status(404).json({
         success: false,
+
         message:
           "Interview session not found",
       });
     }
 
-    if (session.status === "Completed") {
+    if (
+      session.status ===
+      "Completed"
+    ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Interview session is already completed",
       });
@@ -411,10 +675,12 @@ const submitInterviewAnswer = async (
 
     if (
       !session.assignedQuestions ||
-      session.assignedQuestions.length === 0
+      session.assignedQuestions
+        .length === 0
     ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Interview questions have not been assigned yet",
       });
@@ -422,7 +688,9 @@ const submitInterviewAnswer = async (
 
     const isAssigned =
       session.assignedQuestions.some(
-        (assignedQuestionId) =>
+        (
+          assignedQuestionId
+        ) =>
           assignedQuestionId.toString() ===
           questionId.toString()
       );
@@ -430,6 +698,7 @@ const submitInterviewAnswer = async (
     if (!isAssigned) {
       return res.status(400).json({
         success: false,
+
         message:
           "This question is not assigned to this interview session",
       });
@@ -437,15 +706,37 @@ const submitInterviewAnswer = async (
 
     const question =
       await InterviewQuestion.findOne({
-        _id: questionId,
-        isActive: true,
+        _id:
+          questionId,
+
+        isActive:
+          true,
       });
 
     if (!question) {
       return res.status(404).json({
         success: false,
+
         message:
           "Interview question not found",
+      });
+    }
+
+    // ==============================
+    // THEORY ENDPOINT SECURITY
+    // ==============================
+    if (
+      question.questionMode !==
+      "Theory"
+    ) {
+      return res.status(400).json({
+        success: false,
+
+        message:
+          question.questionMode ===
+          "Coding"
+            ? "Use the coding submission endpoint for this interview question"
+            : "Use the SQL submission endpoint for this interview question",
       });
     }
 
@@ -455,6 +746,7 @@ const submitInterviewAnswer = async (
     ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Question does not belong to this interview type",
       });
@@ -466,6 +758,7 @@ const submitInterviewAnswer = async (
     ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Question difficulty does not match this interview session",
       });
@@ -479,6 +772,7 @@ const submitInterviewAnswer = async (
     ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Question does not match the target role",
       });
@@ -492,6 +786,7 @@ const submitInterviewAnswer = async (
     ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Question does not match the target company",
       });
@@ -499,14 +794,20 @@ const submitInterviewAnswer = async (
 
     const existingAnswer =
       await InterviewAnswer.findOne({
-        user: userId,
-        session: sessionId,
-        question: questionId,
+        user:
+          userId,
+
+        session:
+          sessionId,
+
+        question:
+          questionId,
       });
 
     if (existingAnswer) {
       return res.status(409).json({
         success: false,
+
         message:
           "This interview question has already been answered",
       });
@@ -516,28 +817,36 @@ const submitInterviewAnswer = async (
       evaluateInterviewAnswer({
         answerText:
           answerText.trim(),
+
         question,
       });
 
     const interviewAnswer =
       await InterviewAnswer.create({
-        user: userId,
+        user:
+          userId,
 
-        session: sessionId,
+        session:
+          sessionId,
 
-        question: questionId,
+        question:
+          questionId,
 
         answerText:
           answerText.trim(),
 
         answerType:
-          answerType || "Text",
+          answerType ||
+          "Text",
 
         transcript:
-          transcript || null,
+          transcript || "",
 
         score:
           evaluation.score,
+
+        scorePercentage:
+          evaluation.finalPercentage,
 
         matchedKeywords:
           evaluation.matchedKeywords,
@@ -569,15 +878,24 @@ const submitInterviewAnswer = async (
 
     const answeredQuestions =
       await InterviewAnswer.countDocuments({
-        user: userId,
-        session: sessionId,
+        user:
+          userId,
+
+        session:
+          sessionId,
+
+        question: {
+          $in:
+            session.assignedQuestions,
+        },
       });
 
     session.answeredQuestions =
       answeredQuestions;
 
     if (
-      session.status === "Started"
+      session.status ===
+      "Started"
     ) {
       session.status =
         "In Progress";
@@ -597,6 +915,9 @@ const submitInterviewAnswer = async (
 
         questionId:
           question._id,
+
+        questionMode:
+          question.questionMode,
 
         score:
           evaluation.score,
@@ -647,9 +968,12 @@ const submitInterviewAnswer = async (
       },
     });
   } catch (error) {
-    if (error.code === 11000) {
+    if (
+      error.code === 11000
+    ) {
       return res.status(409).json({
         success: false,
+
         message:
           "This interview question has already been answered",
       });
@@ -661,7 +985,8 @@ const submitInterviewAnswer = async (
       message:
         "Failed to submit interview answer",
 
-      error: error.message,
+      error:
+        error.message,
     });
   }
 };
@@ -674,26 +999,38 @@ const completeInterviewSession = async (
   res
 ) => {
   try {
-    const userId = req.user.id;
-    const { sessionId } = req.params;
+    const userId =
+      req.user.id;
+
+    const {
+      sessionId,
+    } = req.params;
 
     const session =
       await InterviewSession.findOne({
-        _id: sessionId,
-        user: userId,
+        _id:
+          sessionId,
+
+        user:
+          userId,
       });
 
     if (!session) {
       return res.status(404).json({
         success: false,
+
         message:
           "Interview session not found",
       });
     }
 
-    if (session.status === "Completed") {
+    if (
+      session.status ===
+      "Completed"
+    ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Interview session is already completed",
       });
@@ -701,18 +1038,24 @@ const completeInterviewSession = async (
 
     if (
       !session.assignedQuestions ||
-      session.assignedQuestions.length === 0
+      session.assignedQuestions
+        .length === 0
     ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Interview session has no assigned questions",
       });
     }
 
-    if (session.totalQuestions === 0) {
+    if (
+      session.totalQuestions ===
+      0
+    ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Interview session has no questions",
       });
@@ -720,21 +1063,30 @@ const completeInterviewSession = async (
 
     const answers =
       await InterviewAnswer.find({
-        user: userId,
-        session: sessionId,
+        user:
+          userId,
+
+        session:
+          sessionId,
+
         question: {
           $in:
             session.assignedQuestions,
         },
       }).populate({
-        path: "question",
+        path:
+          "question",
+
         select:
-          "maxScore interviewType",
+          "maxScore interviewType questionMode",
       });
 
-    if (answers.length === 0) {
+    if (
+      answers.length === 0
+    ) {
       return res.status(400).json({
         success: false,
+
         message:
           "No interview answers submitted",
       });
@@ -746,6 +1098,7 @@ const completeInterviewSession = async (
     ) {
       return res.status(400).json({
         success: false,
+
         message:
           "Please answer all interview questions before completing the session",
       });
@@ -753,25 +1106,46 @@ const completeInterviewSession = async (
 
     let totalObtainedScore = 0;
     let totalMaximumScore = 0;
-    let totalCommunicationScore = 0;
+
+    let totalCommunicationScore =
+      0;
+
+    let communicationAnswerCount =
+      0;
 
     const strengths = [];
     const weakAreas = [];
     const recommendations = [];
 
-    for (const answer of answers) {
+    for (
+      const answer of
+      answers
+    ) {
       totalObtainedScore +=
-        Number(answer.score) || 0;
+        Number(
+          answer.score
+        ) || 0;
 
       totalMaximumScore +=
         Number(
-          answer.question?.maxScore
+          answer.question
+            ?.maxScore
         ) || 10;
 
-      totalCommunicationScore +=
-        Number(
-          answer.communicationScore
-        ) || 0;
+      // Coding and SQL do not
+      // produce communication scores.
+      if (
+        ["Text", "Voice"].includes(
+          answer.answerType
+        )
+      ) {
+        totalCommunicationScore +=
+          Number(
+            answer.communicationScore
+          ) || 0;
+
+        communicationAnswerCount++;
+      }
 
       if (
         Array.isArray(
@@ -814,10 +1188,10 @@ const completeInterviewSession = async (
         : 0;
 
     const communicationScore =
-      answers.length > 0
+      communicationAnswerCount > 0
         ? Math.round(
             totalCommunicationScore /
-              answers.length
+              communicationAnswerCount
           )
         : 0;
 
@@ -828,23 +1202,32 @@ const completeInterviewSession = async (
         : 0;
 
     // Keep confidenceScore at 0 until
-    // an objectively defensible analysis
-    // method is implemented.
-    const confidenceScore = 0;
+    // an objectively defensible method
+    // is implemented.
+    const confidenceScore =
+      0;
 
     const uniqueStrengths = [
-      ...new Set(strengths),
+      ...new Set(
+        strengths
+      ),
     ];
 
     const uniqueWeakAreas = [
-      ...new Set(weakAreas),
+      ...new Set(
+        weakAreas
+      ),
     ];
 
     let uniqueRecommendations = [
-      ...new Set(recommendations),
+      ...new Set(
+        recommendations
+      ),
     ];
 
-    if (overallScore >= 80) {
+    if (
+      overallScore >= 80
+    ) {
       uniqueRecommendations.push(
         "Maintain this level of preparation and practice more company-specific interview questions."
       );
@@ -861,6 +1244,8 @@ const completeInterviewSession = async (
     }
 
     if (
+      communicationAnswerCount >
+        0 &&
       communicationScore < 60
     ) {
       uniqueRecommendations.push(
@@ -898,7 +1283,8 @@ const completeInterviewSession = async (
     session.recommendations =
       uniqueRecommendations;
 
-    session.status = "Completed";
+    session.status =
+      "Completed";
 
     session.completedAt =
       new Date();
@@ -971,7 +1357,8 @@ const completeInterviewSession = async (
       message:
         "Failed to complete interview session",
 
-      error: error.message,
+      error:
+        error.message,
     });
   }
 };

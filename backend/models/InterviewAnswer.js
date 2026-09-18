@@ -21,29 +21,134 @@ const interviewAnswerSchema =
         required: true,
       },
 
-      answerText: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-
+      // ==============================
+      // ANSWER TYPE
+      // ==============================
       answerType: {
         type: String,
-        enum: ["Text", "Voice"],
+        enum: [
+          "Text",
+          "Voice",
+          "Coding",
+          "SQL",
+        ],
         default: "Text",
+      },
+
+      // ==============================
+      // THEORY / VOICE ANSWER
+      // ==============================
+      answerText: {
+        type: String,
+        default: "",
+        trim: true,
       },
 
       transcript: {
         type: String,
+        default: "",
         trim: true,
       },
 
+      // ==============================
+      // CODING ANSWER
+      // ==============================
+      language: {
+        type: String,
+        enum: [
+          "Java",
+          "JavaScript",
+          "Python",
+          "C",
+          "C++",
+          null,
+        ],
+        default: null,
+      },
+
+      sourceCode: {
+        type: String,
+        default: "",
+      },
+
+      codingProblem: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CodingProblem",
+        default: null,
+      },
+
+      totalTestCases: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+
+      passedTestCases: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+
+      failedTestCases: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+
+      // ==============================
+      // SQL ANSWER
+      // ==============================
+      submittedQuery: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      sqlProblem: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "SqlProblem",
+        default: null,
+      },
+
+      // ==============================
+      // EXECUTION RESULT
+      // ==============================
+      executionStatus: {
+        type: String,
+        default: "",
+        trim: true,
+      },
+
+      executionTimeMs: {
+        type: Number,
+        default: 0,
+        min: 0,
+      },
+
+      errorMessage: {
+        type: String,
+        default: "",
+      },
+
+      // ==============================
+      // COMMON SCORE
+      // ==============================
       score: {
         type: Number,
         default: 0,
         min: 0,
       },
 
+      scorePercentage: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100,
+      },
+
+      // ==============================
+      // THEORY EVALUATION
+      // ==============================
       matchedKeywords: [
         {
           type: String,
@@ -109,6 +214,65 @@ const interviewAnswerSchema =
       timestamps: true,
     }
   );
+
+// ==============================
+// ANSWER MODE VALIDATION
+// ==============================
+interviewAnswerSchema.pre(
+  "validate",
+  function () {
+    if (
+      ["Text", "Voice"].includes(
+        this.answerType
+      ) &&
+      !this.answerText?.trim()
+    ) {
+      throw new Error(
+        "Answer text is required for Text and Voice interview answers"
+      );
+    }
+
+    if (
+      this.answerType === "Coding"
+    ) {
+      if (!this.codingProblem) {
+        throw new Error(
+          "Coding problem is required for Coding interview answers"
+        );
+      }
+
+      if (!this.language) {
+        throw new Error(
+          "Programming language is required for Coding interview answers"
+        );
+      }
+
+      if (!this.sourceCode?.trim()) {
+        throw new Error(
+          "Source code is required for Coding interview answers"
+        );
+      }
+    }
+
+    if (
+      this.answerType === "SQL"
+    ) {
+      if (!this.sqlProblem) {
+        throw new Error(
+          "SQL problem is required for SQL interview answers"
+        );
+      }
+
+      if (
+        !this.submittedQuery?.trim()
+      ) {
+        throw new Error(
+          "SQL query is required for SQL interview answers"
+        );
+      }
+    }
+  }
+);
 
 // One answer per question in one interview session
 interviewAnswerSchema.index(

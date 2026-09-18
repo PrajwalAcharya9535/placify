@@ -170,6 +170,11 @@ const {
   submitVoiceInterviewAnswer,
 } = require("../controllers/student/interviewVoiceController");
 
+const {
+  submitInterviewCodingAnswer,
+  submitInterviewSqlAnswer,
+} = require("../controllers/student/interviewHandsOnController");
+
 // ==============================
 // GROUP DISCUSSION CONTROLLERS
 // ==============================
@@ -698,6 +703,28 @@ router.post(
   authorizeRoles("student"),
   interviewAudioUpload.single("audio"),
   submitVoiceInterviewAnswer
+);
+
+// ==============================
+// INTERVIEW CODING ANSWER
+// ==============================
+
+router.post(
+  "/interview/:sessionId/questions/:questionId/coding-submit",
+  protect,
+  authorizeRoles("student"),
+  submitInterviewCodingAnswer
+);
+
+// ==============================
+// INTERVIEW SQL ANSWER
+// ==============================
+
+router.post(
+  "/interview/:sessionId/questions/:questionId/sql-submit",
+  protect,
+  authorizeRoles("student"),
+  submitInterviewSqlAnswer
 );
 
 // ==============================
