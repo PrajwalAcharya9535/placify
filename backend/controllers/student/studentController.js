@@ -6,6 +6,8 @@ const LearningProgress = require("../../models/LearningProgress");
 const PracticeAttempt = require("../../models/PracticeAttempt");
 const Resume = require("../../models/Resume");
 const MockAttempt = require("../../models/MockAttempt");
+const InterviewSession = require("../../models/InterviewSession");
+const GDSession = require("../../models/GDSession");
 const User = require("../../models/User");
 
 // ==============================
@@ -16,7 +18,8 @@ const addUnique = (array, value) => {
 
   const exists = array.some(
     (item) =>
-      item.toLowerCase() === value.toLowerCase()
+      item.toLowerCase() ===
+      value.toLowerCase()
   );
 
   if (!exists) {
@@ -25,9 +28,29 @@ const addUnique = (array, value) => {
 };
 
 // ==============================
+// HELPER - AVERAGE
+// ==============================
+const calculateAverage = (values) => {
+  if (!values.length) {
+    return 0;
+  }
+
+  return Math.round(
+    values.reduce(
+      (total, value) =>
+        total + (Number(value) || 0),
+      0
+    ) / values.length
+  );
+};
+
+// ==============================
 // STUDENT DASHBOARD
 // ==============================
-const getStudentDashboard = async (req, res) => {
+const getStudentDashboard = async (
+  req,
+  res
+) => {
   try {
     const userId = req.user.id;
 
@@ -41,6 +64,8 @@ const getStudentDashboard = async (req, res) => {
       practiceAttempts,
       resume,
       mockAttempts,
+      interviewSessions,
+      gdSessions,
     ] = await Promise.all([
       User.findById(userId).select(
         "name email role"
@@ -80,6 +105,18 @@ const getStudentDashboard = async (req, res) => {
       MockAttempt.find({
         user: userId,
       }),
+
+      InterviewSession.find({
+        user: userId,
+      }).sort({
+        createdAt: -1,
+      }),
+
+      GDSession.find({
+        "participants.user": userId,
+      }).sort({
+        createdAt: -1,
+      }),
     ]);
 
     // ==============================
@@ -88,12 +125,14 @@ const getStudentDashboard = async (req, res) => {
 
     const completedTopics =
       learningProgress.filter(
-        (item) => item.status === "Completed"
+        (item) =>
+          item.status === "Completed"
       ).length;
 
     const inProgressTopics =
       learningProgress.filter(
-        (item) => item.status === "In Progress"
+        (item) =>
+          item.status === "In Progress"
       ).length;
 
     const totalLearningTopicsStarted =
@@ -105,9 +144,11 @@ const getStudentDashboard = async (req, res) => {
             learningProgress.reduce(
               (total, item) =>
                 total +
-                (item.progressPercentage || 0),
+                (item.progressPercentage ||
+                  0),
               0
-            ) / learningProgress.length
+            ) /
+              learningProgress.length
           )
         : 0;
 
@@ -120,7 +161,8 @@ const getStudentDashboard = async (req, res) => {
 
     const correctPracticeAttempts =
       practiceAttempts.filter(
-        (attempt) => attempt.isCorrect
+        (attempt) =>
+          attempt.isCorrect
       ).length;
 
     const incorrectPracticeAttempts =
@@ -174,24 +216,29 @@ const getStudentDashboard = async (req, res) => {
 
     const categoryMap = {};
 
-    practiceAttempts.forEach((attempt) => {
-      const category =
-        attempt.category || "Other";
+    practiceAttempts.forEach(
+      (attempt) => {
+        const category =
+          attempt.category || "Other";
 
-      if (!categoryMap[category]) {
-        categoryMap[category] = {
-          totalAttempts: 0,
-          correctAttempts: 0,
-        };
+        if (!categoryMap[category]) {
+          categoryMap[category] = {
+            totalAttempts: 0,
+            correctAttempts: 0,
+          };
+        }
+
+        categoryMap[
+          category
+        ].totalAttempts++;
+
+        if (attempt.isCorrect) {
+          categoryMap[
+            category
+          ].correctAttempts++;
+        }
       }
-
-      categoryMap[category].totalAttempts++;
-
-      if (attempt.isCorrect) {
-        categoryMap[category]
-          .correctAttempts++;
-      }
-    });
+    );
 
     const categoryPerformance =
       Object.entries(categoryMap).map(
@@ -219,7 +266,9 @@ const getStudentDashboard = async (req, res) => {
             item.totalAttempts >= 1 &&
             item.accuracy < 60
         )
-        .map((item) => item.category);
+        .map(
+          (item) => item.category
+        );
 
     const practiceStrengths =
       categoryPerformance
@@ -228,18 +277,177 @@ const getStudentDashboard = async (req, res) => {
             item.totalAttempts >= 1 &&
             item.accuracy >= 80
         )
-        .map((item) => item.category);
+        .map(
+          (item) => item.category
+        );
+
+    // ==============================
+    // INTERVIEW SUMMARY
+    // ==============================
+
+    const completedInterviews =
+      interviewSessions.filter(
+        (session) =>
+          session.status === "Completed"
+      );
+
+    const interviewScores =
+      completedInterviews.map(
+        (session) =>
+          Number(
+            session.overallScore
+          ) || 0
+      );
+
+    const interviewTechnicalScores =
+      completedInterviews.map(
+        (session) =>
+          Number(
+            session.technicalScore
+          ) || 0
+      );
+
+    const interviewCommunicationScores =
+      completedInterviews.map(
+        (session) =>
+          Number(
+            session.communicationScore
+          ) || 0
+      );
+
+    const averageInterviewScore =
+      calculateAverage(
+        interviewScores
+      );
+
+    const averageInterviewTechnicalScore =
+      calculateAverage(
+        interviewTechnicalScores
+      );
+
+    const averageInterviewCommunicationScore =
+      calculateAverage(
+        interviewCommunicationScores
+      );
+
+    const latestCompletedInterview =
+      completedInterviews.length > 0
+        ? completedInterviews[0]
+        : null;
+
+    // ==============================
+    // GD SUMMARY
+    // ==============================
+
+    const completedGDSessions =
+      gdSessions.filter(
+        (session) =>
+          session.status === "Completed"
+      );
+
+    const gdPerformanceRecords = [];
+
+    completedGDSessions.forEach(
+      (session) => {
+        const participant =
+          session.participants.find(
+            (item) =>
+              item.user.toString() ===
+              userId.toString()
+          );
+
+        if (participant) {
+          gdPerformanceRecords.push({
+            session,
+            participant,
+          });
+        }
+      }
+    );
+
+    const gdOverallScores =
+      gdPerformanceRecords.map(
+        ({ participant }) =>
+          Number(
+            participant.overallScore
+          ) || 0
+      );
+
+    const gdCommunicationScores =
+      gdPerformanceRecords.map(
+        ({ participant }) =>
+          Number(
+            participant.communicationScore
+          ) || 0
+      );
+
+    const gdRelevanceScores =
+      gdPerformanceRecords.map(
+        ({ participant }) =>
+          Number(
+            participant.relevanceScore
+          ) || 0
+      );
+
+    const gdStructureScores =
+      gdPerformanceRecords.map(
+        ({ participant }) =>
+          Number(
+            participant.structureScore
+          ) || 0
+      );
+
+    const gdParticipationScores =
+      gdPerformanceRecords.map(
+        ({ participant }) =>
+          Number(
+            participant.participationScore
+          ) || 0
+      );
+
+    const averageGDScore =
+      calculateAverage(
+        gdOverallScores
+      );
+
+    const averageGDCommunicationScore =
+      calculateAverage(
+        gdCommunicationScores
+      );
+
+    const averageGDRelevanceScore =
+      calculateAverage(
+        gdRelevanceScores
+      );
+
+    const averageGDStructureScore =
+      calculateAverage(
+        gdStructureScores
+      );
+
+    const averageGDParticipationScore =
+      calculateAverage(
+        gdParticipationScores
+      );
+
+    const latestGDPerformance =
+      gdPerformanceRecords.length > 0
+        ? gdPerformanceRecords[0]
+        : null;
 
     // ==============================
     // SKILL GAP ANALYSIS
     // ==============================
 
     const currentSkillNames =
-      skills.map((skill) => skill.name);
+      skills.map(
+        (skill) => skill.name
+      );
 
     const currentSkillsLower =
-      currentSkillNames.map((skill) =>
-        skill.toLowerCase()
+      currentSkillNames.map(
+        (skill) =>
+          skill.toLowerCase()
       );
 
     const preferredSkills =
@@ -248,7 +456,8 @@ const getStudentDashboard = async (req, res) => {
     const missingSkills = [];
     const skillGapWeakAreas = [];
     const priorityAreas = [];
-    const skillGapRecommendations = [];
+    const skillGapRecommendations =
+      [];
 
     // ------------------------------
     // Goal-based missing skills
@@ -276,8 +485,11 @@ const getStudentDashboard = async (req, res) => {
 
     if (
       resume &&
-      resume.analysisStatus === "Analyzed" &&
-      Array.isArray(resume.missingSkills)
+      resume.analysisStatus ===
+        "Analyzed" &&
+      Array.isArray(
+        resume.missingSkills
+      )
     ) {
       resume.missingSkills.forEach(
         (missingSkill) => {
@@ -319,28 +531,32 @@ const getStudentDashboard = async (req, res) => {
     const completedMocks =
       mockAttempts.filter(
         (attempt) =>
-          attempt.status === "Completed" ||
+          attempt.status ===
+            "Completed" ||
           attempt.completedAt
       );
 
     if (completedMocks.length > 0) {
       const mockScores =
-        completedMocks.map((attempt) => {
-          if (
-            typeof attempt.percentage ===
-            "number"
-          ) {
-            return attempt.percentage;
-          }
+        completedMocks.map(
+          (attempt) => {
+            if (
+              typeof attempt.percentage ===
+              "number"
+            ) {
+              return attempt.percentage;
+            }
 
-          if (
-            typeof attempt.score === "number"
-          ) {
-            return attempt.score;
-          }
+            if (
+              typeof attempt.score ===
+              "number"
+            ) {
+              return attempt.score;
+            }
 
-          return 0;
-        });
+            return 0;
+          }
+        );
 
       const averageMockScore =
         mockScores.reduce(
@@ -368,11 +584,13 @@ const getStudentDashboard = async (req, res) => {
     // Skill recommendations
     // ------------------------------
 
-    missingSkills.forEach((skill) => {
-      skillGapRecommendations.push(
-        `Learn and practice ${skill} based on your placement requirements.`
-      );
-    });
+    missingSkills.forEach(
+      (skill) => {
+        skillGapRecommendations.push(
+          `Learn and practice ${skill} based on your placement requirements.`
+        );
+      }
+    );
 
     // ------------------------------
     // Weak-area recommendations
@@ -405,7 +623,8 @@ const getStudentDashboard = async (req, res) => {
         "Upload and analyze your resume to identify ATS-based missing skills."
       );
     } else if (
-      resume.analysisStatus !== "Analyzed"
+      resume.analysisStatus !==
+      "Analyzed"
     ) {
       skillGapRecommendations.push(
         "Run ATS analysis on your resume to identify missing skills."
@@ -435,10 +654,16 @@ const getStudentDashboard = async (req, res) => {
 
       goal: goal || null,
 
-      readiness: readiness || null,
+      readiness:
+        readiness || null,
+
+      // ==============================
+      // LEARNING
+      // ==============================
 
       learning: {
-        progress: learningProgress,
+        progress:
+          learningProgress,
 
         totalStarted:
           totalLearningTopicsStarted,
@@ -450,6 +675,10 @@ const getStudentDashboard = async (req, res) => {
         averageProgress:
           averageLearningProgress,
       },
+
+      // ==============================
+      // PRACTICE
+      // ==============================
 
       practice: {
         totalAttempts:
@@ -483,6 +712,156 @@ const getStudentDashboard = async (req, res) => {
       },
 
       // ==============================
+      // MODULE 7 - INTERVIEW
+      // ==============================
+
+      interview: {
+        totalSessions:
+          interviewSessions.length,
+
+        completedSessions:
+          completedInterviews.length,
+
+        averageScore:
+          averageInterviewScore,
+
+        averageTechnicalScore:
+          averageInterviewTechnicalScore,
+
+        averageCommunicationScore:
+          averageInterviewCommunicationScore,
+
+        latestCompleted:
+          latestCompletedInterview
+            ? {
+                sessionId:
+                  latestCompletedInterview._id,
+
+                interviewType:
+                  latestCompletedInterview.interviewType,
+
+                targetRole:
+                  latestCompletedInterview.targetRole,
+
+                targetCompany:
+                  latestCompletedInterview.targetCompany,
+
+                difficulty:
+                  latestCompletedInterview.difficulty,
+
+                overallScore:
+                  latestCompletedInterview.overallScore ||
+                  0,
+
+                technicalScore:
+                  latestCompletedInterview.technicalScore ||
+                  0,
+
+                communicationScore:
+                  latestCompletedInterview.communicationScore ||
+                  0,
+
+                completedAt:
+                  latestCompletedInterview.completedAt,
+              }
+            : null,
+      },
+
+      // ==============================
+      // MODULE 7 - GROUP DISCUSSION
+      // ==============================
+
+      gd: {
+        totalSessions:
+          gdSessions.length,
+
+        completedSessions:
+          gdPerformanceRecords.length,
+
+        averageScore:
+          averageGDScore,
+
+        averageCommunicationScore:
+          averageGDCommunicationScore,
+
+        averageRelevanceScore:
+          averageGDRelevanceScore,
+
+        averageStructureScore:
+          averageGDStructureScore,
+
+        averageParticipationScore:
+          averageGDParticipationScore,
+
+        latestCompleted:
+          latestGDPerformance
+            ? {
+                sessionId:
+                  latestGDPerformance
+                    .session._id,
+
+                roomCode:
+                  latestGDPerformance
+                    .session.roomCode,
+
+                topic:
+                  latestGDPerformance
+                    .session.topic,
+
+                category:
+                  latestGDPerformance
+                    .session.category,
+
+                difficulty:
+                  latestGDPerformance
+                    .session.difficulty,
+
+                targetRole:
+                  latestGDPerformance
+                    .session.targetRole,
+
+                targetCompany:
+                  latestGDPerformance
+                    .session.targetCompany,
+
+                overallScore:
+                  latestGDPerformance
+                    .participant
+                    .overallScore ||
+                  0,
+
+                communicationScore:
+                  latestGDPerformance
+                    .participant
+                    .communicationScore ||
+                  0,
+
+                relevanceScore:
+                  latestGDPerformance
+                    .participant
+                    .relevanceScore ||
+                  0,
+
+                structureScore:
+                  latestGDPerformance
+                    .participant
+                    .structureScore ||
+                  0,
+
+                participationScore:
+                  latestGDPerformance
+                    .participant
+                    .participationScore ||
+                  0,
+
+                completedAt:
+                  latestGDPerformance
+                    .session.completedAt,
+              }
+            : null,
+      },
+
+      // ==============================
       // MODULE 6 - SKILL GAP
       // ==============================
 
@@ -505,6 +884,10 @@ const getStudentDashboard = async (req, res) => {
         recommendations:
           uniqueSkillGapRecommendations,
       },
+
+      // ==============================
+      // OVERALL DASHBOARD SUMMARY
+      // ==============================
 
       summary: {
         totalSkills:
@@ -560,6 +943,26 @@ const getStudentDashboard = async (req, res) => {
 
         priorityAreasCount:
           priorityAreas.length,
+
+        // Interview summary
+        totalInterviewSessions:
+          interviewSessions.length,
+
+        completedInterviewSessions:
+          completedInterviews.length,
+
+        averageInterviewScore:
+          averageInterviewScore,
+
+        // GD summary
+        totalGDSessions:
+          gdSessions.length,
+
+        completedGDSessions:
+          gdPerformanceRecords.length,
+
+        averageGDScore:
+          averageGDScore,
       },
     });
   } catch (error) {
