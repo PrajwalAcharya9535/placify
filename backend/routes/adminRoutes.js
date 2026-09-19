@@ -72,7 +72,7 @@ const {
 
 const {
   createPlacementOpportunity,
-} = require("../controllers/placementOpportunityController");
+} = require("../controllers/admin/placementOpportunityController");
 
 // ==============================
 // MIDDLEWARE

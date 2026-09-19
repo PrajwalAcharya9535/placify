@@ -227,6 +227,12 @@ const {
   getOpportunityRecommendations,
 } = require("../controllers/student/opportunityRecommendationController");
 
+const {
+  saveOpportunity,
+  getSavedOpportunities,
+  removeSavedOpportunity,
+} = require("../controllers/student/savedOpportunityController");
+
 // ==============================
 // MIDDLEWARE
 // ==============================
@@ -864,6 +870,7 @@ router.post(
 // PLACEMENT OPPORTUNITY MODULE
 // ==============================
 
+// Get all active opportunities
 router.get(
   "/opportunities",
   protect,
@@ -871,13 +878,45 @@ router.get(
   getPlacementOpportunities
 );
 
-// Personalized recommendations
+// Personalized opportunity recommendations
 router.get(
   "/opportunities/recommendations",
   protect,
   authorizeRoles("student"),
   getOpportunityRecommendations
 );
+
+// ==============================
+// SAVED / BOOKMARKED OPPORTUNITIES
+// ==============================
+
+// Get all saved opportunities
+router.get(
+  "/opportunities/saved",
+  protect,
+  authorizeRoles("student"),
+  getSavedOpportunities
+);
+
+// Save an opportunity
+router.post(
+  "/opportunities/:id/save",
+  protect,
+  authorizeRoles("student"),
+  saveOpportunity
+);
+
+// Remove saved opportunity
+router.delete(
+  "/opportunities/:id/save",
+  protect,
+  authorizeRoles("student"),
+  removeSavedOpportunity
+);
+
+// ==============================
+// OPPORTUNITY MATCH
+// ==============================
 
 // Eligibility + skill match + match score
 router.get(
@@ -887,7 +926,10 @@ router.get(
   getOpportunityMatch
 );
 
-// Individual opportunity details
+// ==============================
+// INDIVIDUAL OPPORTUNITY
+// ==============================
+
 router.get(
   "/opportunities/:id",
   protect,
