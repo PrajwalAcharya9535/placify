@@ -67,6 +67,14 @@ const {
 } = require("../controllers/admin/gdController");
 
 // ==============================
+// ADMIN PLACEMENT OPPORTUNITY CONTROLLER
+// ==============================
+
+const {
+  createPlacementOpportunity,
+} = require("../controllers/placementOpportunityController");
+
+// ==============================
 // MIDDLEWARE
 // ==============================
 
@@ -175,6 +183,17 @@ router.post(
   protect,
   authorizeRoles("admin"),
   createGDTopic
+);
+
+// ==============================
+// ADMIN PLACEMENT OPPORTUNITY MODULE
+// ==============================
+
+router.post(
+  "/opportunities",
+  protect,
+  authorizeRoles("admin"),
+  createPlacementOpportunity
 );
 
 module.exports = router;

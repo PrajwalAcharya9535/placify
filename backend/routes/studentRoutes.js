@@ -211,6 +211,23 @@ const {
 } = require("../controllers/student/gdHistoryController");
 
 // ==============================
+// PLACEMENT OPPORTUNITY CONTROLLERS
+// ==============================
+
+const {
+  getPlacementOpportunities,
+  getPlacementOpportunityById,
+} = require("../controllers/student/placementOpportunityController");
+
+const {
+  getOpportunityMatch,
+} = require("../controllers/student/opportunityMatchController");
+
+const {
+  getOpportunityRecommendations,
+} = require("../controllers/student/opportunityRecommendationController");
+
+// ==============================
 // MIDDLEWARE
 // ==============================
 
@@ -841,6 +858,41 @@ router.post(
   protect,
   authorizeRoles("student"),
   evaluateGDParticipantPerformance
+);
+
+// ==============================
+// PLACEMENT OPPORTUNITY MODULE
+// ==============================
+
+router.get(
+  "/opportunities",
+  protect,
+  authorizeRoles("student"),
+  getPlacementOpportunities
+);
+
+// Personalized recommendations
+router.get(
+  "/opportunities/recommendations",
+  protect,
+  authorizeRoles("student"),
+  getOpportunityRecommendations
+);
+
+// Eligibility + skill match + match score
+router.get(
+  "/opportunities/:id/match",
+  protect,
+  authorizeRoles("student"),
+  getOpportunityMatch
+);
+
+// Individual opportunity details
+router.get(
+  "/opportunities/:id",
+  protect,
+  authorizeRoles("student"),
+  getPlacementOpportunityById
 );
 
 module.exports = router;

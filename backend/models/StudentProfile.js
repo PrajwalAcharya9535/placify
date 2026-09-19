@@ -35,6 +35,12 @@ const studentProfileSchema = new mongoose.Schema(
       max: 10,
     },
 
+    backlogs: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+
     skills: [
       {
         type: String,
@@ -58,4 +64,7 @@ const studentProfileSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("StudentProfile", studentProfileSchema);
+module.exports = mongoose.model(
+  "StudentProfile",
+  studentProfileSchema
+);
