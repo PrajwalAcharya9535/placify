@@ -16,6 +16,10 @@ const getPlacementOpportunities = async (
       location,
       companyName,
       jobRole,
+      workMode,
+      search,
+      skill,
+      sort,
     } = req.query;
 
     const filter = {
@@ -58,6 +62,145 @@ const getPlacementOpportunities = async (
       };
     }
 
+    if (workMode) {
+      filter.workMode = workMode;
+    }
+
+    // ==============================
+    // GENERAL SEARCH
+    // ==============================
+
+    if (search && search.trim()) {
+      const searchText =
+        search.trim();
+
+      filter.$or = [
+        {
+          title: {
+            $regex: searchText,
+            $options: "i",
+          },
+        },
+        {
+          companyName: {
+            $regex: searchText,
+            $options: "i",
+          },
+        },
+        {
+          jobRole: {
+            $regex: searchText,
+            $options: "i",
+          },
+        },
+        {
+          location: {
+            $regex: searchText,
+            $options: "i",
+          },
+        },
+        {
+          requiredSkills: {
+            $regex: searchText,
+            $options: "i",
+          },
+        },
+        {
+          preferredSkills: {
+            $regex: searchText,
+            $options: "i",
+          },
+        },
+        {
+          skillsTags: {
+            $regex: searchText,
+            $options: "i",
+          },
+        },
+      ];
+    }
+
+    // ==============================
+    // SKILL FILTER
+    // ==============================
+
+    if (skill && skill.trim()) {
+      const skillText =
+        skill.trim();
+
+      const skillConditions = [
+        {
+          requiredSkills: {
+            $regex: skillText,
+            $options: "i",
+          },
+        },
+        {
+          preferredSkills: {
+            $regex: skillText,
+            $options: "i",
+          },
+        },
+        {
+          skillsTags: {
+            $regex: skillText,
+            $options: "i",
+          },
+        },
+      ];
+
+      // If general search is also used,
+      // both search AND skill must match.
+      if (filter.$or) {
+        const searchConditions =
+          filter.$or;
+
+        delete filter.$or;
+
+        filter.$and = [
+          {
+            $or: searchConditions,
+          },
+          {
+            $or: skillConditions,
+          },
+        ];
+      } else {
+        filter.$or =
+          skillConditions;
+      }
+    }
+
+    // ==============================
+    // SORTING
+    // ==============================
+
+    let sortOption = {
+      applicationDeadline: 1,
+      createdAt: -1,
+    };
+
+    if (sort === "newest") {
+      sortOption = {
+        createdAt: -1,
+      };
+    }
+
+    if (sort === "salary-high") {
+      sortOption = {
+        salaryMax: -1,
+        salaryMin: -1,
+        applicationDeadline: 1,
+      };
+    }
+
+    if (sort === "deadline") {
+      sortOption = {
+        applicationDeadline: 1,
+        createdAt: -1,
+      };
+    }
+
     // ==============================
     // FETCH OPPORTUNITIES
     // ==============================
@@ -67,10 +210,7 @@ const getPlacementOpportunities = async (
         filter
       )
         .select("-__v")
-        .sort({
-          applicationDeadline: 1,
-          createdAt: -1,
-        });
+        .sort(sortOption);
 
     res.status(200).json({
       success: true,
@@ -80,6 +220,9 @@ const getPlacementOpportunities = async (
 
       count:
         opportunities.length,
+
+      sort:
+        sort || "deadline",
 
       opportunities,
     });
@@ -145,9 +288,7 @@ const getPlacementOpportunityById =
             : "Open",
       });
     } catch (error) {
-      if (
-        error.name === "CastError"
-      ) {
+      if (error.name === "CastError") {
         return res.status(400).json({
           success: false,
 
