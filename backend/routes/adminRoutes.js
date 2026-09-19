@@ -72,6 +72,10 @@ const {
 
 const {
   createPlacementOpportunity,
+  getAllPlacementOpportunities,
+  getPlacementOpportunityById,
+  updatePlacementOpportunity,
+  closePlacementOpportunity,
 } = require("../controllers/admin/placementOpportunityController");
 
 // ==============================
@@ -189,11 +193,44 @@ router.post(
 // ADMIN PLACEMENT OPPORTUNITY MODULE
 // ==============================
 
+// Create placement opportunity
 router.post(
   "/opportunities",
   protect,
   authorizeRoles("admin"),
   createPlacementOpportunity
+);
+
+// Get all placement opportunities
+router.get(
+  "/opportunities",
+  protect,
+  authorizeRoles("admin"),
+  getAllPlacementOpportunities
+);
+
+// Get placement opportunity by ID
+router.get(
+  "/opportunities/:id",
+  protect,
+  authorizeRoles("admin"),
+  getPlacementOpportunityById
+);
+
+// Update placement opportunity
+router.put(
+  "/opportunities/:id",
+  protect,
+  authorizeRoles("admin"),
+  updatePlacementOpportunity
+);
+
+// Close placement opportunity
+router.patch(
+  "/opportunities/:id/close",
+  protect,
+  authorizeRoles("admin"),
+  closePlacementOpportunity
 );
 
 module.exports = router;
