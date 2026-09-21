@@ -234,6 +234,20 @@ const {
 } = require("../controllers/student/savedOpportunityController");
 
 // ==============================
+// PLACEMENT TRACKER CONTROLLER
+// MODULE 9
+// ==============================
+
+const {
+  addToPlacementTracker,
+  getPlacementTracker,
+  getPlacementApplicationById,
+  updatePlacementApplicationNotes,
+  updatePlacementOfferDetails,
+  updatePlacementStage,
+} = require("../controllers/student/placementApplicationController");
+
+// ==============================
 // MIDDLEWARE
 // ==============================
 
@@ -755,6 +769,7 @@ router.post(
 // ==============================
 
 // GD HISTORY
+
 router.get(
   "/gd/history",
   protect,
@@ -763,6 +778,7 @@ router.get(
 );
 
 // GD RESULT
+
 router.get(
   "/gd/rooms/:roomCode/result",
   protect,
@@ -771,6 +787,7 @@ router.get(
 );
 
 // GD TOPICS
+
 router.get(
   "/gd/topics",
   protect,
@@ -779,6 +796,7 @@ router.get(
 );
 
 // MANUAL GD SESSION
+
 router.post(
   "/gd/sessions",
   protect,
@@ -871,6 +889,7 @@ router.post(
 // ==============================
 
 // Get all active opportunities
+
 router.get(
   "/opportunities",
   protect,
@@ -879,6 +898,7 @@ router.get(
 );
 
 // Personalized opportunity recommendations
+
 router.get(
   "/opportunities/recommendations",
   protect,
@@ -891,6 +911,7 @@ router.get(
 // ==============================
 
 // Get all saved opportunities
+
 router.get(
   "/opportunities/saved",
   protect,
@@ -899,6 +920,7 @@ router.get(
 );
 
 // Save an opportunity
+
 router.post(
   "/opportunities/:id/save",
   protect,
@@ -907,6 +929,7 @@ router.post(
 );
 
 // Remove saved opportunity
+
 router.delete(
   "/opportunities/:id/save",
   protect,
@@ -919,6 +942,7 @@ router.delete(
 // ==============================
 
 // Eligibility + skill match + match score
+
 router.get(
   "/opportunities/:id/match",
   protect,
@@ -935,6 +959,65 @@ router.get(
   protect,
   authorizeRoles("student"),
   getPlacementOpportunityById
+);
+
+// ==============================
+// MODULE 9
+// APPLICATION & PLACEMENT TRACKER
+// ==============================
+
+// Get student's placement tracker
+
+router.get(
+  "/placement-tracker",
+  protect,
+  authorizeRoles("student"),
+  getPlacementTracker
+);
+
+// Add opportunity to placement tracker
+
+router.post(
+  "/placement-tracker/:opportunityId",
+  protect,
+  authorizeRoles("student"),
+  addToPlacementTracker
+);
+
+// Get single placement tracker application
+
+router.get(
+  "/placement-tracker/:applicationId",
+  protect,
+  authorizeRoles("student"),
+  getPlacementApplicationById
+);
+
+// Update placement application notes
+
+router.patch(
+  "/placement-tracker/:applicationId/notes",
+  protect,
+  authorizeRoles("student"),
+  updatePlacementApplicationNotes
+);
+
+// Update placement offer details
+
+router.patch(
+  "/placement-tracker/:applicationId/offer",
+  protect,
+  authorizeRoles("student"),
+  updatePlacementOfferDetails
+);
+
+// Update placement application stage
+
+router.patch(
+  "/placement-tracker/:applicationId/stage",
+  protect,
+  authorizeRoles("student"),
+  updatePlacementStage
 );
 
 module.exports = router;

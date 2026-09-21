@@ -8,11 +8,15 @@ const Resume = require("../../models/Resume");
 const MockAttempt = require("../../models/MockAttempt");
 const InterviewSession = require("../../models/InterviewSession");
 const GDSession = require("../../models/GDSession");
+const PlacementApplication = require(
+  "../../models/PlacementApplication"
+);
 const User = require("../../models/User");
 
 // ==============================
 // HELPER - ADD UNIQUE VALUE
 // ==============================
+
 const addUnique = (array, value) => {
   if (!value) return;
 
@@ -30,6 +34,7 @@ const addUnique = (array, value) => {
 // ==============================
 // HELPER - AVERAGE
 // ==============================
+
 const calculateAverage = (values) => {
   if (!values.length) {
     return 0;
@@ -47,6 +52,7 @@ const calculateAverage = (values) => {
 // ==============================
 // STUDENT DASHBOARD
 // ==============================
+
 const getStudentDashboard = async (
   req,
   res
@@ -66,6 +72,7 @@ const getStudentDashboard = async (
       mockAttempts,
       interviewSessions,
       gdSessions,
+      placementApplications,
     ] = await Promise.all([
       User.findById(userId).select(
         "name email role"
@@ -117,6 +124,29 @@ const getStudentDashboard = async (
       }).sort({
         createdAt: -1,
       }),
+
+      PlacementApplication.find({
+        student: userId,
+      })
+        .populate(
+          "opportunity",
+          [
+            "title",
+            "companyName",
+            "jobRole",
+            "location",
+            "workMode",
+            "opportunityType",
+            "applicationDeadline",
+            "salaryMin",
+            "salaryMax",
+            "status",
+            "isActive",
+          ].join(" ")
+        )
+        .sort({
+          updatedAt: -1,
+        }),
     ]);
 
     // ==============================
@@ -433,6 +463,99 @@ const getStudentDashboard = async (
     const latestGDPerformance =
       gdPerformanceRecords.length > 0
         ? gdPerformanceRecords[0]
+        : null;
+
+    // ==============================
+    // PLACEMENT TRACKER SUMMARY
+    // MODULE 9
+    // ==============================
+
+    const placementStageCounts = {
+      Interested: 0,
+      Applied: 0,
+      Assessment: 0,
+      Shortlisted: 0,
+      Technical: 0,
+      HR: 0,
+      Selected: 0,
+      Rejected: 0,
+      Offer: 0,
+      Placed: 0,
+    };
+
+    placementApplications.forEach(
+      (application) => {
+        if (
+          Object.prototype.hasOwnProperty.call(
+            placementStageCounts,
+            application.currentStage
+          )
+        ) {
+          placementStageCounts[
+            application.currentStage
+          ]++;
+        }
+      }
+    );
+
+    const activePlacementApplications =
+      placementApplications.filter(
+        (application) =>
+          application.isActive === true
+      );
+
+    const placedApplications =
+      placementApplications.filter(
+        (application) =>
+          application.currentStage ===
+          "Placed"
+      );
+
+    const rejectedApplications =
+      placementApplications.filter(
+        (application) =>
+          application.currentStage ===
+          "Rejected"
+      );
+
+    const offerApplications =
+      placementApplications.filter(
+        (application) =>
+          application.currentStage ===
+            "Offer" ||
+          application.currentStage ===
+            "Placed"
+      );
+
+    const upcomingPlacementRounds =
+      placementApplications
+        .filter(
+          (application) =>
+            application.isActive ===
+              true &&
+            application.nextRoundDate &&
+            new Date(
+              application.nextRoundDate
+            ) >= new Date()
+        )
+        .sort(
+          (a, b) =>
+            new Date(
+              a.nextRoundDate
+            ) -
+            new Date(
+              b.nextRoundDate
+            )
+        );
+
+    const latestPlacementApplication =
+      placementApplications.length > 0
+        ? placementApplications[0]
+        : null;
+
+    const nextPlacementRound =
+      upcomingPlacementRounds.length > 0
+        ? upcomingPlacementRounds[0]
         : null;
 
     // ==============================
@@ -862,6 +985,100 @@ const getStudentDashboard = async (
       },
 
       // ==============================
+      // MODULE 9 - PLACEMENT TRACKER
+      // ==============================
+
+      placementTracker: {
+        totalApplications:
+          placementApplications.length,
+
+        activeApplications:
+          activePlacementApplications.length,
+
+        placedApplications:
+          placedApplications.length,
+
+        rejectedApplications:
+          rejectedApplications.length,
+
+        offerApplications:
+          offerApplications.length,
+
+        stageCounts:
+          placementStageCounts,
+
+        upcomingRoundsCount:
+          upcomingPlacementRounds.length,
+
+        nextRound:
+          nextPlacementRound
+            ? {
+                applicationId:
+                  nextPlacementRound._id,
+
+                currentStage:
+                  nextPlacementRound.currentStage,
+
+                nextRoundDate:
+                  nextPlacementRound.nextRoundDate,
+
+                companyName:
+                  nextPlacementRound
+                    .opportunity
+                    ?.companyName ||
+                  null,
+
+                jobRole:
+                  nextPlacementRound
+                    .opportunity
+                    ?.jobRole ||
+                  null,
+
+                opportunityTitle:
+                  nextPlacementRound
+                    .opportunity
+                    ?.title ||
+                  null,
+              }
+            : null,
+
+        latestApplication:
+          latestPlacementApplication
+            ? {
+                applicationId:
+                  latestPlacementApplication._id,
+
+                currentStage:
+                  latestPlacementApplication.currentStage,
+
+                isActive:
+                  latestPlacementApplication.isActive,
+
+                companyName:
+                  latestPlacementApplication
+                    .opportunity
+                    ?.companyName ||
+                  null,
+
+                jobRole:
+                  latestPlacementApplication
+                    .opportunity
+                    ?.jobRole ||
+                  null,
+
+                opportunityTitle:
+                  latestPlacementApplication
+                    .opportunity
+                    ?.title ||
+                  null,
+
+                updatedAt:
+                  latestPlacementApplication.updatedAt,
+              }
+            : null,
+      },
+
+      // ==============================
       // MODULE 6 - SKILL GAP
       // ==============================
 
@@ -935,6 +1152,7 @@ const getStudentDashboard = async (
           practiceStrengths,
 
         // Skill Gap summary
+
         missingSkillsCount:
           missingSkills.length,
 
@@ -945,6 +1163,7 @@ const getStudentDashboard = async (
           priorityAreas.length,
 
         // Interview summary
+
         totalInterviewSessions:
           interviewSessions.length,
 
@@ -955,6 +1174,7 @@ const getStudentDashboard = async (
           averageInterviewScore,
 
         // GD summary
+
         totalGDSessions:
           gdSessions.length,
 
@@ -963,8 +1183,29 @@ const getStudentDashboard = async (
 
         averageGDScore:
           averageGDScore,
+
+        // Placement tracker summary
+
+        totalPlacementApplications:
+          placementApplications.length,
+
+        activePlacementApplications:
+          activePlacementApplications.length,
+
+        placedApplications:
+          placedApplications.length,
+
+        rejectedApplications:
+          rejectedApplications.length,
+
+        offerApplications:
+          offerApplications.length,
+
+        upcomingPlacementRounds:
+          upcomingPlacementRounds.length,
       },
     });
+
   } catch (error) {
     res.status(500).json({
       message:
@@ -990,6 +1231,7 @@ const saveStudentProfile = async (
       college,
       graduationYear,
       cgpa,
+      backlogs,
       skills,
       location,
       bio,
@@ -1007,6 +1249,7 @@ const saveStudentProfile = async (
           college,
           graduationYear,
           cgpa,
+          backlogs,
           skills,
           location,
           bio,
