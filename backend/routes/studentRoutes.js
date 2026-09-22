@@ -248,6 +248,18 @@ const {
 } = require("../controllers/student/placementApplicationController");
 
 // ==============================
+// PERFORMANCE & ANALYTICS CONTROLLER
+// MODULE 10
+// ==============================
+
+const {
+  getOverallPerformanceAnalytics,
+  getPerformanceTrends,
+  getStrengthWeaknessAnalytics,
+  getPerformanceRecommendations,
+} = require("../controllers/student/performanceAnalyticsController");
+
+// ==============================
 // MIDDLEWARE
 // ==============================
 
@@ -1019,5 +1031,49 @@ router.patch(
   authorizeRoles("student"),
   updatePlacementStage
 );
+
+// ==============================
+// MODULE 10
+// PERFORMANCE & ANALYTICS
+// ==============================
+
+// Overall student performance analytics
+
+router.get(
+  "/analytics/overview",
+  protect,
+  authorizeRoles("student"),
+  getOverallPerformanceAnalytics
+);
+
+// Student performance trends
+
+router.get(
+  "/analytics/trends",
+  protect,
+  authorizeRoles("student"),
+  getPerformanceTrends
+);
+
+
+// Strength and weakness analytics
+
+router.get(
+  "/analytics/strengths-weaknesses",
+  protect,
+  authorizeRoles("student"),
+  getStrengthWeaknessAnalytics
+);
+
+
+// Performance recommendations
+
+router.get(
+  "/analytics/recommendations",
+  protect,
+  authorizeRoles("student"),
+  getPerformanceRecommendations
+);
+
 
 module.exports = router;
