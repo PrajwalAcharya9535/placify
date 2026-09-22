@@ -259,6 +259,36 @@ const {
   getPerformanceRecommendations,
 } = require("../controllers/student/performanceAnalyticsController");
 
+
+// ==============================
+// NOTIFICATION CONTROLLER
+// MODULE 11
+// ==============================
+
+const {
+  getNotifications,
+  getUnreadNotificationCount,
+  markNotificationAsRead,
+  markAllNotificationsAsRead,
+  deleteNotification,
+} = require("../controllers/student/notificationController");
+
+// ==============================
+// CALENDAR CONTROLLER
+// MODULE 11
+// ==============================
+
+const {
+  createCalendarEvent,
+  getCalendarEvents,
+  getCalendarEventById,
+  updateCalendarEvent,
+  deleteCalendarEvent,
+  getUpcomingCalendarEvents,
+  getDueCalendarReminders,
+} = require("../controllers/student/calendarController");
+
+
 // ==============================
 // MIDDLEWARE
 // ==============================
@@ -1074,6 +1104,133 @@ router.get(
   authorizeRoles("student"),
   getPerformanceRecommendations
 );
+
+// ==============================
+// MODULE 11
+// NOTIFICATIONS
+// ==============================
+
+// Get student notifications
+
+router.get(
+  "/notifications",
+  protect,
+  authorizeRoles("student"),
+  getNotifications
+);
+
+// Get unread notification count
+
+router.get(
+  "/notifications/unread-count",
+  protect,
+  authorizeRoles("student"),
+  getUnreadNotificationCount
+);
+
+// Mark all notifications as read
+// IMPORTANT: Keep this before /notifications/:notificationId/read
+
+router.patch(
+  "/notifications/read-all",
+  protect,
+  authorizeRoles("student"),
+  markAllNotificationsAsRead
+);
+
+// Mark one notification as read
+
+router.patch(
+  "/notifications/:notificationId/read",
+  protect,
+  authorizeRoles("student"),
+  markNotificationAsRead
+);
+
+// Delete one notification
+
+router.delete(
+  "/notifications/:notificationId",
+  protect,
+  authorizeRoles("student"),
+  deleteNotification
+);
+
+
+// ==============================
+// MODULE 11
+// CALENDAR
+// ==============================
+
+// Create calendar event
+
+router.post(
+  "/calendar/events",
+  protect,
+  authorizeRoles("student"),
+  createCalendarEvent
+);
+
+// Get all calendar events
+
+router.get(
+  "/calendar/events",
+  protect,
+  authorizeRoles("student"),
+  getCalendarEvents
+);
+
+// Get upcoming calendar events
+// IMPORTANT: Keep this before /calendar/events/:eventId
+
+router.get(
+  "/calendar/upcoming",
+  protect,
+  authorizeRoles("student"),
+  getUpcomingCalendarEvents
+);
+
+// Get due calendar reminders
+// IMPORTANT: Keep this before /calendar/events/:eventId
+
+router.get(
+  "/calendar/reminders/due",
+  protect,
+  authorizeRoles("student"),
+  getDueCalendarReminders
+);
+
+
+// Get one calendar event
+
+router.get(
+  "/calendar/events/:eventId",
+  protect,
+  authorizeRoles("student"),
+  getCalendarEventById
+);
+
+
+// Update calendar event
+
+router.patch(
+  "/calendar/events/:eventId",
+  protect,
+  authorizeRoles("student"),
+  updateCalendarEvent
+);
+
+
+// Delete calendar event
+
+router.delete(
+  "/calendar/events/:eventId",
+  protect,
+  authorizeRoles("student"),
+  deleteCalendarEvent
+);
+
+
 
 
 module.exports = router;

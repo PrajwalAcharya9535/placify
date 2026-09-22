@@ -8,6 +8,14 @@ const PlacementOpportunity = require(
   "../../models/PlacementOpportunity"
 );
 
+const CalendarEvent = require(
+  "../../models/CalendarEvent"
+);
+
+const {
+  createNotification,
+} = require("../../services/notificationService");
+
 // ========================================
 // VALID PLACEMENT STAGES
 // ========================================
@@ -180,6 +188,34 @@ const addToPlacementTracker = async (req, res) => {
         "isActive",
       ].join(" ")
     );
+
+    // ----------------------------------------
+// CREATE PLACEMENT TRACKER NOTIFICATION
+// ----------------------------------------
+
+await createNotification({
+  user: req.user.id,
+
+  title: "Opportunity Added to Placement Tracker",
+
+  message: `${opportunity.companyName} - ${opportunity.jobRole} has been added to your placement tracker.`,
+
+  type: "Application",
+
+  priority: "Medium",
+
+  relatedEntityType: "PlacementApplication",
+
+  relatedEntityId: application._id,
+
+  actionUrl: `/placement-tracker/${application._id}`,
+
+  metadata: {
+    companyName: opportunity.companyName,
+    jobRole: opportunity.jobRole,
+    stage: application.currentStage,
+  },
+});
 
     res.status(201).json({
       success: true,
@@ -862,6 +898,95 @@ const updatePlacementOfferDetails =
       );
 
       // ----------------------------------------
+// SYNC JOINING DATE TO CALENDAR
+// ----------------------------------------
+
+if (application.offerDetails.joiningDate) {
+  await CalendarEvent.findOneAndUpdate(
+    {
+      user: req.user.id,
+      relatedEntityType: "PlacementApplication",
+      relatedEntityId: application._id,
+      eventType: "Joining",
+    },
+    {
+      $set: {
+        title: `${application.opportunity.companyName} - Joining Date`,
+
+        description: `Joining date for ${application.opportunity.jobRole}.`,
+
+        eventType: "Joining",
+
+        startDate:
+          application.offerDetails.joiningDate,
+
+        endDate: null,
+
+        allDay: true,
+
+        status: "Scheduled",
+
+        reminderEnabled: true,
+
+        reminderMinutesBefore: 1440,
+
+        reminderSentAt: null,
+
+        actionUrl: `/placement-tracker/${application._id}`,
+
+        metadata: {
+          companyName:
+            application.opportunity.companyName,
+
+          jobRole:
+            application.opportunity.jobRole,
+
+          package:
+            application.offerDetails.package,
+        },
+      },
+
+      $setOnInsert: {
+        user: req.user.id,
+
+        relatedEntityType:
+          "PlacementApplication",
+
+        relatedEntityId:
+          application._id,
+      },
+    },
+    {
+      new: true,
+      upsert: true,
+      runValidators: true,
+    }
+  );
+}
+
+else {
+  await CalendarEvent.findOneAndUpdate(
+    {
+      user: req.user.id,
+      relatedEntityType: "PlacementApplication",
+      relatedEntityId: application._id,
+      eventType: "Joining",
+      status: "Scheduled",
+    },
+    {
+      $set: {
+        status: "Cancelled",
+        reminderEnabled: false,
+        reminderSentAt: null,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+}
+
+      // ----------------------------------------
       // RESPONSE
       // ----------------------------------------
 
@@ -1113,8 +1238,136 @@ const updatePlacementStage = async (
     );
 
     // ----------------------------------------
-    // RESPONSE
-    // ----------------------------------------
+// SYNC NEXT PLACEMENT ROUND TO CALENDAR
+// ----------------------------------------
+
+if (application.nextRoundDate) {
+  await CalendarEvent.findOneAndUpdate(
+    {
+  user: req.user.id,
+  relatedEntityType: "PlacementApplication",
+  relatedEntityId: application._id,
+  eventType: "Application Round",
+},
+    {
+      $set: {
+        title: `${application.opportunity.companyName} - ${stage} Round`,
+
+        description: `${stage} round for ${application.opportunity.jobRole}.`,
+
+        eventType: "Application Round",
+
+        startDate: application.nextRoundDate,
+
+        endDate: null,
+
+        allDay: false,
+
+        status: "Scheduled",
+
+        reminderEnabled: true,
+
+        reminderMinutesBefore: 1440,
+
+        reminderSentAt: null,
+
+        actionUrl: `/placement-tracker/${application._id}`,
+
+        metadata: {
+          companyName:
+            application.opportunity.companyName,
+
+          jobRole:
+            application.opportunity.jobRole,
+
+          stage,
+        },
+      },
+
+      $setOnInsert: {
+        user: req.user.id,
+
+        relatedEntityType:
+          "PlacementApplication",
+
+        relatedEntityId:
+          application._id,
+      },
+    },
+    {
+      new: true,
+      upsert: true,
+      runValidators: true,
+    }
+    );
+} else {
+  await CalendarEvent.findOneAndUpdate(
+    {
+      user: req.user.id,
+      relatedEntityType: "PlacementApplication",
+      relatedEntityId: application._id,
+      eventType: "Application Round",
+      status: "Scheduled",
+    },
+    {
+      $set: {
+        status: "Cancelled",
+        reminderEnabled: false,
+        reminderSentAt: null,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+}
+
+
+// ----------------------------------------
+// CREATE PLACEMENT STAGE NOTIFICATION
+// ----------------------------------------
+
+await createNotification({
+  user: req.user.id,
+
+  title: "Placement Application Update",
+
+  message: `Your ${application.opportunity.companyName} application has moved to ${stage}.`,
+
+  type: "Application",
+
+  priority:
+    stage === "Selected" ||
+    stage === "Offer" ||
+    stage === "Placed"
+      ? "High"
+      : "Medium",
+
+  relatedEntityType: "PlacementApplication",
+
+  relatedEntityId: application._id,
+
+  actionUrl: `/placement-tracker/${application._id}`,
+
+  metadata: {
+    companyName:
+      application.opportunity.companyName,
+
+    jobRole:
+      application.opportunity.jobRole,
+
+    stage,
+
+    nextRoundDate:
+      application.nextRoundDate || null,
+  },
+});
+
+
+// ----------------------------------------
+// RESPONSE
+// ----------------------------------------
+
 
     res.status(200).json({
       success: true,

@@ -6,6 +6,10 @@ const PlacementOpportunity = require(
   "../../models/PlacementOpportunity"
 );
 
+const CalendarEvent = require(
+  "../../models/CalendarEvent"
+);
+
 // ==============================
 // SAVE / BOOKMARK OPPORTUNITY
 // ==============================
@@ -74,6 +78,63 @@ const saveOpportunity = async (req, res) => {
         user: userId,
         opportunity: opportunityId,
       });
+
+      // ==============================
+// ADD APPLICATION DEADLINE TO CALENDAR
+// ==============================
+
+await CalendarEvent.findOneAndUpdate(
+  {
+    user: userId,
+    relatedEntityType: "PlacementOpportunity",
+    relatedEntityId: opportunity._id,
+  },
+  {
+    $set: {
+      title: `${opportunity.companyName} - Application Deadline`,
+
+      description: `Application deadline for ${opportunity.jobRole}.`,
+
+      eventType: "Opportunity Deadline",
+
+      startDate: opportunity.applicationDeadline,
+
+      endDate: null,
+
+      allDay: true,
+
+      status: "Scheduled",
+
+      reminderEnabled: true,
+
+      reminderMinutesBefore: 1440,
+
+      reminderSentAt: null,
+
+      actionUrl: `/opportunities/${opportunity._id}`,
+
+      metadata: {
+        companyName: opportunity.companyName,
+        jobRole: opportunity.jobRole,
+      },
+    },
+
+    $setOnInsert: {
+      user: userId,
+
+      relatedEntityType:
+        "PlacementOpportunity",
+
+      relatedEntityId:
+        opportunity._id,
+    },
+  },
+  {
+    new: true,
+    upsert: true,
+    runValidators: true,
+  }
+);
 
     return res.status(201).json({
       success: true,
@@ -199,6 +260,30 @@ const removeSavedOpportunity = async (
           "Saved opportunity not found",
       });
     }
+
+    // ==============================
+// CANCEL DEADLINE CALENDAR EVENT
+// ==============================
+
+await CalendarEvent.findOneAndUpdate(
+  {
+    user: req.user.id,
+    relatedEntityType:
+      "PlacementOpportunity",
+    relatedEntityId: req.params.id,
+    status: "Scheduled",
+  },
+  {
+    $set: {
+      status: "Cancelled",
+      reminderEnabled: false,
+      reminderSentAt: null,
+    },
+  },
+  {
+    new: true,
+  }
+);
 
     return res.status(200).json({
       success: true,
