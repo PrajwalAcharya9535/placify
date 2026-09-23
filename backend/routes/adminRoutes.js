@@ -1,6 +1,29 @@
 const express = require("express");
 
 // ==============================
+// ADMIN DASHBOARD CONTROLLER
+// ==============================
+
+const {
+  getAdminDashboardOverview,
+  getRecentPlacementApplications,
+  getAllPlacementApplications,
+  getPlacementApplicationById,
+  getApplicationStageAnalytics,
+  getCompanyApplicationAnalytics,
+  getPlacementPackageAnalytics,
+} = require("../controllers/admin/dashboardController");
+
+// ==============================
+// ADMIN STUDENT MANAGEMENT CONTROLLER
+// ==============================
+
+const {
+  getAllStudents,
+  getStudentById,
+} = require("../controllers/admin/studentManagementController");
+
+// ==============================
 // ADMIN LEARNING CONTROLLER
 // ==============================
 
@@ -86,6 +109,81 @@ const protect = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 
 const router = express.Router();
+
+// ==============================
+// ADMIN DASHBOARD
+// ==============================
+
+router.get(
+  "/dashboard",
+  protect,
+  authorizeRoles("admin"),
+  getAdminDashboardOverview
+);
+
+router.get(
+  "/dashboard/recent-applications",
+  protect,
+  authorizeRoles("admin"),
+  getRecentPlacementApplications
+);
+
+// ==============================
+// ADMIN STUDENT MANAGEMENT
+// ==============================
+
+router.get(
+  "/students",
+  protect,
+  authorizeRoles("admin"),
+  getAllStudents
+);
+
+router.get(
+  "/students/:studentId",
+  protect,
+  authorizeRoles("admin"),
+  getStudentById
+);
+
+// ==============================
+// ADMIN APPLICATION MANAGEMENT
+// ==============================
+
+router.get(
+  "/applications",
+  protect,
+  authorizeRoles("admin"),
+  getAllPlacementApplications
+);
+
+router.get(
+  "/applications/analytics/stages",
+  protect,
+  authorizeRoles("admin"),
+  getApplicationStageAnalytics
+);
+
+router.get(
+  "/applications/analytics/companies",
+  protect,
+  authorizeRoles("admin"),
+  getCompanyApplicationAnalytics
+);
+
+router.get(
+  "/applications/analytics/packages",
+  protect,
+  authorizeRoles("admin"),
+  getPlacementPackageAnalytics
+);
+
+router.get(
+  "/applications/:applicationId",
+  protect,
+  authorizeRoles("admin"),
+  getPlacementApplicationById
+);
 
 // ==============================
 // ADMIN LEARNING MODULE
@@ -233,4 +331,4 @@ router.patch(
   closePlacementOpportunity
 );
 
-module.exports = router;
+module.exports = router;  
