@@ -2,6 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const http = require("http");
+const cors = require("cors");
 const { Server } = require("socket.io");
 
 const authRoutes = require("./routes/authRoutes");
@@ -42,6 +43,15 @@ io.use(socketAuthMiddleware);
 // ==============================
 // EXPRESS MIDDLEWARE
 // ==============================
+
+// Allow Placify React frontend to access REST APIs
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 app.use(express.json());
 

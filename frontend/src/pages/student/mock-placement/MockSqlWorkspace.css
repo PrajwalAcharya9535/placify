@@ -1,0 +1,921 @@
+/* =========================================
+   SQL ASSESSMENT WORKSPACE
+========================================= */
+
+.mock-sql-workspace {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  margin-top: 12px;
+  padding: 14px 16px 16px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+/* =========================================
+   PROBLEM HEADER
+========================================= */
+
+.mock-sql-problem-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  gap: 20px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.mock-sql-problem-copy {
+  min-width: 0;
+}
+
+.mock-sql-eyebrow {
+  margin: 0 0 3px;
+  color: #2563eb;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+}
+
+.mock-sql-problem-header h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 18px;
+  line-height: 1.3;
+  font-weight: 780;
+  letter-spacing: -0.2px;
+}
+
+.mock-sql-description {
+  max-width: 760px;
+  margin: 5px 0 0;
+  overflow: hidden;
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.45;
+  text-overflow: ellipsis;
+}
+
+.mock-sql-problem-badges {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  gap: 6px;
+}
+
+.mock-sql-problem-badges span {
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 10px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.mock-sql-problem-badges span:first-child {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+/* =========================================
+   MAIN TWO-COLUMN WORKSPACE
+========================================= */
+
+.mock-sql-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(320px, 0.86fr)
+    minmax(440px, 1.14fr);
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+/* =========================================
+   COMMON PANELS
+========================================= */
+
+.mock-sql-database-panel,
+.mock-sql-editor-panel {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 13px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  background: #f8fafc;
+}
+
+.mock-sql-section-heading {
+  flex: 0 0 auto;
+  margin-bottom: 10px;
+}
+
+.mock-sql-section-heading p {
+  margin: 0 0 3px;
+  color: #2563eb;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.mock-sql-section-heading h3 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 760;
+}
+
+/* =========================================
+   DATABASE INTERNAL SCROLL AREA
+========================================= */
+
+.mock-sql-database-content {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-right: 4px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.mock-sql-database-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mock-sql-database-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mock-sql-database-content::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.mock-sql-database-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* =========================================
+   DATABASE TABLE CARD
+========================================= */
+
+.mock-sql-table-card {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.mock-sql-table-card + .mock-sql-table-card {
+  margin-top: 11px;
+}
+
+.mock-sql-table-name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 11px;
+  border-bottom: 1px solid #dbeafe;
+  background: #eff6ff;
+}
+
+.mock-sql-table-name span {
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.9px;
+}
+
+.mock-sql-table-name strong {
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* =========================================
+   SCHEMA
+========================================= */
+
+.mock-sql-schema {
+  padding: 10px 11px;
+}
+
+.mock-sql-schema h4,
+.mock-sql-sample h4 {
+  margin: 0 0 7px;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 780;
+}
+
+.mock-sql-schema-list {
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+}
+
+.mock-sql-schema-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 7px 9px;
+  background: #ffffff;
+}
+
+.mock-sql-schema-row + .mock-sql-schema-row {
+  border-top: 1px solid #f1f5f9;
+}
+
+.mock-sql-schema-row span {
+  color: #334155;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.mock-sql-schema-row code {
+  padding: 3px 6px;
+  border-radius: 5px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 10px;
+}
+
+/* =========================================
+   SAMPLE DATA / SHARED TABLE SCROLL
+========================================= */
+
+.mock-sql-sample {
+  padding: 0 11px 11px;
+}
+
+.mock-sql-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.mock-sql-table-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.mock-sql-table-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mock-sql-table-scroll::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.mock-sql-table-scroll table {
+  width: 100%;
+  min-width: 440px;
+  border-collapse: collapse;
+}
+
+.mock-sql-table-scroll th {
+  padding: 7px 8px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #f8fafc;
+  color: #475569;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 760;
+  white-space: nowrap;
+}
+
+.mock-sql-table-scroll td {
+  padding: 7px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.mock-sql-table-scroll tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* =========================================
+   RIGHT SIDE
+========================================= */
+
+.mock-sql-editor-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.mock-sql-editor-area {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* =========================================
+   QUERY EDITOR
+========================================= */
+
+.mock-sql-editor {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 150px;
+  overflow: hidden;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: #0f172a;
+}
+
+.mock-sql-editor-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  gap: 10px;
+  padding: 8px 11px;
+  border-bottom: 1px solid #334155;
+  background: #1e293b;
+}
+
+.mock-sql-editor-top span:first-child {
+  color: #67e8f9;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.9px;
+}
+
+.mock-sql-editor-top span:last-child {
+  color: #94a3b8;
+  font-size: 10px;
+}
+
+.mock-sql-editor textarea {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 120px;
+  padding: 13px 14px;
+  overflow: auto;
+  border: none;
+  outline: none;
+  resize: none;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.mock-sql-editor textarea::placeholder {
+  color: #64748b;
+}
+
+.mock-sql-editor textarea:disabled {
+  opacity: 0.8;
+  cursor: wait;
+}
+
+/* =========================================
+   EDITOR FOOTER
+========================================= */
+
+.mock-sql-editor-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 0 0 auto;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.mock-sql-editor-footer > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mock-sql-editor-footer span {
+  color: #64748b;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.mock-sql-editor-footer strong {
+  color: #334155;
+  font-weight: 700;
+}
+
+.mock-sql-submit-button {
+  min-width: 128px;
+  min-height: 37px;
+  flex-shrink: 0;
+  padding: 0 16px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 780;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    background 0.18s ease;
+}
+
+.mock-sql-submit-button:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 11px rgba(37, 99, 235, 0.2);
+}
+
+.mock-sql-submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.mock-sql-submit-button:disabled {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   EMPTY STATE
+========================================= */
+
+.mock-sql-empty {
+  padding: 14px;
+  color: #64748b;
+  text-align: center;
+  font-size: 11px;
+}
+
+/* =========================================
+   FEEDBACK / RESULT AREA
+========================================= */
+
+.mock-sql-feedback-area {
+  flex: 0 0 auto;
+  min-height: 0;
+}
+
+.mock-sql-feedback-visible {
+  flex: 0 1 46%;
+  min-height: 125px;
+  margin-top: 10px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.mock-sql-feedback-visible::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mock-sql-feedback-visible::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mock-sql-feedback-visible::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+/* =========================================
+   SUBMISSION ERROR
+========================================= */
+
+.mock-sql-result-error {
+  padding: 12px 13px;
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+  background: #fff7f7;
+}
+
+.mock-sql-result-error strong {
+  display: block;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.mock-sql-result-error p {
+  margin: 4px 0 0;
+  color: #7f1d1d;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+/* =========================================
+   RESULT CARD
+========================================= */
+
+.mock-sql-result {
+  overflow: hidden;
+  border: 1px solid #dbe3ed;
+  border-radius: 10px;
+  background: #ffffff;
+}
+
+.mock-sql-result-success {
+  border-color: #bbf7d0;
+}
+
+.mock-sql-result-warning {
+  border-color: #fed7aa;
+}
+
+/* =========================================
+   RESULT HEADER
+========================================= */
+
+.mock-sql-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #dcfce7;
+  background: linear-gradient(
+    135deg,
+    #f0fdf4 0%,
+    #ffffff 70%
+  );
+}
+
+.mock-sql-result-warning
+  .mock-sql-result-header {
+  border-bottom-color: #ffedd5;
+  background: linear-gradient(
+    135deg,
+    #fff7ed 0%,
+    #ffffff 70%
+  );
+}
+
+.mock-sql-result-header span {
+  display: block;
+  margin-bottom: 2px;
+  color: #16a34a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.9px;
+}
+
+.mock-sql-result-warning
+  .mock-sql-result-header span {
+  color: #c2410c;
+}
+
+.mock-sql-result-header h3 {
+  margin: 0;
+  color: #166534;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.mock-sql-result-warning
+  .mock-sql-result-header h3 {
+  color: #9a3412;
+}
+
+.mock-sql-result-header > strong {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  min-height: 34px;
+  padding: 0 10px;
+  border-radius: 8px;
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 14px;
+  font-weight: 850;
+}
+
+.mock-sql-result-warning
+  .mock-sql-result-header > strong {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+/* =========================================
+   RESULT MESSAGE
+========================================= */
+
+.mock-sql-result-message {
+  margin: 0;
+  padding: 8px 12px 0;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+/* =========================================
+   RESULT STATS
+========================================= */
+
+.mock-sql-result-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 7px;
+  padding: 9px 12px;
+}
+
+.mock-sql-result-stats > div {
+  padding: 8px 9px;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  background: #f8fafc;
+}
+
+.mock-sql-result-stats span {
+  display: block;
+  margin-bottom: 2px;
+  color: #64748b;
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+}
+
+.mock-sql-result-stats strong {
+  color: #0f172a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* =========================================
+   QUERY OUTPUT
+========================================= */
+
+.mock-sql-output {
+  padding: 0 12px 10px;
+}
+
+.mock-sql-output h4 {
+  margin: 0 0 6px;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.mock-sql-output .mock-sql-table-scroll {
+  max-height: 145px;
+  background: #ffffff;
+}
+
+.mock-sql-output
+  .mock-sql-table-scroll table {
+  min-width: 100%;
+}
+
+.mock-sql-output
+  .mock-sql-table-scroll th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.mock-sql-output
+  .mock-sql-table-scroll td {
+  color: #334155;
+  font-size: 11px;
+}
+
+/* =========================================
+   ROUND ERROR
+========================================= */
+
+.mock-sql-round-error {
+  margin: 0 12px 9px;
+  padding: 9px 10px;
+  border: 1px solid #fecaca;
+  border-radius: 7px;
+  background: #fef2f2;
+}
+
+.mock-sql-round-error strong {
+  display: block;
+  color: #b91c1c;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.mock-sql-round-error p {
+  margin: 3px 0 0;
+  color: #7f1d1d;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.mock-sql-round-error-standalone {
+  margin: 0;
+}
+
+/* =========================================
+   COMPLETE ROUND
+========================================= */
+
+.mock-sql-round-action {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 9px 12px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.mock-sql-complete-button {
+  min-width: 140px;
+  min-height: 36px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 8px;
+  background: #2563eb;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform 0.18s ease,
+    background 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.mock-sql-complete-button:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.22);
+}
+
+.mock-sql-complete-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.mock-sql-complete-button:disabled {
+  background: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   MEDIUM / SMALL DESKTOP
+========================================= */
+
+@media (max-width: 1200px) {
+  .mock-sql-layout {
+    grid-template-columns:
+      minmax(290px, 0.82fr)
+      minmax(400px, 1.18fr);
+  }
+
+  .mock-sql-problem-description {
+    max-width: 620px;
+  }
+}
+
+/* =========================================
+   TABLET / SMALLER SCREEN
+
+   Normal page scrolling is intentionally
+   restored here because fixed assessment
+   mode is intended for desktop.
+========================================= */
+
+@media (max-width: 1050px) {
+  .mock-sql-workspace {
+    display: block;
+    overflow: visible;
+  }
+
+  .mock-sql-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+
+  .mock-sql-database-panel,
+  .mock-sql-editor-panel {
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .mock-sql-database-content {
+    max-height: 420px;
+  }
+
+  .mock-sql-editor-content {
+    overflow: visible;
+  }
+
+  .mock-sql-editor-area {
+    min-height: auto;
+  }
+
+  .mock-sql-editor {
+    min-height: 300px;
+  }
+
+  .mock-sql-editor textarea {
+    min-height: 260px;
+  }
+
+  .mock-sql-feedback-visible {
+    max-height: 420px;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 720px) {
+  .mock-sql-workspace {
+    margin-top: 10px;
+    padding: 12px;
+  }
+
+  .mock-sql-problem-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .mock-sql-problem-header h2 {
+    font-size: 17px;
+  }
+
+  .mock-sql-description {
+    overflow: visible;
+    text-overflow: initial;
+  }
+
+  .mock-sql-problem-badges {
+    justify-content: flex-start;
+  }
+
+  .mock-sql-database-panel,
+  .mock-sql-editor-panel {
+    padding: 11px;
+  }
+
+  .mock-sql-editor-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .mock-sql-submit-button {
+    width: 100%;
+  }
+
+  .mock-sql-result-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .mock-sql-result-header {
+    align-items: flex-start;
+  }
+
+  .mock-sql-round-action {
+    justify-content: stretch;
+  }
+
+  .mock-sql-complete-button {
+    width: 100%;
+  }
+}

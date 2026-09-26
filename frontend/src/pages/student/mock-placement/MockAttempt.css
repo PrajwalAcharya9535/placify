@@ -1,0 +1,462 @@
+.mock-attempt-page {
+  min-height: 100vh;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.mock-attempt-page-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 18px 28px 28px;
+}
+
+/* ==============================
+   SQL ASSESSMENT PAGE
+============================== */
+
+.mock-attempt-assessment-page {
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.mock-attempt-assessment-page
+  .mock-attempt-page-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding-bottom: 18px;
+}
+
+/* ==============================
+   COMPACT TOP HEADER
+============================== */
+
+.mock-attempt-header {
+  flex: 0 0 auto;
+  overflow: hidden;
+  border-radius: 14px;
+  background: linear-gradient(
+    135deg,
+    #1d4ed8 0%,
+    #2563eb 52%,
+    #06b6d4 100%
+  );
+  box-shadow: 0 8px 22px rgba(37, 99, 235, 0.14);
+}
+
+.mock-attempt-header-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 20px 13px;
+}
+
+.mock-attempt-label {
+  margin: 0 0 3px;
+  color: #dbeafe;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.mock-attempt-header h1 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 21px;
+  line-height: 1.25;
+  font-weight: 750;
+  letter-spacing: -0.3px;
+}
+
+.mock-attempt-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 6px 11px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.mock-attempt-status-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #86efac;
+  box-shadow: 0 0 0 3px rgba(134, 239, 172, 0.14);
+}
+
+/* ==============================
+   ROUND SUMMARY BAR
+============================== */
+
+.mock-attempt-round-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 9px 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(15, 23, 42, 0.12);
+}
+
+.mock-attempt-round-primary {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.mock-attempt-round-type {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.17);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.mock-attempt-round-primary > div {
+  min-width: 0;
+}
+
+.mock-attempt-round-primary > div > span {
+  display: block;
+  margin-bottom: 1px;
+  color: #bfdbfe;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+.mock-attempt-round-primary strong {
+  display: block;
+  overflow: hidden;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 750;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mock-attempt-round-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mock-attempt-round-meta > div {
+  min-width: 70px;
+  padding: 5px 9px;
+  border-left: 1px solid rgba(255, 255, 255, 0.17);
+}
+
+.mock-attempt-round-meta span {
+  display: block;
+  margin-bottom: 1px;
+  color: #bfdbfe;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.mock-attempt-round-meta strong {
+  display: block;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+/* ==============================
+   ASSESSMENT CONTENT
+============================== */
+
+.mock-attempt-content {
+  min-height: 0;
+}
+
+.mock-attempt-assessment-page
+  .mock-attempt-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ==============================
+   READY / LOADING AREA
+============================== */
+
+.mock-attempt-ready {
+  margin-top: 14px;
+  padding: 42px 28px;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  text-align: center;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.035);
+}
+
+.mock-attempt-assessment-page
+  .mock-attempt-ready {
+  flex: 1;
+  min-height: 0;
+}
+
+.mock-attempt-ready-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: #16a34a;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.mock-attempt-ready h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 19px;
+  font-weight: 750;
+}
+
+.mock-attempt-ready p {
+  max-width: 620px;
+  margin: 8px auto 0;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ==============================
+   EMPTY STATE
+============================== */
+
+.mock-attempt-empty {
+  max-width: 600px;
+  margin: 80px auto 0;
+  padding: 45px 30px;
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #ffffff;
+  text-align: center;
+}
+
+.mock-attempt-empty h2 {
+  margin: 0;
+  color: #0f172a;
+  font-size: 20px;
+}
+
+.mock-attempt-empty p {
+  margin: 10px 0 20px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.mock-attempt-empty button {
+  min-height: 40px;
+  padding: 0 18px;
+  border: none;
+  border-radius: 9px;
+  background: #2563eb;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.mock-attempt-empty button:hover {
+  background: #1d4ed8;
+}
+
+/* ==============================
+   RESPONSIVE
+============================== */
+
+@media (max-width: 1050px) {
+  .mock-attempt-assessment-page {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
+
+  .mock-attempt-assessment-page
+    .mock-attempt-page-container {
+    height: auto;
+  }
+
+  .mock-attempt-assessment-page
+    .mock-attempt-content {
+    overflow: visible;
+  }
+
+  .mock-attempt-round-bar {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .mock-attempt-round-meta {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 650px) {
+  .mock-attempt-page-container {
+    padding: 14px 14px 28px;
+  }
+
+  .mock-attempt-header-main {
+    align-items: flex-start;
+    padding: 14px 15px 12px;
+  }
+
+  .mock-attempt-header h1 {
+    font-size: 18px;
+  }
+
+  .mock-attempt-status {
+    font-size: 10px;
+  }
+
+  .mock-attempt-round-bar {
+    padding: 9px 15px 11px;
+  }
+
+  .mock-attempt-round-primary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .mock-attempt-round-meta {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .mock-attempt-round-meta > div {
+    min-width: 0;
+    padding-left: 8px;
+  }
+
+  .mock-attempt-ready {
+    padding: 34px 18px;
+  }
+}
+
+/* ==============================
+   PROCTORING HEADER ACTIONS
+============================== */
+
+.mock-attempt-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mock-attempt-fullscreen-button {
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 9px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.mock-attempt-fullscreen-button:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  transform: translateY(-1px);
+}
+
+.mock-attempt-fullscreen-button:active {
+  transform: translateY(0);
+}
+
+/* ==============================
+   PROCTORING CAMERA ERROR
+============================== */
+
+.mock-attempt-camera-error {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  padding: 0 11px;
+  border: 1px solid rgba(254, 202, 202, 0.9);
+  border-radius: 9px;
+  background: rgba(254, 226, 226, 0.95);
+  color: #b91c1c;
+  font-size: 11px;
+  font-weight: 750;
+  white-space: nowrap;
+}
+
+/* ==============================
+   PROCTORING CAMERA PREVIEW
+============================== */
+
+.mock-attempt-camera-preview {
+  width: 76px;
+  height: 52px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.65);
+  border-radius: 10px;
+  background: #0f172a;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+}
+
+.mock-attempt-camera-preview video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+
+@media (max-width: 640px) {
+  .mock-attempt-header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .mock-attempt-camera-preview {
+    width: 64px;
+    height: 44px;
+  }
+
+  .mock-attempt-fullscreen-button {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}

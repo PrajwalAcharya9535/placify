@@ -63,6 +63,9 @@ const getMockTestDetails = async (req, res) => {
       });
     }
 
+    // ==============================
+    // COUNT ALL ATTEMPTS
+    // ==============================
     const attemptsUsed =
       await MockAttempt.countDocuments({
         user: req.user.id,
@@ -74,6 +77,31 @@ const getMockTestDetails = async (req, res) => {
       0
     );
 
+    // ==============================
+    // FIND ACTIVE ATTEMPT
+    // ==============================
+    const activeAttempt =
+      await MockAttempt.findOne({
+        user: req.user.id,
+        mockTest: mockTest._id,
+        status: "In Progress",
+      });
+
+    // ==============================
+    // CURRENT ACTIVE ROUND
+    // ==============================
+    let currentRound = null;
+
+    if (activeAttempt) {
+      currentRound =
+        activeAttempt.roundResults[
+          activeAttempt.currentRoundIndex
+        ] || null;
+    }
+
+    // ==============================
+    // RESPONSE
+    // ==============================
     res.status(200).json({
       message:
         "Mock placement test details fetched successfully",
@@ -89,7 +117,16 @@ const getMockTestDetails = async (req, res) => {
         attemptsRemaining,
 
         canAttempt:
+          !activeAttempt &&
           attemptsRemaining > 0,
+
+        hasActiveAttempt:
+          Boolean(activeAttempt),
+
+        activeAttempt:
+          activeAttempt || null,
+
+        currentRound,
       },
     });
   } catch (error) {

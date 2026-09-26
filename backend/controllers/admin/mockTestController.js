@@ -225,8 +225,47 @@ const getMockTestById = async (
   }
 };
 
+// ==============================
+// DEACTIVATE MOCK TEST
+// ==============================
+const deactivateMockTest = async (
+  req,
+  res
+) => {
+  try {
+    const mockTest =
+      await MockTest.findById(
+        req.params.id
+      );
+
+    if (!mockTest) {
+      return res.status(404).json({
+        message:
+          "Mock placement test not found",
+      });
+    }
+
+    mockTest.isActive = false;
+
+    await mockTest.save();
+
+    res.status(200).json({
+      message:
+        "Mock placement test deactivated successfully",
+      mockTest,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message:
+        "Failed to deactivate mock placement test",
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   createMockTest,
   getMockTests,
   getMockTestById,
+  deactivateMockTest,
 };
