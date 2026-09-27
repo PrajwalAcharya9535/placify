@@ -11,52 +11,169 @@ const normalizeText = (text) => {
 
 // ==============================
 // UNIQUE STRINGS
+// CASE-INSENSITIVE
 // ==============================
-const uniqueStrings = (items) => {
-  return [
-    ...new Set(
-      items
-        .map((item) =>
-          String(item || "").trim()
-        )
-        .filter(Boolean)
-    ),
-  ];
+const uniqueStrings = (items = []) => {
+  const seen = new Set();
+
+  return items
+    .map((item) => String(item || "").trim())
+    .filter(Boolean)
+    .filter((item) => {
+      const key = normalizeText(item);
+
+      if (seen.has(key)) {
+        return false;
+      }
+
+      seen.add(key);
+      return true;
+    });
 };
 
 // ==============================
 // ESCAPE REGEX
 // ==============================
 const escapeRegExp = (text) => {
-  return text.replace(
+  return String(text || "").replace(
     /[.*+?^${}()|[\]\\]/g,
     "\\$&"
   );
 };
 
 // ==============================
-// EXACT SKILL MATCH
+// CANONICAL SKILL ALIASES
 // ==============================
-const containsSkill = (
+const skillAliases = {
+  java: ["java"],
+
+  javascript: [
+    "javascript",
+    "java script",
+  ],
+
+  python: ["python"],
+
+  sql: ["sql"],
+
+  c: ["c"],
+
+  "c++": ["c++"],
+
+  html: [
+    "html",
+    "html5",
+  ],
+
+  css: [
+    "css",
+    "css3",
+  ],
+
+  react: [
+    "react",
+    "react.js",
+    "reactjs",
+  ],
+
+  "node.js": [
+    "node.js",
+    "nodejs",
+    "node js",
+  ],
+
+  "express.js": [
+    "express.js",
+    "expressjs",
+    "express js",
+  ],
+
+  mongodb: [
+    "mongodb",
+    "mongo db",
+  ],
+
+  mysql: [
+    "mysql",
+    "my sql",
+  ],
+
+  "spring boot": [
+    "spring boot",
+    "springboot",
+  ],
+
+  spring: ["spring"],
+
+  oop: [
+    "oop",
+    "oops",
+    "object oriented programming",
+    "object-oriented programming",
+  ],
+
+  dbms: ["dbms"],
+
+  "data structures": [
+    "data structures",
+    "data structure",
+    "dsa",
+  ],
+
+  "rest api": [
+    "rest api",
+    "rest apis",
+    "restful api",
+    "restful apis",
+    "restful services",
+    "rest services",
+  ],
+
+  git: ["git"],
+
+  github: ["github"],
+
+  aws: [
+    "aws",
+    "amazon web services",
+  ],
+
+  jwt: [
+    "jwt",
+    "jwt authentication",
+    "json web token",
+    "json web tokens",
+  ],
+
+  "problem solving": [
+    "problem solving",
+    "problem-solving",
+  ],
+};
+
+// ==============================
+// EXACT PHRASE MATCH
+// ==============================
+const containsPhrase = (
   text,
-  skill
+  phrase
 ) => {
   const normalizedText =
     normalizeText(text);
 
-  const normalizedSkill =
-    normalizeText(skill);
+  const normalizedPhrase =
+    normalizeText(phrase);
 
-  if (!normalizedText || !normalizedSkill) {
+  if (
+    !normalizedText ||
+    !normalizedPhrase
+  ) {
     return false;
   }
 
-  // ==============================
-  // MULTI-WORD / SPECIAL SKILLS
-  // ==============================
-  const escapedSkill =
+  const escaped =
     escapeRegExp(
-      normalizedSkill
+      normalizedPhrase
     ).replace(
       /\s+/g,
       "\\s+"
@@ -64,7 +181,7 @@ const containsSkill = (
 
   const pattern =
     new RegExp(
-      `(^|[^a-z0-9])${escapedSkill}([^a-z0-9]|$)`,
+      `(^|[^a-z0-9])${escaped}(?=$|[^a-z0-9])`,
       "i"
     );
 
@@ -74,104 +191,48 @@ const containsSkill = (
 };
 
 // ==============================
-// SKILL DICTIONARY
+// CANONICAL SKILL MATCH
 // ==============================
-const skillDictionary = [
-  "java",
-  "javascript",
-  "python",
-  "sql",
-  "c",
-  "c++",
-
-  "html",
-  "html5",
-  "css",
-  "css3",
-
-  "react",
-  "react.js",
-
-  "node.js",
-  "express.js",
-
-  "mongodb",
-  "mysql",
-
-  "spring boot",
-  "spring",
-
-  "oop",
-  "dbms",
-
-  "data structures",
-  "dsa",
-
-  "rest api",
-  "rest apis",
-
-  "git",
-  "github",
-
-  "aws",
-
-  "jwt",
-  "jwt authentication",
-
-  "problem solving",
-];
-
-// ==============================
-// REMOVE CHILD SKILLS
-// ==============================
-const removeOverlappingSkills = (
-  skills
+const containsSkill = (
+  text,
+  canonicalSkill
 ) => {
-  const normalized =
-    uniqueStrings(skills);
+  const aliases =
+    skillAliases[
+      canonicalSkill
+    ] || [
+      canonicalSkill,
+    ];
 
-  return normalized.filter(
-    (skill) => {
-      return !normalized.some(
-        (otherSkill) => {
-          if (
-            otherSkill === skill
-          ) {
-            return false;
-          }
-
-          return (
-            otherSkill.length >
-              skill.length &&
-            normalizeText(
-              otherSkill
-            ).includes(
-              normalizeText(skill)
-            )
-          );
-        }
-      );
-    }
+  return aliases.some(
+    (alias) =>
+      containsPhrase(
+        text,
+        alias
+      )
   );
 };
 
 // ==============================
-// EXTRACT RESUME SKILLS
+// SKILL DICTIONARY
+// ==============================
+const skillDictionary =
+  Object.keys(
+    skillAliases
+  );
+
+// ==============================
+// EXTRACT SKILLS
 // ==============================
 const extractSkills = (
-  resumeText
+  text
 ) => {
-  const foundSkills =
-    skillDictionary.filter(
-      (skill) =>
-        containsSkill(
-          resumeText,
-          skill
-        )
-    );
-
-  return removeOverlappingSkills(
-    foundSkills
+  return skillDictionary.filter(
+    (skill) =>
+      containsSkill(
+        text,
+        skill
+      )
   );
 };
 
@@ -181,18 +242,26 @@ const extractSkills = (
 const extractJobKeywords = (
   jobDescription
 ) => {
-  const foundKeywords =
-    skillDictionary.filter(
-      (skill) =>
-        containsSkill(
-          jobDescription,
-          skill
-        )
+  let keywords =
+    extractSkills(
+      jobDescription
     );
 
-  return removeOverlappingSkills(
-    foundKeywords
-  );
+  // If a more specific technology is detected,
+  // do not count its parent term separately.
+  if (
+    keywords.includes(
+      "spring boot"
+    )
+  ) {
+    keywords =
+      keywords.filter(
+        (skill) =>
+          skill !== "spring"
+      );
+  }
+
+  return keywords;
 };
 
 // ==============================
@@ -201,60 +270,134 @@ const extractJobKeywords = (
 const detectSections = (
   resumeText
 ) => {
-  const normalizedResume =
-    normalizeText(resumeText);
+  const text =
+    String(resumeText || "");
+
+  const normalized =
+    normalizeText(text);
+
+  const compactPhoneText =
+    text.replace(
+      /[\s\-()]/g,
+      ""
+    );
 
   return {
+    summary:
+      /\b(summary|professional summary|profile summary|career objective|objective|about me)\b/i.test(
+        normalized
+      ),
+
     education:
-      /\beducation\b/i.test(
-        normalizedResume
+      /\b(education|academic details|academic background|academics)\b/i.test(
+        normalized
       ),
 
     skills:
-      /\bskills?\b/i.test(
-        normalizedResume
+      /\b(technical skills|key skills|skills|technologies)\b/i.test(
+        normalized
       ),
 
     projects:
-      /\bprojects?\b/i.test(
-        normalizedResume
+      /\b(project|projects|academic projects|personal projects)\b/i.test(
+        normalized
+      ),
+
+    internships:
+      /\b(internship|internships|internship experience)\b/i.test(
+        normalized
       ),
 
     experience:
-      /\bexperience\b/i.test(
-        normalizedResume
+      /\b(work experience|professional experience|experience|employment history)\b/i.test(
+        normalized
       ),
 
     certifications:
-      /\bcertifications?\b/i.test(
-        normalizedResume
+      /\b(certification|certifications|courses)\b/i.test(
+        normalized
       ),
 
     achievements:
-      /\bachievements?\b/i.test(
-        normalizedResume
+      /\b(achievement|achievements|awards|accomplishments)\b/i.test(
+        normalized
+      ),
+
+    languages:
+      /\b(languages known|languages)\b/i.test(
+        normalized
+      ),
+
+    interests:
+      /\b(interests|hobbies|activities)\b/i.test(
+        normalized
       ),
 
     contact:
-      /[\w.-]+@[\w.-]+\.\w+/i.test(
-        resumeText
-      ) ||
-      /\b\d{10}\b/.test(
-        String(
-          resumeText || ""
-        ).replace(/\s+/g, "")
+      /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(
+        text
+      ) &&
+      /(?:\+91)?[6-9]\d{9}/.test(
+        compactPhoneText
       ),
 
     linkedin:
-      /linkedin/i.test(
-        resumeText
+      /linkedin\.com/i.test(
+        text
       ),
 
     github:
-      /github/i.test(
-        resumeText
+      /github\.com/i.test(
+        text
       ),
   };
+};
+
+// ==============================
+// COMPLETENESS SCORE
+// FRESHER-AWARE
+// ==============================
+const calculateCompleteness = (
+  sections
+) => {
+  /*
+    Core fresher resume structure.
+
+    Experience/internship is useful,
+    but a fresher should not be
+    penalized heavily for not having
+    professional experience.
+
+    Total = 100
+  */
+
+  const weights = {
+    contact: 20,
+    education: 15,
+    skills: 20,
+    projects: 20,
+    summary: 10,
+    linkedin: 5,
+    github: 5,
+    certifications: 5,
+  };
+
+  let score = 0;
+
+  Object.entries(
+    weights
+  ).forEach(
+    ([section, weight]) => {
+      if (sections[section]) {
+        score += weight;
+      }
+    }
+  );
+
+  return Math.min(
+    100,
+    Math.round(score)
+  );
 };
 
 // ==============================
@@ -301,77 +444,65 @@ const analyzeResume = ({
   const keywordScore =
     jobKeywords.length > 0
       ? Math.round(
-          (matchedKeywords.length /
-            jobKeywords.length) *
-            100
+          (
+            matchedKeywords.length /
+            jobKeywords.length
+          ) * 100
         )
       : 0;
 
   // ==============================
-  // SKILL MATCH
+  // SKILL MATCH SCORE
   // ==============================
   const matchedSkills =
-    matchedKeywords;
+    [...matchedKeywords];
 
   const missingSkills =
-    missingKeywords;
+    [...missingKeywords];
 
   const skillMatchScore =
     jobKeywords.length > 0
       ? Math.round(
-          (matchedSkills.length /
-            jobKeywords.length) *
-            100
+          (
+            matchedSkills.length /
+            jobKeywords.length
+          ) * 100
         )
       : 0;
 
   // ==============================
-  // COMPLETENESS SCORE
+  // SECTION COMPLETENESS
   // ==============================
   const sections =
     detectSections(
       resumeText
     );
 
-  const importantSections = [
-    sections.education,
-    sections.skills,
-    sections.projects,
-    sections.contact,
-    sections.linkedin,
-    sections.github,
-    sections.certifications,
-  ];
-
-  const completedSections =
-    importantSections.filter(
-      Boolean
-    ).length;
-
   const completenessScore =
-    Math.round(
-      (completedSections /
-        importantSections.length) *
-        100
+    calculateCompleteness(
+      sections
     );
 
   // ==============================
   // FINAL ATS SCORE
   // ==============================
   /*
-    Keyword Score      = 40%
-    Skill Match Score  = 35%
-    Completeness       = 25%
+    Current Placify ATS foundation:
+
+    Keyword alignment = 40%
+    Skill alignment   = 35%
+    Completeness      = 25%
+
+    Later advanced resume review
+    will add separate content,
+    format and quality metrics.
   */
 
   const atsScore =
     Math.round(
-      keywordScore *
-        0.4 +
-        skillMatchScore *
-          0.35 +
-        completenessScore *
-          0.25
+      keywordScore * 0.4 +
+      skillMatchScore * 0.35 +
+      completenessScore * 0.25
     );
 
   // ==============================
@@ -383,7 +514,13 @@ const analyzeResume = ({
     keywordScore >= 80
   ) {
     strengths.push(
-      "Strong job keyword match"
+      "Strong target-job keyword alignment"
+    );
+  } else if (
+    keywordScore >= 60
+  ) {
+    strengths.push(
+      "Moderate target-job keyword alignment"
     );
   }
 
@@ -391,15 +528,45 @@ const analyzeResume = ({
     skillMatchScore >= 80
   ) {
     strengths.push(
-      "Strong skill match"
+      "Strong target-job skill alignment"
+    );
+  } else if (
+    skillMatchScore >= 60
+  ) {
+    strengths.push(
+      "Moderate target-job skill alignment"
     );
   }
 
   if (
-    completenessScore >= 80
+    completenessScore >= 85
   ) {
     strengths.push(
-      "Resume has strong section completeness"
+      "Strong core resume section completeness"
+    );
+  }
+
+  if (
+    sections.projects
+  ) {
+    strengths.push(
+      "Projects section is present"
+    );
+  }
+
+  if (
+    sections.github
+  ) {
+    strengths.push(
+      "GitHub profile is included"
+    );
+  }
+
+  if (
+    sections.linkedin
+  ) {
+    strengths.push(
+      "LinkedIn profile is included"
     );
   }
 
@@ -409,26 +576,42 @@ const analyzeResume = ({
   const weaknesses = [];
 
   if (
-    keywordScore < 60
+    jobKeywords.length === 0
   ) {
     weaknesses.push(
-      "Low job keyword match"
+      "No recognized technical job keywords were found in the supplied job description"
     );
-  }
+  } else {
+    if (
+      keywordScore < 60
+    ) {
+      weaknesses.push(
+        "Low target-job keyword alignment"
+      );
+    }
 
-  if (
-    skillMatchScore < 60
-  ) {
-    weaknesses.push(
-      "Missing important job skills"
-    );
+    if (
+      skillMatchScore < 60
+    ) {
+      weaknesses.push(
+        "Several target-job skills are not evidenced in the resume"
+      );
+    }
   }
 
   if (
     completenessScore < 80
   ) {
     weaknesses.push(
-      "Resume sections are incomplete"
+      "Some recommended core resume sections are missing"
+    );
+  }
+
+  if (
+    !sections.summary
+  ) {
+    weaknesses.push(
+      "Professional summary or career objective is missing"
     );
   }
 
@@ -438,10 +621,16 @@ const analyzeResume = ({
   const suggestions = [];
 
   if (
+    jobKeywords.length === 0
+  ) {
+    suggestions.push(
+      "Provide a more detailed job description to calculate meaningful keyword and skill alignment"
+    );
+  } else if (
     keywordScore < 80
   ) {
     suggestions.push(
-      "Improve the alignment between your resume and the target job description"
+      "Improve alignment with the target role using relevant keywords that truthfully reflect your skills and experience"
     );
   }
 
@@ -449,9 +638,17 @@ const analyzeResume = ({
     missingSkills.length > 0
   ) {
     suggestions.push(
-      `Consider adding relevant missing skills only if you genuinely have them: ${missingSkills.join(
+      `Consider developing or adding these target-role skills only when you genuinely have them: ${missingSkills.join(
         ", "
       )}`
+    );
+  }
+
+  if (
+    !sections.contact
+  ) {
+    suggestions.push(
+      "Add both a professional email address and phone number"
     );
   }
 
@@ -467,7 +664,7 @@ const analyzeResume = ({
     !sections.skills
   ) {
     suggestions.push(
-      "Add a Skills section"
+      "Add a clearly labeled Skills section"
     );
   }
 
@@ -475,15 +672,15 @@ const analyzeResume = ({
     !sections.projects
   ) {
     suggestions.push(
-      "Add a Projects section"
+      "Add relevant academic or personal projects"
     );
   }
 
   if (
-    !sections.contact
+    !sections.summary
   ) {
     suggestions.push(
-      "Add contact information"
+      "Consider adding a concise professional summary or career objective tailored to the target role"
     );
   }
 
@@ -491,7 +688,7 @@ const analyzeResume = ({
     !sections.linkedin
   ) {
     suggestions.push(
-      "Add your LinkedIn profile"
+      "Add your LinkedIn profile if available"
     );
   }
 
@@ -499,7 +696,7 @@ const analyzeResume = ({
     !sections.github
   ) {
     suggestions.push(
-      "Add your GitHub profile"
+      "Add your GitHub profile for technical roles if available"
     );
   }
 
@@ -508,6 +705,15 @@ const analyzeResume = ({
   ) {
     suggestions.push(
       "Add relevant certifications if available"
+    );
+  }
+
+  if (
+    !sections.internships &&
+    !sections.experience
+  ) {
+    suggestions.push(
+      "As a fresher, professional experience is not mandatory; add internships, practical training, freelance work, or other relevant experience only if you have it"
     );
   }
 
@@ -520,15 +726,30 @@ const analyzeResume = ({
 
     completenessScore,
 
-    extractedSkills,
+    extractedSkills:
+      uniqueStrings(
+        extractedSkills
+      ),
 
-    matchedKeywords,
+    matchedKeywords:
+      uniqueStrings(
+        matchedKeywords
+      ),
 
-    missingKeywords,
+    missingKeywords:
+      uniqueStrings(
+        missingKeywords
+      ),
 
-    matchedSkills,
+    matchedSkills:
+      uniqueStrings(
+        matchedSkills
+      ),
 
-    missingSkills,
+    missingSkills:
+      uniqueStrings(
+        missingSkills
+      ),
 
     strengths:
       uniqueStrings(

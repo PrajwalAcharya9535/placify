@@ -1,4 +1,5 @@
 const express = require("express");
+const path = require("path");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const http = require("http");
@@ -48,12 +49,49 @@ io.use(socketAuthMiddleware);
 app.use(
   cors({
     origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
 
 app.use(express.json());
+
+// ==============================
+// GENERATED RESUME FILES
+// ==============================
+//
+// Only generated improved resumes are
+// publicly served for frontend preview.
+//
+// Original uploaded student resumes remain
+// private and are NOT exposed through
+// /uploads/resumes.
+//
+// Generated resumes can be accessed through:
+//
+// http://localhost:5000/uploads/generated-resumes/file.pdf
+// ==============================
+
+app.use(
+  "/uploads/generated-resumes",
+  express.static(
+    path.join(
+      __dirname,
+      "uploads",
+      "generated-resumes"
+    )
+  )
+);
 
 // ==============================
 // ROUTES

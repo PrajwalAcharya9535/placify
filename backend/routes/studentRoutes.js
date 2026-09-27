@@ -146,6 +146,7 @@ const {
 const {
   saveResumeDetails,
   analyzeStudentResume,
+  reviewStudentResume,
   getResume,
   deleteResume,
 } = require("../controllers/student/resumeController");
@@ -289,6 +290,22 @@ const {
 } = require("../controllers/student/calendarController");
 
 
+const {
+  saveResumeImprovements,
+} = require("../controllers/student/resumeImprovementController");
+
+
+const {
+  generateImprovedResumePreview,
+  generateImprovedResumePdf,
+} = require("../controllers/student/improvedResumeController");
+
+
+const {
+  downloadImprovedResume,
+} = require("../controllers/student/resumeDownloadController");
+
+
 // ==============================
 // MIDDLEWARE
 // ==============================
@@ -306,6 +323,7 @@ const interviewAudioUpload = require(
 const gdAudioUpload = require(
   "../middleware/gdAudioUploadMiddleware"
 );
+
 
 const router = express.Router();
 
@@ -715,6 +733,62 @@ router.post(
   authorizeRoles("student"),
   analyzeStudentResume
 );
+
+
+// ==============================
+// ADVANCED RESUME REVIEW
+// ==============================
+router.post(
+  "/resume/review",
+  protect,
+  authorizeRoles("student"),
+  reviewStudentResume
+);
+
+
+// ==============================
+// SAVE RESUME IMPROVEMENTS
+// ==============================
+router.post(
+  "/resume/improvements",
+  protect,
+  authorizeRoles("student"),
+  saveResumeImprovements
+);
+
+
+// ==============================
+// IMPROVED RESUME PREVIEW
+// ==============================
+router.post(
+  "/resume/improved/preview",
+  protect,
+  authorizeRoles("student"),
+  generateImprovedResumePreview
+);
+
+
+// ==============================
+// GENERATE IMPROVED RESUME PDF
+// ==============================
+router.post(
+  "/resume/improved/generate",
+  protect,
+  authorizeRoles("student"),
+  generateImprovedResumePdf
+);
+
+
+// ==============================
+// DOWNLOAD IMPROVED RESUME
+// ==============================
+router.get(
+  "/resume/improved/download",
+  protect,
+  authorizeRoles("student"),
+  downloadImprovedResume
+);
+
 
 router.get(
   "/resume",

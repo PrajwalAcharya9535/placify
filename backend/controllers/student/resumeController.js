@@ -8,13 +8,148 @@ const {
 } = require("../../services/resumeTextExtractionService");
 
 const {
+  extractStructuredResume,
+} = require("../../services/resumeStructuredExtractionService");
+
+const {
   analyzeResume,
 } = require("../../services/atsAnalysisService");
+
+const {
+  reviewResume,
+} = require("../../services/resumeAdvancedReviewService");
+
+// ==============================
+// NORMALIZE SKILL FOR COMPARISON
+// ==============================
+const normalizeSkill = (skill) => {
+  return String(skill || "")
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, " ");
+};
+
+// ==============================
+// SKILL ALIAS GROUPS
+// Used only while merging ATS skills
+// with richer structured skills.
+// ==============================
+const SKILL_ALIAS_GROUPS = [
+  ["html", "html5"],
+  ["css", "css3"],
+  ["react", "react.js", "reactjs"],
+  ["node.js", "nodejs", "node js"],
+  ["express.js", "expressjs", "express js"],
+  [
+    "rest api",
+    "rest apis",
+    "restful api",
+    "restful apis",
+  ],
+  ["jwt", "jwt authentication"],
+  [
+    "data structures",
+    "data structure",
+    "dsa",
+  ],
+  ["mern", "mern stack"],
+];
+
+// ==============================
+// CHECK IF TWO SKILLS ARE ALIASES
+// ==============================
+const areSkillAliases = (
+  firstSkill,
+  secondSkill
+) => {
+  const first =
+    normalizeSkill(firstSkill);
+
+  const second =
+    normalizeSkill(secondSkill);
+
+  if (!first || !second) {
+    return false;
+  }
+
+  if (first === second) {
+    return true;
+  }
+
+  return SKILL_ALIAS_GROUPS.some(
+    (group) =>
+      group.includes(first) &&
+      group.includes(second)
+  );
+};
+
+// ==============================
+// MERGE STRUCTURED + ATS SKILLS
+// ==============================
+const mergeResumeSkills = (
+  structuredSkills = [],
+  atsSkills = []
+) => {
+  const merged = [];
+
+  structuredSkills.forEach(
+    (skill) => {
+      const value =
+        String(skill || "").trim();
+
+      if (!value) {
+        return;
+      }
+
+      const alreadyExists =
+        merged.some(
+          (existingSkill) =>
+            areSkillAliases(
+              existingSkill,
+              value
+            )
+        );
+
+      if (!alreadyExists) {
+        merged.push(value);
+      }
+    }
+  );
+
+  atsSkills.forEach(
+    (skill) => {
+      const value =
+        String(skill || "").trim();
+
+      if (!value) {
+        return;
+      }
+
+      const alreadyExists =
+        merged.some(
+          (existingSkill) =>
+            areSkillAliases(
+              existingSkill,
+              value
+            )
+        );
+
+      if (!alreadyExists) {
+        merged.push(value);
+      }
+    }
+  );
+
+  return merged;
+};
 
 // ==============================
 // CREATE / UPDATE RESUME
 // ==============================
-const saveResumeDetails = async (req, res) => {
+const saveResumeDetails = async (
+  req,
+  res
+) => {
   try {
     const userId = req.user.id;
 
@@ -57,6 +192,26 @@ const saveResumeDetails = async (req, res) => {
         req.file.mimetype;
 
       // ==============================
+      // RESET EXTRACTION STATUS
+      // ==============================
+      updateData.extractionStatus =
+        "Not Extracted";
+
+      updateData.extractedAt =
+        null;
+
+      // ==============================
+      // RESET ADVANCED REVIEW
+      // ==============================
+      updateData.advancedReview = {
+        reviewStatus:
+          "Not Reviewed",
+
+        reviewedAt:
+          null,
+      };
+
+      // ==============================
       // EXTRACT PDF TEXT
       // ==============================
       const extractionResult =
@@ -76,6 +231,81 @@ const saveResumeDetails = async (req, res) => {
 
       updateData.extractedText =
         extractionResult.text;
+
+      updateData.pageCount =
+        extractionResult.pages || 0;
+
+      // ==============================
+      // STRUCTURED EXTRACTION
+      // ==============================
+      const structuredResult =
+        extractStructuredResume({
+          resumeText:
+            extractionResult.text,
+
+          pageCount:
+            extractionResult.pages ||
+            0,
+        });
+
+      if (!structuredResult.success) {
+        updateData.extractionStatus =
+          "Failed";
+
+        updateData.extractedAt =
+          null;
+      } else {
+        const structured =
+          structuredResult.data;
+
+        updateData.contact =
+          structured.contact;
+
+        updateData.summary =
+          structured.summary;
+
+        updateData.extractedSkills =
+          structured.skills;
+
+        updateData.education =
+          structured.education;
+
+        updateData.projects =
+          structured.projects;
+
+        updateData.internships =
+          structured.internships;
+
+        updateData.experience =
+          structured.experience;
+
+        updateData.certifications =
+          structured.certifications;
+
+        updateData.achievements =
+          structured.achievements;
+
+        updateData.languages =
+          structured.languages;
+
+        updateData.interests =
+          structured.interests;
+
+        updateData.sectionPresence =
+          structured.sectionPresence;
+
+        updateData.detectedSections =
+          structured.detectedSections;
+
+        updateData.extractedLineCount =
+          structured.lineCount;
+
+        updateData.extractionStatus =
+          "Extracted";
+
+        updateData.extractedAt =
+          new Date();
+      }
     }
 
     const resume =
@@ -94,7 +324,7 @@ const saveResumeDetails = async (req, res) => {
     res.status(200).json({
       message:
         req.file
-          ? "Resume uploaded and text extracted successfully"
+          ? "Resume uploaded and structured information extracted successfully"
           : "Resume details saved successfully",
 
       resume,
@@ -179,8 +409,14 @@ const analyzeStudentResume = async (
     resume.completenessScore =
       analysis.completenessScore;
 
+    // ==============================
+    // MERGE SKILLS WITHOUT DUPLICATES
+    // ==============================
     resume.extractedSkills =
-      analysis.extractedSkills;
+      mergeResumeSkills(
+        resume.extractedSkills || [],
+        analysis.extractedSkills || []
+      );
 
     resume.matchedKeywords =
       analysis.matchedKeywords;
@@ -208,6 +444,15 @@ const analyzeStudentResume = async (
 
     resume.analyzedAt =
       new Date();
+
+    // ATS changes affect advanced review.
+    resume.advancedReview = {
+      reviewStatus:
+        "Not Reviewed",
+
+      reviewedAt:
+        null,
+    };
 
     await resume.save();
 
@@ -271,6 +516,105 @@ const analyzeStudentResume = async (
 };
 
 // ==============================
+// ADVANCED RESUME REVIEW
+// ==============================
+const reviewStudentResume = async (
+  req,
+  res
+) => {
+  try {
+    const userId = req.user.id;
+
+    const resume =
+      await Resume.findOne({
+        user: userId,
+      });
+
+    if (!resume) {
+      return res.status(404).json({
+        message:
+          "Resume not found. Upload your resume first.",
+      });
+    }
+
+    if (
+      !resume.extractedText ||
+      !resume.extractedText.trim()
+    ) {
+      return res.status(400).json({
+        message:
+          "Resume text is not available. Upload a readable PDF resume first.",
+      });
+    }
+
+    // ==============================
+    // REQUIRE ATS FIRST
+    // ==============================
+    if (
+      resume.analysisStatus !==
+      "Analyzed"
+    ) {
+      return res.status(400).json({
+        message:
+          "Complete ATS analysis before running the advanced resume review",
+      });
+    }
+
+    // ==============================
+    // RUN ADVANCED REVIEW
+    // ==============================
+    const reviewResult =
+      reviewResume({
+        resume,
+      });
+
+    if (!reviewResult.success) {
+      resume.advancedReview = {
+        reviewStatus:
+          "Failed",
+
+        reviewedAt:
+          null,
+      };
+
+      await resume.save();
+
+      return res.status(400).json({
+        message:
+          "Advanced resume review failed",
+
+        error:
+          reviewResult.errorMessage,
+      });
+    }
+
+    // ==============================
+    // SAVE ADVANCED REVIEW
+    // ==============================
+    resume.advancedReview =
+      reviewResult.data;
+
+    await resume.save();
+
+    res.status(200).json({
+      message:
+        "Advanced resume review completed successfully",
+
+      review:
+        resume.advancedReview,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message:
+        "Failed to review resume",
+
+      error:
+        error.message,
+    });
+  }
+};
+
+// ==============================
 // GET STUDENT RESUME
 // ==============================
 const getResume = async (req, res) => {
@@ -307,7 +651,10 @@ const getResume = async (req, res) => {
 // ==============================
 // DELETE STUDENT RESUME
 // ==============================
-const deleteResume = async (req, res) => {
+const deleteResume = async (
+  req,
+  res
+) => {
   try {
     const resume =
       await Resume.findOne({
@@ -361,6 +708,7 @@ const deleteResume = async (req, res) => {
 module.exports = {
   saveResumeDetails,
   analyzeStudentResume,
+  reviewStudentResume,
   getResume,
   deleteResume,
 };
