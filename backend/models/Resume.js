@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 // ==============================
 // CONTACT INFORMATION SCHEMA
 // ==============================
+
 const contactSchema = new mongoose.Schema(
   {
     name: {
@@ -49,6 +50,7 @@ const contactSchema = new mongoose.Schema(
 // ==============================
 // SECTION PRESENCE SCHEMA
 // ==============================
+
 const sectionPresenceSchema =
   new mongoose.Schema(
     {
@@ -67,12 +69,17 @@ const sectionPresenceSchema =
         default: false,
       },
 
-      projects: {
-        type: Boolean,
-        default: false,
-      },
+     projects: {
+  type: Boolean,
+  default: false,
+},
 
-      internships: {
+projectImpact: {
+  type: Boolean,
+  default: false,
+},
+
+internships: {
         type: Boolean,
         default: false,
       },
@@ -110,6 +117,7 @@ const sectionPresenceSchema =
 // ==============================
 // SECTION REVIEW SCHEMA
 // ==============================
+
 const sectionReviewSchema =
   new mongoose.Schema(
     {
@@ -166,6 +174,7 @@ const sectionReviewSchema =
 // ==============================
 // IMPROVEMENT FIELD SCHEMA
 // ==============================
+
 const improvementFieldSchema =
   new mongoose.Schema(
     {
@@ -194,6 +203,8 @@ const improvementFieldSchema =
           "textarea",
           "list",
           "url",
+          "single-select",
+          "multi-select",
         ],
         default: "text",
       },
@@ -213,11 +224,22 @@ const improvementFieldSchema =
         default: "",
       },
 
+      // Searchable/selectable dataset supplied
+      // to the frontend when appropriate.
+      options: {
+        type: [String],
+        default: [],
+      },
+
       currentValue: {
         type: String,
         default: "",
       },
 
+      // Kept as String so the existing
+      // improvement workflow remains compatible.
+      // Multi-select values can be stored as
+      // comma-separated values.
       studentValue: {
         type: String,
         default: "",
@@ -242,6 +264,7 @@ const improvementFieldSchema =
 // ==============================
 // FORMAT REVIEW SCHEMA
 // ==============================
+
 const formatReviewSchema =
   new mongoose.Schema(
     {
@@ -296,6 +319,7 @@ const formatReviewSchema =
 // ==============================
 // ADVANCED REVIEW SCHEMA
 // ==============================
+
 const advancedReviewSchema =
   new mongoose.Schema(
     {
@@ -358,15 +382,25 @@ const advancedReviewSchema =
         default: () => ({}),
       },
 
-      improvementFields: {
-        type: [improvementFieldSchema],
-        default: [],
-      },
+     improvementFields: {
+  type: [improvementFieldSchema],
+  default: [],
+},
 
-      strengths: {
-        type: [String],
-        default: [],
-      },
+// ==============================
+// POSITIVE RESUME FEEDBACK
+// ==============================
+// Stores positive feedback for information
+// already detected in the student's resume.
+positiveFeedback: {
+  type: [String],
+  default: [],
+},
+
+strengths: {
+  type: [String],
+  default: [],
+},
 
       priorityImprovements: {
         type: [String],
@@ -399,8 +433,89 @@ const advancedReviewSchema =
   );
 
 // ==============================
+// IMPROVED RESUME ATS ANALYSIS
+// ==============================
+
+const improvedResumeAtsSchema =
+  new mongoose.Schema(
+    {
+      atsScore: {
+        type: Number,
+        min: 0,
+        max: 100,
+        default: 0,
+      },
+
+      keywordScore: {
+        type: Number,
+        min: 0,
+        max: 100,
+        default: 0,
+      },
+
+      skillMatchScore: {
+        type: Number,
+        min: 0,
+        max: 100,
+        default: 0,
+      },
+
+      completenessScore: {
+        type: Number,
+        min: 0,
+        max: 100,
+        default: 0,
+      },
+
+      matchedKeywords: {
+        type: [String],
+        default: [],
+      },
+
+      missingKeywords: {
+        type: [String],
+        default: [],
+      },
+
+      matchedSkills: {
+        type: [String],
+        default: [],
+      },
+
+      missingSkills: {
+        type: [String],
+        default: [],
+      },
+
+      strengths: {
+        type: [String],
+        default: [],
+      },
+
+      weaknesses: {
+        type: [String],
+        default: [],
+      },
+
+      suggestions: {
+        type: [String],
+        default: [],
+      },
+
+      analyzedAt: {
+        type: Date,
+        default: null,
+      },
+    },
+    {
+      _id: false,
+    }
+  );
+
+// ==============================
 // IMPROVED RESUME SCHEMA
 // ==============================
+
 const improvedResumeSchema =
   new mongoose.Schema(
     {
@@ -438,6 +553,11 @@ const improvedResumeSchema =
         type: Date,
         default: null,
       },
+
+      atsAnalysis: {
+  type: improvedResumeAtsSchema,
+  default: () => ({}),
+},
     },
     {
       _id: false,
@@ -447,11 +567,13 @@ const improvedResumeSchema =
 // ==============================
 // RESUME SCHEMA
 // ==============================
+
 const resumeSchema = new mongoose.Schema(
   {
     // ==============================
     // STUDENT
     // ==============================
+
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -462,6 +584,7 @@ const resumeSchema = new mongoose.Schema(
     // ==============================
     // RESUME FILE INFORMATION
     // ==============================
+
     fileName: {
       type: String,
       default: "",
@@ -489,6 +612,7 @@ const resumeSchema = new mongoose.Schema(
     // ==============================
     // EXTRACTED RESUME TEXT
     // ==============================
+
     extractedText: {
       type: String,
       default: "",
@@ -497,6 +621,7 @@ const resumeSchema = new mongoose.Schema(
     // ==============================
     // STRUCTURED CONTACT INFORMATION
     // ==============================
+
     contact: {
       type: contactSchema,
       default: () => ({}),
@@ -505,6 +630,7 @@ const resumeSchema = new mongoose.Schema(
     // ==============================
     // SUMMARY / OBJECTIVE
     // ==============================
+
     summary: {
       type: String,
       default: "",
@@ -513,6 +639,7 @@ const resumeSchema = new mongoose.Schema(
     // ==============================
     // EXTRACTED INFORMATION
     // ==============================
+
     extractedSkills: {
       type: [String],
       default: [],
@@ -528,12 +655,18 @@ const resumeSchema = new mongoose.Schema(
       default: [],
     },
 
-    projects: {
-      type: [String],
-      default: [],
-    },
+   projects: {
+  type: [String],
+  default: [],
+},
 
-    certifications: {
+projectImpact: {
+  type: String,
+  default: "",
+  trim: true,
+},
+
+certifications: {
       type: [String],
       default: [],
     },
@@ -561,6 +694,7 @@ const resumeSchema = new mongoose.Schema(
     // ==============================
     // SECTION DETECTION
     // ==============================
+
     sectionPresence: {
       type: sectionPresenceSchema,
       default: () => ({}),
@@ -580,6 +714,7 @@ const resumeSchema = new mongoose.Schema(
     // ==============================
     // ATS ANALYSIS
     // ==============================
+
     atsScore: {
       type: Number,
       min: 0,
@@ -611,6 +746,7 @@ const resumeSchema = new mongoose.Schema(
     // ==============================
     // ATS FEEDBACK
     // ==============================
+
     matchedKeywords: {
       type: [String],
       default: [],
@@ -649,14 +785,30 @@ const resumeSchema = new mongoose.Schema(
     // ==============================
     // ADVANCED RESUME REVIEW
     // ==============================
+
     advancedReview: {
       type: advancedReviewSchema,
       default: () => ({}),
     },
 
+
+    // ==============================
+// ORIGINAL ATS SNAPSHOT
+// ==============================
+//
+// Preserves the ATS result of the uploaded
+// original resume for before/after comparison.
+//
+
+originalAtsAnalysis: {
+  type: improvedResumeAtsSchema,
+  default: () => ({}),
+},
+
     // ==============================
     // IMPROVED / GENERATED RESUME
     // ==============================
+
     improvedResume: {
       type: improvedResumeSchema,
       default: () => ({}),
@@ -665,6 +817,7 @@ const resumeSchema = new mongoose.Schema(
     // ==============================
     // TARGET JOB
     // ==============================
+
     targetRole: {
       type: String,
       default: "",
@@ -685,6 +838,7 @@ const resumeSchema = new mongoose.Schema(
     // ==============================
     // EXTRACTION STATUS
     // ==============================
+
     extractionStatus: {
       type: String,
       enum: [
@@ -703,6 +857,7 @@ const resumeSchema = new mongoose.Schema(
     // ==============================
     // ATS ANALYSIS STATUS
     // ==============================
+
     analysisStatus: {
       type: String,
       enum: [
@@ -726,6 +881,7 @@ const resumeSchema = new mongoose.Schema(
 // ==============================
 // INDEX
 // ==============================
+
 resumeSchema.index({
   user: 1,
   updatedAt: -1,

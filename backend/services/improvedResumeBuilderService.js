@@ -148,16 +148,117 @@ const buildLanguages = (resume) => {
 // ==========================================
 // BUILD PROJECTS
 // ==========================================
+// ==========================================
+// BUILD PROJECTS
+// ==========================================
 const buildProjects = (resume) => {
-  const projects = cleanArray(
-    resume?.projects || []
+  console.log(
+    "\n===== RESUME BUILDER PROJECT DEBUG ====="
   );
-
-  const projectImpact =
+  console.log(
+    "resume.projects:",
+    resume?.projects
+  );
+  console.log(
+    "resume.projectImpact:",
+    resume?.projectImpact
+  );
+  console.log(
+    "improvement projectImpact:",
     getImprovementValue(
       resume,
       "projectImpact"
+    )
+  );
+  console.log(
+    "========================================\n"
+  );
+
+  let projects = cleanArray(
+    resume?.projects || []
+  );
+
+  let projectImpact =
+    cleanText(
+      resume?.projectImpact ||
+        getImprovementValue(
+          resume,
+          "projectImpact"
+        )
     );
+
+  // ========================================
+  // PROJECT IMPACT CONTINUATION FIX
+  // ========================================
+  //
+  // Some extracted resumes may split a
+  // Project Impact sentence across lines.
+  //
+  // Example:
+  //
+  // projectImpact:
+  // "... enabling users to"
+  //
+  // final project item:
+  // "manage placement and bookstore-related
+  // data efficiently."
+  //
+  // Only merge when the impact appears
+  // incomplete and the final project item
+  // looks like its continuation.
+  // ========================================
+
+  if (
+    projectImpact &&
+    projects.length
+  ) {
+    const lastProjectItem =
+      cleanText(
+        projects[
+          projects.length - 1
+        ]
+      );
+
+    const impactLooksIncomplete =
+      !/[.!?]$/.test(
+        projectImpact
+      );
+
+    const continuationLooksValid =
+      lastProjectItem &&
+      /^[a-z]/.test(
+        lastProjectItem
+      ) &&
+      /[.!?]$/.test(
+        lastProjectItem
+      );
+
+    if (
+      impactLooksIncomplete &&
+      continuationLooksValid
+    ) {
+      projectImpact =
+        cleanText(
+          `${projectImpact} ${lastProjectItem}`
+        );
+
+      projects =
+        projects.slice(
+          0,
+          -1
+        );
+    }
+  }
+
+  console.log(
+    "FINAL PROJECT ITEMS:",
+    projects
+  );
+
+  console.log(
+    "FINAL PROJECT IMPACT:",
+    projectImpact
+  );
 
   return {
     items: projects,

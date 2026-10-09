@@ -3,6 +3,21 @@ const path = require("path");
 const PDFDocument = require("pdfkit");
 
 // ==========================================
+// MODERN PROFESSIONAL THEME
+// Matches StudentResume.css Modern preview
+// ==========================================
+
+const COLORS = {
+  name: "#163d6b",
+  primary: "#1769d2",
+  body: "#4b5b70",
+  skillText: "#354c69",
+  contact: "#66758a",
+  sectionRule: "#d8e5f5",
+  link: "#1769d2",
+};
+
+// ==========================================
 // BASIC HELPERS
 // ==========================================
 
@@ -37,6 +52,13 @@ const normalizeUrl = (value) => {
   return `https://${url}`;
 };
 
+const resetBodyStyle = (doc) => {
+  doc
+    .fillColor(COLORS.body)
+    .font("Helvetica")
+    .fontSize(9.3);
+};
+
 // ==========================================
 // SECTION HEADING
 // ==========================================
@@ -48,25 +70,37 @@ const addSectionHeading = (doc, title) => {
     return;
   }
 
-  doc.moveDown(0.45);
+  doc.moveDown(0.75);
 
   doc
+    .fillColor(COLORS.primary)
     .font("Helvetica-Bold")
     .fontSize(10.5)
-    .text(value.toUpperCase());
+    .text(value.toUpperCase(), {
+      characterSpacing: 0.8,
+    });
 
-  const lineY = doc.y + 2;
+  const lineY = doc.y + 3;
 
   doc
-    .moveTo(doc.page.margins.left, lineY)
-    .lineTo(
-      doc.page.width - doc.page.margins.right,
+    .save()
+    .strokeColor(COLORS.sectionRule)
+    .lineWidth(0.8)
+    .moveTo(
+      doc.page.margins.left,
       lineY
     )
-    .lineWidth(0.7)
-    .stroke();
+    .lineTo(
+      doc.page.width -
+        doc.page.margins.right,
+      lineY
+    )
+    .stroke()
+    .restore();
 
-  doc.moveDown(0.35);
+  doc.y = lineY + 6;
+
+  resetBodyStyle(doc);
 };
 
 // ==========================================
@@ -85,17 +119,22 @@ const addPlainLine = (
   }
 
   doc
+    .fillColor(
+      options.color || COLORS.body
+    )
     .font(
       options.bold
         ? "Helvetica-Bold"
         : "Helvetica"
     )
-    .fontSize(options.size || 9.2)
+    .fontSize(options.size || 9.3)
     .text(value, {
       paragraphGap:
         options.paragraphGap ?? 2,
-      lineGap: options.lineGap ?? 1,
+      lineGap: options.lineGap ?? 1.5,
     });
+
+  resetBodyStyle(doc);
 };
 
 const addBullet = (doc, text) => {
@@ -106,12 +145,13 @@ const addBullet = (doc, text) => {
   }
 
   doc
+    .fillColor(COLORS.body)
     .font("Helvetica")
-    .fontSize(9.1)
+    .fontSize(9.2)
     .text(`• ${value}`, {
       indent: 8,
       paragraphGap: 2,
-      lineGap: 1,
+      lineGap: 1.5,
     });
 };
 
@@ -124,9 +164,16 @@ const addModernHeader = (
   contact,
   targetRole
 ) => {
-  const name = cleanText(contact?.name);
-  const email = cleanText(contact?.email);
-  const phone = cleanText(contact?.phone);
+  const name =
+    cleanText(contact?.name) || "Resume";
+
+  const email = cleanText(
+    contact?.email
+  );
+
+  const phone = cleanText(
+    contact?.phone
+  );
 
   const linkedin = cleanText(
     contact?.linkedin
@@ -145,9 +192,10 @@ const addModernHeader = (
   // ========================================
 
   doc
+    .fillColor(COLORS.name)
     .font("Helvetica-Bold")
-    .fontSize(20)
-    .text(name || "Resume", {
+    .fontSize(23)
+    .text(name, {
       align: "left",
     });
 
@@ -159,37 +207,17 @@ const addModernHeader = (
 
   if (role) {
     doc
-      .moveDown(0.1)
-      .font("Helvetica")
-      .fontSize(10.5)
+      .moveDown(0.15)
+      .fillColor(COLORS.primary)
+      .font("Helvetica-Bold")
+      .fontSize(11.5)
       .text(role, {
         align: "left",
       });
   }
 
   // ========================================
-  // DIVIDER
-  // ========================================
-
-  const dividerY = doc.y + 5;
-
-  doc
-    .moveTo(
-      doc.page.margins.left,
-      dividerY
-    )
-    .lineTo(
-      doc.page.width -
-        doc.page.margins.right,
-      dividerY
-    )
-    .lineWidth(1.2)
-    .stroke();
-
-  doc.y = dividerY + 7;
-
-  // ========================================
-  // EMAIL + PHONE
+  // CONTACT
   // ========================================
 
   const contactParts = [
@@ -199,15 +227,20 @@ const addModernHeader = (
 
   if (contactParts.length) {
     doc
+      .moveDown(0.4)
+      .fillColor(COLORS.contact)
       .font("Helvetica")
-      .fontSize(9)
+      .fontSize(8.6)
       .text(
-        contactParts.join("  |  ")
+        contactParts.join("   |   "),
+        {
+          lineGap: 1,
+        }
       );
   }
 
   // ========================================
-  // CLICKABLE PROFESSIONAL LINKS
+  // PROFESSIONAL LINKS
   // ========================================
 
   const links = [];
@@ -236,19 +269,20 @@ const addModernHeader = (
   if (links.length) {
     doc.moveDown(0.15);
 
-    doc
-      .font("Helvetica")
-      .fontSize(9);
-
     const startX =
       doc.page.margins.left;
 
     let currentX = startX;
-
     const y = doc.y;
+
+    doc
+      .font("Helvetica")
+      .fontSize(8.6);
 
     links.forEach(
       (item, index) => {
+        doc.fillColor(COLORS.link);
+
         const labelWidth =
           doc.widthOfString(
             item.label
@@ -271,7 +305,11 @@ const addModernHeader = (
           index <
           links.length - 1
         ) {
-          const separator = "  |  ";
+          const separator = "   |   ";
+
+          doc.fillColor(
+            COLORS.contact
+          );
 
           doc.text(
             separator,
@@ -290,13 +328,35 @@ const addModernHeader = (
       }
     );
 
-    // Important:
-    // Restore normal PDF cursor position
-    // after manually positioned links.
-
     doc.x = doc.page.margins.left;
     doc.y = y + 13;
   }
+
+  // ========================================
+  // BLUE MODERN DIVIDER
+  // ========================================
+
+  const dividerY = doc.y + 5;
+
+  doc
+    .save()
+    .strokeColor(COLORS.primary)
+    .lineWidth(2.2)
+    .moveTo(
+      doc.page.margins.left,
+      dividerY
+    )
+    .lineTo(
+      doc.page.width -
+        doc.page.margins.right,
+      dividerY
+    )
+    .stroke()
+    .restore();
+
+  doc.y = dividerY + 6;
+
+  resetBodyStyle(doc);
 };
 
 // ==========================================
@@ -319,11 +379,13 @@ const addSummary = (
   );
 
   doc
+    .fillColor(COLORS.body)
     .font("Helvetica")
     .fontSize(9.3)
     .text(value, {
-      align: "justify",
+      align: "left",
       lineGap: 2,
+      paragraphGap: 1,
     });
 };
 
@@ -353,128 +415,26 @@ const addSkills = (
 
   addSectionHeading(
     doc,
-    "Technical Skills"
+    "Skills"
   );
 
-  const groups = {
-    "Programming Languages": [],
-    "Web & Frameworks": [],
-    Database: [],
-    "Tools & Cloud": [],
-    "Core Concepts": [],
-  };
+  // Match the Modern frontend preview:
+  // clean continuous skills presentation
+  // instead of the Classic grouped layout.
 
-  const programming = [
-    "Java",
-    "JavaScript",
-    "Python",
-    "C",
-    "C++",
-  ];
-
-  const webFrameworks = [
-    "HTML",
-    "HTML5",
-    "CSS",
-    "CSS3",
-    "React",
-    "React.js",
-    "Node.js",
-    "Express.js",
-    "MERN",
-    "REST API",
-    "REST APIs",
-    "JWT",
-    "JWT Authentication",
-  ];
-
-  const databases = [
-    "MongoDB",
-    "MySQL",
-    "SQL",
-  ];
-
-  const toolsCloud = [
-    "Git",
-    "GitHub",
-    "AWS",
-    "Postman",
-  ];
-
-  const concepts = [
-    "Data Structures",
-    "DSA",
-    "OOP",
-    "DBMS",
-    "Problem Solving",
-  ];
-
-  normalizedSkills.forEach(
-    (skill) => {
-      if (
-        programming.includes(skill)
-      ) {
-        groups[
-          "Programming Languages"
-        ].push(skill);
-      } else if (
-        webFrameworks.includes(skill)
-      ) {
-        groups[
-          "Web & Frameworks"
-        ].push(skill);
-      } else if (
-        databases.includes(skill)
-      ) {
-        groups.Database.push(skill);
-      } else if (
-        toolsCloud.includes(skill)
-      ) {
-        groups[
-          "Tools & Cloud"
-        ].push(skill);
-      } else if (
-        concepts.includes(skill)
-      ) {
-        groups[
-          "Core Concepts"
-        ].push(skill);
-      } else {
-        groups[
-          "Core Concepts"
-        ].push(skill);
+  doc
+    .fillColor(COLORS.skillText)
+    .font("Helvetica")
+    .fontSize(9.3)
+    .text(
+      normalizedSkills.join("  ·  "),
+      {
+        lineGap: 2,
+        paragraphGap: 1,
       }
-    }
-  );
+    );
 
-  Object.entries(groups).forEach(
-    ([groupName, groupSkills]) => {
-      if (!groupSkills.length) {
-        return;
-      }
-
-      doc
-        .font("Helvetica-Bold")
-        .fontSize(9.1)
-        .text(
-          `${groupName}: `,
-          {
-            continued: true,
-          }
-        );
-
-      doc
-        .font("Helvetica")
-        .fontSize(9.1)
-        .text(
-          groupSkills.join(", "),
-          {
-            paragraphGap: 1,
-            lineGap: 1,
-          }
-        );
-    }
-  );
+  resetBodyStyle(doc);
 };
 
 // ==========================================
@@ -490,7 +450,15 @@ const addProjects = (
       ? projects.items
       : [];
 
-  if (!items.length) {
+  const projectImpact =
+    cleanText(
+      projects?.studentProvidedImpact
+    );
+
+  if (
+    !items.length &&
+    !projectImpact
+  ) {
     return;
   }
 
@@ -508,50 +476,67 @@ const addProjects = (
         return;
       }
 
-      // First extracted project line
-      // is treated as project title,
-      // matching the tested Classic ATS
-      // data structure.
-
+      // First extracted line is the
+      // first project/title entry.
       if (index === 0) {
         addPlainLine(
           doc,
           value,
           {
             bold: true,
-            size: 9.6,
+            size: 9.5,
+            color:
+              COLORS.skillText,
+            paragraphGap: 3,
           }
         );
 
         return;
       }
 
-      // Technology stack remains
-      // visually distinct.
-
-      if (
-        /^tech\s*\*stack\s*:/i.test(
-          value
-        )
-      ) {
-        addPlainLine(
-          doc,
-          value,
-          {
-            bold: true,
-            size: 9,
-          }
-        );
-
-        return;
-      }
-
-      addBullet(
+      // Keep project content clean and
+      // paragraph-like to match web preview.
+      addPlainLine(
         doc,
-        value
+        value,
+        {
+          size: 9.2,
+          color: COLORS.body,
+          paragraphGap: 2,
+          lineGap: 1.5,
+        }
       );
     }
   );
+
+  // ========================================
+  // STUDENT-PROVIDED PROJECT IMPACT
+  // ========================================
+
+  if (projectImpact) {
+    doc.moveDown(0.15);
+
+    doc
+      .fillColor(COLORS.skillText)
+      .font("Helvetica-Bold")
+      .fontSize(9.2)
+      .text(
+        "Project Impact: ",
+        {
+          continued: true,
+        }
+      );
+
+    doc
+      .fillColor(COLORS.body)
+      .font("Helvetica")
+      .fontSize(9.2)
+      .text(projectImpact, {
+        lineGap: 1.5,
+      });
+  }
+
+  resetBodyStyle(doc);
 };
 
 // ==========================================
@@ -569,31 +554,38 @@ const addEducation = (
     return;
   }
 
+  const values =
+    education
+      .map(cleanText)
+      .filter(Boolean);
+
+  if (!values.length) {
+    return;
+  }
+
   addSectionHeading(
     doc,
     "Education"
   );
 
-  education.forEach(
-    (item, index) => {
-      const value =
-        cleanText(item);
-
-      if (!value) {
-        return;
-      }
+  values.forEach(
+    (value, index) => {
+      const isDegree =
+        index === 0 ||
+        /bachelor|master|bca|bsc|mca|degree|pre-university|puc|sslc/i.test(
+          value
+        );
 
       addPlainLine(
         doc,
         value,
         {
-          bold:
-            index === 0 ||
-            /bachelor|master|bsc|mca|degree/i.test(
-              value
-            ),
-
+          bold: isDegree,
           size: 9.2,
+          paragraphGap:
+            isDegree && index > 0
+              ? 2
+              : 1,
         }
       );
     }
@@ -672,7 +664,10 @@ const addInlineListSection = (
 
   addPlainLine(
     doc,
-    values.join(", ")
+    values.join(", "),
+    {
+      size: 9.2,
+    }
   );
 };
 
@@ -719,15 +714,15 @@ const generateModernProfessionalPdf = ({
             size: "A4",
 
             margins: {
-              top: 30,
-              bottom: 30,
-              left: 42,
-              right: 42,
+              top: 34,
+              bottom: 32,
+              left: 48,
+              right: 48,
             },
 
             info: {
               Title:
-                `${studentName || "Student"} Resume`,
+                `${studentName || "Student"} Modern Professional Resume`,
 
               Author:
                 studentName,
@@ -758,7 +753,7 @@ const generateModernProfessionalPdf = ({
         );
 
         // ==================================
-        // SUMMARY
+        // PROFESSIONAL SUMMARY
         // ==================================
 
         addSummary(
@@ -767,7 +762,7 @@ const generateModernProfessionalPdf = ({
         );
 
         // ==================================
-        // TECHNICAL SKILLS
+        // SKILLS
         // ==================================
 
         addSkills(

@@ -11,6 +11,15 @@ const {
   generateResumePdf,
 } = require("../../services/resumePdfGenerationService");
 
+
+const {
+  buildImprovedResumeText,
+} = require("../../services/improvedResumeTextService");
+
+const {
+  analyzeResume,
+} = require("../../services/atsAnalysisService");
+
 // ==========================================
 // ALLOWED RESUME TEMPLATES
 // ==========================================
@@ -335,7 +344,7 @@ const generateImprovedResumePdf = async (
       Date.now();
 
     const fileName =
-      `${studentName}-${templateSlug}-${timestamp}.pdf`;
+  `${studentName}-placify-improved-${templateSlug}-${timestamp}.pdf`;
 
     generatedFilePath =
       path.join(
@@ -451,6 +460,24 @@ const generateImprovedResumePdf = async (
     const generatedFileUrl =
       `/uploads/generated-resumes/${fileName}`;
 
+      // ======================================
+// ANALYZE IMPROVED RESUME
+// ======================================
+
+const improvedResumeText =
+  buildImprovedResumeText(
+    buildResult.data
+  );
+
+const improvedAnalysis =
+  analyzeResume({
+    resumeText:
+      improvedResumeText,
+
+    jobDescription:
+      resume.jobDescription,
+  });
+
     // ======================================
     // SAVE GENERATION STATUS
     // ======================================
@@ -473,7 +500,100 @@ const generateImprovedResumePdf = async (
     resume.improvedResume.generatedAt =
       new Date();
 
+      resume.improvedResume.atsAnalysis = {
+  atsScore:
+    improvedAnalysis.atsScore,
+
+  keywordScore:
+    improvedAnalysis.keywordScore,
+
+  skillMatchScore:
+    improvedAnalysis.skillMatchScore,
+
+  completenessScore:
+    improvedAnalysis.completenessScore,
+
+  matchedKeywords:
+    improvedAnalysis.matchedKeywords || [],
+
+  missingKeywords:
+    improvedAnalysis.missingKeywords || [],
+
+  matchedSkills:
+    improvedAnalysis.matchedSkills || [],
+
+  missingSkills:
+    improvedAnalysis.missingSkills || [],
+
+  strengths:
+    improvedAnalysis.strengths || [],
+
+  weaknesses:
+    improvedAnalysis.weaknesses || [],
+
+  suggestions:
+    improvedAnalysis.suggestions || [],
+
+  analyzedAt:
+    new Date(),
+};
+
     await resume.save();
+
+    // ======================================
+// ORIGINAL VS IMPROVED ATS COMPARISON
+// ======================================
+
+const originalAnalysis =
+  resume.originalAtsAnalysis || {};
+
+const atsComparison = {
+  original: {
+    atsScore:
+      originalAnalysis.atsScore || 0,
+
+    keywordScore:
+      originalAnalysis.keywordScore || 0,
+
+    skillMatchScore:
+      originalAnalysis.skillMatchScore || 0,
+
+    completenessScore:
+      originalAnalysis.completenessScore || 0,
+  },
+
+  improved: {
+    atsScore:
+      improvedAnalysis.atsScore || 0,
+
+    keywordScore:
+      improvedAnalysis.keywordScore || 0,
+
+    skillMatchScore:
+      improvedAnalysis.skillMatchScore || 0,
+
+    completenessScore:
+      improvedAnalysis.completenessScore || 0,
+  },
+
+  change: {
+    atsScore:
+      (improvedAnalysis.atsScore || 0) -
+      (originalAnalysis.atsScore || 0),
+
+    keywordScore:
+      (improvedAnalysis.keywordScore || 0) -
+      (originalAnalysis.keywordScore || 0),
+
+    skillMatchScore:
+      (improvedAnalysis.skillMatchScore || 0) -
+      (originalAnalysis.skillMatchScore || 0),
+
+    completenessScore:
+      (improvedAnalysis.completenessScore || 0) -
+      (originalAnalysis.completenessScore || 0),
+  },
+};
 
     return res.status(200).json({
       message:
@@ -506,9 +626,15 @@ const generateImprovedResumePdf = async (
         generatedAt:
           resume.improvedResume
             .generatedAt,
-      },
+         },
+
+      improvedAtsAnalysis:
+        resume.improvedResume.atsAnalysis,
+        atsComparison:
+  atsComparison,
     });
-  } catch (error) {
+
+  } catch (error) { 
     // ======================================
     // CLEAN UP PARTIAL FILE ON FAILURE
     // ======================================

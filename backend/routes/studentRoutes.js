@@ -31,6 +31,10 @@ const {
   analyzeSkillGap,
 } = require("../controllers/student/skillGapController");
 
+const {
+  getPersonalizedRoadmap,
+} = require("../controllers/student/roadmapController");
+
 // ==============================
 // LEARNING CONTROLLERS
 // ==============================
@@ -324,6 +328,15 @@ const gdAudioUpload = require(
   "../middleware/gdAudioUploadMiddleware"
 );
 
+const {
+  uploadAIInterviewResume,
+  startAIInterview,
+  submitAIInterviewAnswer,
+  completeAIInterview,
+  getAIInterviewResult,
+  getAIInterviewHistory,
+} = require("../controllers/student/aiInterviewController");
+
 
 const router = express.Router();
 
@@ -433,6 +446,18 @@ router.get(
   protect,
   authorizeRoles("student"),
   analyzeSkillGap
+);
+
+
+// ==============================
+// PERSONALIZED ROADMAP
+// ==============================
+
+router.get(
+  "/roadmap",
+  protect,
+  authorizeRoles("student"),
+  getPersonalizedRoadmap
 );
 
 // ==============================
@@ -734,6 +759,75 @@ router.post(
   analyzeStudentResume
 );
 
+
+// ==============================
+// ADAPTIVE AI INTERVIEW
+// ==============================
+
+router.post(
+  "/ai-interview/resume",
+  protect,
+  authorizeRoles("student"),
+  resumeUpload.single("resume"),
+  uploadAIInterviewResume
+);
+
+
+router.post(
+  "/ai-interview/:sessionId/start",
+  protect,
+  authorizeRoles("student"),
+  startAIInterview
+);  
+
+
+// ==============================
+// ADAPTIVE AI INTERVIEW ANSWER
+// ==============================
+
+router.post(
+  "/ai-interview/:sessionId/answer",
+  protect,
+  authorizeRoles("student"),
+  submitAIInterviewAnswer
+);
+
+
+
+// ==============================
+// COMPLETE ADAPTIVE AI INTERVIEW
+// ==============================
+
+router.post(
+  "/ai-interview/:sessionId/complete",
+  protect,
+  authorizeRoles("student"),
+  completeAIInterview
+);
+
+
+// ==============================
+// GET ADAPTIVE AI INTERVIEW RESULT
+// ==============================
+
+router.get(
+  "/ai-interview/:sessionId/result",
+  protect,
+  authorizeRoles("student"),
+  getAIInterviewResult
+);
+
+
+// ==============================
+// ADAPTIVE AI INTERVIEW HISTORY
+// ==============================
+
+router.get(
+  "/ai-interview/history",
+  protect,
+  authorizeRoles("student"),
+  getAIInterviewHistory
+);
 
 // ==============================
 // ADVANCED RESUME REVIEW

@@ -94,21 +94,43 @@ const SECTION_PATTERNS = {
   ],
 
   skills: [
-    "skills",
-    "technical skills",
-    "key skills",
-    "core skills",
-    "technologies",
-    "technical proficiency",
-  ],
+  "skills",
+  "technical skills",
+  "key skills",
+  "core skills",
+  "technologies",
+  "technical proficiency",
+  "what i know",
+  "skills i know",
+  "technical knowledge",
+  "technical knowledge and skills",
+  "technical expertise",
+  "technical competencies",
+  "tools & technologies",
+  "tools and technologies",
+],
 
   projects: [
-    "projects",
-    "project",
-    "academic projects",
-    "personal projects",
-    "major projects",
-  ],
+  "projects",
+  "project",
+  "academic projects",
+  "personal projects",
+  "major projects",
+  "college work",
+  "college projects",
+  "project work",
+  "academic work",
+  "project experience",
+],
+
+  projectImpact: [
+  "project impact",
+  "project result",
+  "project results",
+  "project outcome",
+  "project outcomes",
+  "project achievements",
+],
 
   internships: [
     "internship",
@@ -145,13 +167,26 @@ const SECTION_PATTERNS = {
     "languages known",
   ],
 
-  interests: [
-    "interest",
-    "interests",
-    "hobbies",
-    "activities",
-    "extracurricular activities",
-  ],
+interests: [
+  "interest",
+  "interests",
+  "hobbies",
+  "activities",
+  "extracurricular activities",
+  "other interests",
+  "personal interests",
+],
+
+other: [
+  "other",
+  "others",
+  "additional information",
+  "additional details",
+  "additional information & activities",
+  "additional information and activities",
+  "miscellaneous",
+],
+
 };
 
 // ==============================
@@ -409,6 +444,27 @@ const detectHeading = (line) => {
   return null;
 };
 
+
+// ==============================
+// EXTRACT INLINE PROJECT IMPACT
+// ==============================
+
+const extractInlineProjectImpact = (line) => {
+  const value = cleanLine(line);
+
+  if (!value) {
+    return "";
+  }
+
+  const match = value.match(
+    /^(?:project\s+impact|project\s+result|project\s+results|project\s+outcome|project\s+outcomes)\s*:\s*(.+)$/i
+  );
+
+  return match?.[1]
+    ? cleanText(match[1])
+    : "";
+};
+
 // ==============================
 // SPLIT RESUME INTO SECTIONS
 // ==============================
@@ -424,7 +480,8 @@ const splitIntoSections = (resumeText) => {
     education: [],
     skills: [],
     projects: [],
-    internships: [],
+projectImpact: [],
+internships: [],
     experience: [],
     certifications: [],
     achievements: [],
@@ -436,25 +493,38 @@ const splitIntoSections = (resumeText) => {
 
   let currentSection = "header";
 
-  lines.forEach((line) => {
-    const heading =
-      detectHeading(line);
+lines.forEach((line) => {
+  const inlineProjectImpact =
+    extractInlineProjectImpact(line);
 
-    if (heading) {
-      currentSection =
-        heading.section;
+ if (inlineProjectImpact) {
+  sections.projectImpact.push(
+    inlineProjectImpact
+  );
 
-      return;
-    }
+  currentSection = "projectImpact";
 
-    if (!sections[currentSection]) {
-      currentSection = "other";
-    }
+  return;
+}
 
-    sections[currentSection].push(
-      line
-    );
-  });
+  const heading =
+    detectHeading(line);
+
+  if (heading) {
+    currentSection =
+      heading.section;
+
+    return;
+  }
+
+  if (!sections[currentSection]) {
+    currentSection = "other";
+  }
+
+  sections[currentSection].push(
+    line
+  );
+});
 
   return {
     lines,
@@ -760,6 +830,64 @@ const splitCombinedCertificationAchievements =
     };
   };
 
+
+// ==============================
+// CLASSIFY OTHER SECTION ITEMS
+// ==============================
+
+const classifyOtherSectionItems = (lines = []) => {
+  const result = {
+    certifications: [],
+    achievements: [],
+    interests: [],
+    unclassified: [],
+  };
+
+  lines.forEach((line) => {
+    const value = cleanLine(line);
+
+    if (!value || isPdfArtifact(value)) {
+      return;
+    }
+
+    if (
+      /\b(course|courses|certification|certified|certificate|training|workshop)\b/i.test(
+        value
+      )
+    ) {
+      result.certifications.push(value);
+      return;
+    }
+
+    if (
+      /\b(participated|winner|won|award|achievement|prize|ranked|finalist|competition|contest|hackathon|coding event)\b/i.test(
+        value
+      )
+    ) {
+      result.achievements.push(value);
+      return;
+    }
+
+    if (
+      /\b(hobby|hobbies|interest|interests|cricket|music|sports|reading|travel|photography)\b/i.test(
+        value
+      )
+    ) {
+      result.interests.push(value);
+      return;
+    }
+
+    result.unclassified.push(value);
+  });
+
+  return {
+    certifications: uniqueStrings(result.certifications),
+    achievements: uniqueStrings(result.achievements),
+    interests: uniqueStrings(result.interests),
+    unclassified: uniqueStrings(result.unclassified),
+  };
+};
+
 // ==============================
 // SECTION PRESENCE
 // ==============================
@@ -780,6 +908,9 @@ const buildSectionPresence = ({
 
     projects:
       sections.projects.length > 0,
+
+      projectImpact:
+  sections.projectImpact.length > 0,
 
     internships:
       sections.internships.length > 0,
@@ -820,13 +951,17 @@ const extractStructuredResume = ({
     };
   }
 
-  try {
-    const {
-      lines,
-      sections,
-    } = splitIntoSections(
-      resumeText
-    );
+ try {
+  console.log("\n===== STRUCTURED EXTRACTION INPUT =====");
+  console.log(resumeText);
+  console.log("=======================================\n");
+
+  const {
+    lines,
+    sections,
+  } = splitIntoSections(
+    resumeText
+  );
 
     const email =
       extractEmail(
@@ -882,17 +1017,32 @@ const extractStructuredResume = ({
         sections.certificationsAchievements
       );
 
-    const certifications =
-      uniqueStrings([
-        ...normalCertifications,
-        ...combined.certifications,
-      ]);
+      const classifiedOther =
+  classifyOtherSectionItems(
+    sections.other
+  );
 
-    const achievements =
-      uniqueStrings([
-        ...normalAchievements,
-        ...combined.achievements,
-      ]);
+  const certifications =
+  uniqueStrings([
+    ...normalCertifications,
+    ...combined.certifications,
+    ...classifiedOther.certifications,
+  ]);
+
+const achievements =
+  uniqueStrings([
+    ...normalAchievements,
+    ...combined.achievements,
+    ...classifiedOther.achievements,
+  ]);
+
+const interests =
+  uniqueStrings([
+    ...extractSectionItems(
+      sections.interests
+    ),
+    ...classifiedOther.interests,
+  ]);
 
     const sectionPresence =
       buildSectionPresence({
@@ -947,6 +1097,11 @@ const extractStructuredResume = ({
             sections.projects
           ),
 
+          projectImpact:
+  sections.projectImpact.join(
+    " "
+  ),
+
         internships:
           extractSectionItems(
             sections.internships
@@ -966,10 +1121,7 @@ const extractStructuredResume = ({
             sections.languages
           ),
 
-        interests:
-          extractSectionItems(
-            sections.interests
-          ),
+      interests,
 
         sectionPresence,
 

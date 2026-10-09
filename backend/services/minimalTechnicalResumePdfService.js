@@ -3,6 +3,25 @@ const path = require("path");
 const PDFDocument = require("pdfkit");
 
 // ==========================================
+// MINIMAL TECHNICAL THEME
+// Matches StudentResume.css technical preview
+// ==========================================
+
+const COLORS = {
+  name: "#172033",
+  role: "#52657a",
+  contact: "#596779",
+  heading: "#1f344d",
+  strongHeading: "#102f50",
+  body: "#3f4c5c",
+  skillLabel: "#263b53",
+  divider: "#263445",
+  sectionRule: "#9ca9b8",
+  strongRule: "#314e6d",
+  link: "#314e6d",
+};
+
+// ==========================================
 // BASIC HELPERS
 // ==========================================
 
@@ -37,13 +56,21 @@ const normalizeUrl = (value) => {
   return `https://${url}`;
 };
 
+const resetBodyStyle = (doc) => {
+  doc
+    .fillColor(COLORS.body)
+    .font("Courier")
+    .fontSize(8.6);
+};
+
 // ==========================================
 // SECTION HEADING
 // ==========================================
 
 const addSectionHeading = (
   doc,
-  title
+  title,
+  options = {}
 ) => {
   const value = cleanText(title);
 
@@ -51,16 +78,39 @@ const addSectionHeading = (
     return;
   }
 
-  doc.moveDown(0.35);
+  const strong =
+    options.strong === true;
+
+  doc.moveDown(
+    strong ? 0.4 : 0.32
+  );
 
   doc
-    .font("Helvetica-Bold")
-    .fontSize(10)
-    .text(value.toUpperCase());
+    .fillColor(
+      strong
+        ? COLORS.strongHeading
+        : COLORS.heading
+    )
+    .font("Courier-Bold")
+    .fontSize(
+      strong ? 9.4 : 9.1
+    )
+    .text(value.toUpperCase(), {
+      characterSpacing: 0.45,
+    });
 
-  const lineY = doc.y + 1.5;
+  const lineY = doc.y + 2;
 
   doc
+    .save()
+    .strokeColor(
+      strong
+        ? COLORS.strongRule
+        : COLORS.sectionRule
+    )
+    .lineWidth(
+      strong ? 1.35 : 0.65
+    )
     .moveTo(
       doc.page.margins.left,
       lineY
@@ -70,10 +120,12 @@ const addSectionHeading = (
         doc.page.margins.right,
       lineY
     )
-    .lineWidth(0.45)
-    .stroke();
+    .stroke()
+    .restore();
 
-  doc.moveDown(0.3);
+  doc.y = lineY + 5;
+
+  resetBodyStyle(doc);
 };
 
 // ==========================================
@@ -92,21 +144,27 @@ const addPlainLine = (
   }
 
   doc
+    .fillColor(
+      options.color ||
+        COLORS.body
+    )
     .font(
       options.bold
-        ? "Helvetica-Bold"
-        : "Helvetica"
+        ? "Courier-Bold"
+        : "Courier"
     )
     .fontSize(
-      options.size || 9
+      options.size || 8.6
     )
     .text(value, {
       paragraphGap:
-        options.paragraphGap ?? 1.5,
+        options.paragraphGap ?? 1.3,
 
       lineGap:
-        options.lineGap ?? 0.8,
+        options.lineGap ?? 0.7,
     });
+
+  resetBodyStyle(doc);
 };
 
 const addBullet = (
@@ -120,12 +178,13 @@ const addBullet = (
   }
 
   doc
-    .font("Helvetica")
-    .fontSize(8.9)
-    .text(`• ${value}`, {
-      indent: 8,
-      paragraphGap: 1.5,
-      lineGap: 0.8,
+    .fillColor(COLORS.body)
+    .font("Courier")
+    .fontSize(8.35)
+    .text(`- ${value}`, {
+      indent: 7,
+      paragraphGap: 1.2,
+      lineGap: 0.6,
     });
 };
 
@@ -139,7 +198,8 @@ const addTechnicalHeader = (
   targetRole
 ) => {
   const name =
-    cleanText(contact?.name);
+    cleanText(contact?.name) ||
+    "Resume";
 
   const email =
     cleanText(contact?.email);
@@ -164,14 +224,12 @@ const addTechnicalHeader = (
   // ========================================
 
   doc
-    .font("Helvetica-Bold")
-    .fontSize(18)
-    .text(
-      name || "Resume",
-      {
-        align: "left",
-      }
-    );
+    .fillColor(COLORS.name)
+    .font("Courier-Bold")
+    .fontSize(19)
+    .text(name, {
+      align: "left",
+    });
 
   // ========================================
   // TARGET ROLE
@@ -180,9 +238,12 @@ const addTechnicalHeader = (
   if (role) {
     doc
       .moveDown(0.05)
-      .font("Helvetica-Bold")
-      .fontSize(9.5)
-      .text(role);
+      .fillColor(COLORS.role)
+      .font("Courier-Bold")
+      .fontSize(9)
+      .text(
+        role.toUpperCase()
+      );
   }
 
   // ========================================
@@ -197,10 +258,16 @@ const addTechnicalHeader = (
   if (contactParts.length) {
     doc
       .moveDown(0.15)
-      .font("Helvetica")
-      .fontSize(8.8)
+      .fillColor(COLORS.contact)
+      .font("Courier")
+      .fontSize(7.9)
       .text(
-        contactParts.join(" | ")
+        contactParts.join(
+          " | "
+        ),
+        {
+          lineGap: 0.5,
+        }
       );
   }
 
@@ -213,33 +280,36 @@ const addTechnicalHeader = (
   if (linkedin) {
     links.push({
       label: "LinkedIn",
-      url:
-        normalizeUrl(linkedin),
+      url: normalizeUrl(
+        linkedin
+      ),
     });
   }
 
   if (github) {
     links.push({
       label: "GitHub",
-      url:
-        normalizeUrl(github),
+      url: normalizeUrl(
+        github
+      ),
     });
   }
 
   if (portfolio) {
     links.push({
       label: "Portfolio",
-      url:
-        normalizeUrl(portfolio),
+      url: normalizeUrl(
+        portfolio
+      ),
     });
   }
 
   if (links.length) {
-    doc.moveDown(0.1);
+    doc.moveDown(0.08);
 
     doc
-      .font("Helvetica")
-      .fontSize(8.8);
+      .font("Courier")
+      .fontSize(7.9);
 
     const startX =
       doc.page.margins.left;
@@ -250,6 +320,10 @@ const addTechnicalHeader = (
 
     links.forEach(
       (item, index) => {
+        doc.fillColor(
+          COLORS.link
+        );
+
         const labelWidth =
           doc.widthOfString(
             item.label
@@ -276,6 +350,10 @@ const addTechnicalHeader = (
           const separator =
             " | ";
 
+          doc.fillColor(
+            COLORS.contact
+          );
+
           doc.text(
             separator,
             currentX,
@@ -297,7 +375,7 @@ const addTechnicalHeader = (
       doc.page.margins.left;
 
     doc.y =
-      y + 11;
+      y + 10;
   }
 
   // ========================================
@@ -308,6 +386,11 @@ const addTechnicalHeader = (
     doc.y + 3;
 
   doc
+    .save()
+    .strokeColor(
+      COLORS.divider
+    )
+    .lineWidth(1.4)
     .moveTo(
       doc.page.margins.left,
       dividerY
@@ -317,11 +400,13 @@ const addTechnicalHeader = (
         doc.page.margins.right,
       dividerY
     )
-    .lineWidth(1)
-    .stroke();
+    .stroke()
+    .restore();
 
   doc.y =
     dividerY + 4;
+
+  resetBodyStyle(doc);
 };
 
 // ==========================================
@@ -350,154 +435,36 @@ const addSkills = (
 
   addSectionHeading(
     doc,
-    "Technical Skills"
-  );
-
-  const groups = {
-    "Languages": [],
-    "Web / Frameworks": [],
-    "Databases": [],
-    "Tools / Cloud": [],
-    "Concepts": [],
-  };
-
-  const programming = [
-    "Java",
-    "JavaScript",
-    "Python",
-    "C",
-    "C++",
-  ];
-
-  const webFrameworks = [
-    "HTML",
-    "HTML5",
-    "CSS",
-    "CSS3",
-    "React",
-    "React.js",
-    "Node.js",
-    "Express.js",
-    "MERN",
-    "REST API",
-    "REST APIs",
-    "JWT",
-    "JWT Authentication",
-  ];
-
-  const databases = [
-    "MongoDB",
-    "MySQL",
-    "SQL",
-  ];
-
-  const toolsCloud = [
-    "Git",
-    "GitHub",
-    "AWS",
-    "Postman",
-  ];
-
-  const concepts = [
-    "Data Structures",
-    "DSA",
-    "OOP",
-    "DBMS",
-    "Problem Solving",
-  ];
-
-  normalizedSkills.forEach(
-    (skill) => {
-      if (
-        programming.includes(
-          skill
-        )
-      ) {
-        groups.Languages.push(
-          skill
-        );
-      } else if (
-        webFrameworks.includes(
-          skill
-        )
-      ) {
-        groups[
-          "Web / Frameworks"
-        ].push(skill);
-      } else if (
-        databases.includes(
-          skill
-        )
-      ) {
-        groups.Databases.push(
-          skill
-        );
-      } else if (
-        toolsCloud.includes(
-          skill
-        )
-      ) {
-        groups[
-          "Tools / Cloud"
-        ].push(skill);
-      } else if (
-        concepts.includes(
-          skill
-        )
-      ) {
-        groups.Concepts.push(
-          skill
-        );
-      } else {
-        groups.Concepts.push(
-          skill
-        );
-      }
+    "Technical Skills",
+    {
+      strong: true,
     }
   );
 
-  Object.entries(groups)
-    .forEach(
-      ([
-        groupName,
-        groupSkills,
-      ]) => {
-        if (
-          !groupSkills.length
-        ) {
-          return;
-        }
+  // Match frontend technical preview:
+  // compact continuous technical stack.
 
-        doc
-          .font(
-            "Helvetica-Bold"
-          )
-          .fontSize(8.9)
-          .text(
-            `${groupName}: `,
-            {
-              continued: true,
-            }
-          );
-
-        doc
-          .font("Helvetica")
-          .fontSize(8.9)
-          .text(
-            groupSkills.join(
-              ", "
-            ),
-            {
-              paragraphGap: 1,
-              lineGap: 0.8,
-            }
-          );
+  doc
+    .fillColor(
+      COLORS.skillLabel
+    )
+    .font("Courier")
+    .fontSize(8.4)
+    .text(
+      normalizedSkills.join(
+        " | "
+      ),
+      {
+        lineGap: 0.8,
+        paragraphGap: 1,
       }
     );
+
+  resetBodyStyle(doc);
 };
 
 // ==========================================
-// PROJECTS
+// TECHNICAL PROJECTS
 // ==========================================
 
 const addProjects = (
@@ -511,13 +478,25 @@ const addProjects = (
       ? projects.items
       : [];
 
-  if (!items.length) {
+  const projectImpact =
+    cleanText(
+      projects
+        ?.studentProvidedImpact
+    );
+
+  if (
+    !items.length &&
+    !projectImpact
+  ) {
     return;
   }
 
   addSectionHeading(
     doc,
-    "Technical Projects"
+    "Technical Projects",
+    {
+      strong: true,
+    }
   );
 
   items.forEach(
@@ -529,48 +508,76 @@ const addProjects = (
         return;
       }
 
-      // First project line is the title.
+      // First extracted project
+      // entry receives title emphasis.
       if (index === 0) {
         addPlainLine(
           doc,
           value,
           {
             bold: true,
-            size: 9.4,
-          }
-        );
-
-        return;
-      }
-
-      // Keep technology stack prominent.
-      if (
-        /^tech\s*\*stack\s*:/i.test(
-          value
-        )
-      ) {
-        addPlainLine(
-          doc,
-          value,
-          {
-            bold: true,
             size: 8.9,
+            color:
+              COLORS.skillLabel,
+            paragraphGap: 2,
           }
         );
 
         return;
       }
 
-      addBullet(
+      // Keep project information
+      // paragraph-based, matching
+      // the browser preview.
+      addPlainLine(
         doc,
-        value
+        value,
+        {
+          size: 8.35,
+          lineGap: 0.7,
+          paragraphGap: 1.3,
+        }
       );
     }
   );
+
+  // ========================================
+  // PROJECT IMPACT
+  // ========================================
+
+  if (projectImpact) {
+    doc.moveDown(0.1);
+
+    doc
+      .fillColor(
+        COLORS.skillLabel
+      )
+      .font("Courier-Bold")
+      .fontSize(8.35)
+      .text(
+        "Project Impact: ",
+        {
+          continued: true,
+        }
+      );
+
+    doc
+      .fillColor(COLORS.body)
+      .font("Courier")
+      .fontSize(8.35)
+      .text(
+        projectImpact,
+        {
+          lineGap: 0.7,
+        }
+      );
+  }
+
+  resetBodyStyle(doc);
 };
 
 // ==========================================
-// SUMMARY
+// PROFILE
 // ==========================================
 
 const addSummary = (
@@ -590,15 +597,18 @@ const addSummary = (
   );
 
   doc
-    .font("Helvetica")
-    .fontSize(9)
+    .fillColor(COLORS.body)
+    .font("Courier")
+    .fontSize(8.4)
     .text(
       value,
       {
-        align: "justify",
-        lineGap: 1.5,
+        align: "left",
+        lineGap: 0.9,
       }
     );
+
+  resetBodyStyle(doc);
 };
 
 // ==========================================
@@ -618,31 +628,35 @@ const addEducation = (
     return;
   }
 
+  const values =
+    education
+      .map(cleanText)
+      .filter(Boolean);
+
+  if (!values.length) {
+    return;
+  }
+
   addSectionHeading(
     doc,
     "Education"
   );
 
-  education.forEach(
-    (item, index) => {
-      const value =
-        cleanText(item);
-
-      if (!value) {
-        return;
-      }
+  values.forEach(
+    (value, index) => {
+      const isDegree =
+        index === 0 ||
+        /bachelor|master|bca|bsc|mca|degree|pre-university|puc|sslc/i.test(
+          value
+        );
 
       addPlainLine(
         doc,
         value,
         {
-          bold:
-            index === 0 ||
-            /bachelor|master|bsc|mca|degree/i.test(
-              value
-            ),
-
-          size: 8.9,
+          bold: isDegree,
+          size: 8.3,
+          paragraphGap: 1,
         }
       );
     }
@@ -723,7 +737,7 @@ const addInlineListSection = (
     doc,
     values.join(", "),
     {
-      size: 8.9,
+      size: 8.3,
     }
   );
 };

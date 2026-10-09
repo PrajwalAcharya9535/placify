@@ -62,6 +62,15 @@ function StudentLayout({ children }) {
             Learning
           </NavLink>
 
+
+          <NavLink
+  to="/student/roadmap"
+  className="student-nav-item"
+>
+  <span className="student-nav-icon">↟</span>
+  Roadmap
+</NavLink>
+
           <NavLink
             to="/student/practice"
             className="student-nav-item"
@@ -86,13 +95,13 @@ function StudentLayout({ children }) {
             Resume & ATS
           </NavLink>
 
-          <NavLink
-            to="/student/interview"
-            className="student-nav-item"
-          >
-            <span className="student-nav-icon">◉</span>
-            Interview & GD
-          </NavLink>
+        <NavLink
+  to="/student/interview"
+  className="student-nav-item"
+>
+  <span className="student-nav-icon">◉</span>
+  HR Interview
+</NavLink>
 
           <p className="student-nav-label">PLACEMENT</p>
 

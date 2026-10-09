@@ -2,10 +2,11 @@ const fs = require("fs");
 const path = require("path");
 const PDFDocument = require("pdfkit");
 
+console.log(">>> resumePdfGenerationService.js LOADED <<<");
+
 const {
   generateModernProfessionalPdf,
 } = require("./modernProfessionalResumePdfService");
-
 
 const {
   generateMinimalTechnicalPdf,
@@ -165,9 +166,9 @@ const addContactHeader = (doc, contact) => {
   if (links.length) {
     doc.moveDown(0.15);
 
-    const linkText = links
-      .map((item) => item.label)
-      .join(" | ");
+   const linkText = links
+  .map((item) => item.url)
+  .join(" | ");
 
     const startX =
       (doc.page.width -
@@ -178,21 +179,25 @@ const addContactHeader = (doc, contact) => {
     const y = doc.y;
 
     links.forEach((item, index) => {
-      const labelWidth =
-        doc.widthOfString(item.label);
 
-      doc.text(
-        item.label,
-        currentX,
-        y,
-        {
-          link: item.url,
-          underline: true,
-          lineBreak: false,
-        }
-      );
 
-      currentX += labelWidth;
+    const displayUrl = item.url;
+
+const labelWidth =
+  doc.widthOfString(displayUrl);
+
+doc.text(
+  displayUrl,
+  currentX,
+  y,
+  {
+    link: item.url,
+    underline: true,
+    lineBreak: false,
+  }
+);
+
+currentX += labelWidth;
 
       if (index < links.length - 1) {
         const separator = " | ";
@@ -224,12 +229,61 @@ const addProjects = (
   doc,
   projects
 ) => {
-  const items =
-    Array.isArray(projects?.items)
-      ? projects.items
-      : [];
+ const rawItems =
+  Array.isArray(projects?.items)
+    ? projects.items
+    : [];
 
-  if (!items.length) {
+const projectImpact =
+  cleanText(
+    projects?.studentProvidedImpact
+  );
+
+const normalizedImpact =
+  projectImpact.toLowerCase();
+
+  console.log("\n===== PROJECT PDF DEBUG =====");
+console.log("RAW PROJECT ITEMS:", rawItems);
+console.log("PROJECT IMPACT:", projectImpact);
+console.log("=============================\n");
+
+const items = rawItems.filter(
+  (item) => {
+    const value =
+      cleanText(item);
+
+    if (!value) {
+      return false;
+    }
+
+    if (!normalizedImpact) {
+      return true;
+    }
+
+    const normalizedValue =
+      value.toLowerCase();
+
+    // Remove a project item when it is already
+    // contained inside the separately stored
+    // Project Impact statement.
+  if (
+  normalizedValue.length >= 20 &&
+  (
+    normalizedImpact.includes(normalizedValue) ||
+    normalizedValue.includes(normalizedImpact)
+  )
+) {
+  return false;
+}
+
+    return true;
+  }
+);
+
+  if (
+    !items.length &&
+    !projectImpact
+  ) {
     return;
   }
 
@@ -265,7 +319,7 @@ const addProjects = (
       // Keep technology line visually
       // distinct but ATS-readable.
       if (
-        /^tech\s*\*stack\s*:/i.test(
+        /^tech\s*stack\s*:/i.test(
           value
         )
       ) {
@@ -287,6 +341,35 @@ const addProjects = (
       );
     }
   );
+
+  // ========================================
+  // PROJECT IMPACT
+  // ========================================
+
+  if (projectImpact) {
+    doc.moveDown(0.1);
+
+    doc
+      .font("Helvetica-Bold")
+      .fontSize(9.2)
+      .text(
+        "Project Impact: ",
+        {
+          continued: true,
+        }
+      );
+
+    doc
+      .font("Helvetica")
+      .fontSize(9.2)
+      .text(
+        projectImpact,
+        {
+          paragraphGap: 2,
+          lineGap: 1,
+        }
+      );
+  }
 };
 
 // ==========================================

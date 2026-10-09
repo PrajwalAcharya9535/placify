@@ -240,15 +240,15 @@ function StudentDashboard() {
             </div>
 
             <div className="readiness-actions">
-              <button
-                type="button"
-                className="readiness-primary-button"
-                onClick={() =>
-                  navigate("/student/practice")
-                }
-              >
-                Continue Preparation
-              </button>
+             <button
+  type="button"
+  className="readiness-primary-button"
+  onClick={() =>
+    navigate("/student/roadmap")
+  }
+>
+  Continue Preparation
+</button>
 
               <button
                 type="button"

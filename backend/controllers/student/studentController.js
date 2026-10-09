@@ -13,6 +13,10 @@ const PlacementApplication = require(
 );
 const User = require("../../models/User");
 
+const {
+  buildSkillGap,
+} = require("../../services/skillGapService");  
+
 // ==============================
 // HELPER - ADD UNIQUE VALUE
 // ==============================
@@ -562,204 +566,11 @@ const getStudentDashboard = async (
     // SKILL GAP ANALYSIS
     // ==============================
 
-    const currentSkillNames =
-      skills.map(
-        (skill) => skill.name
-      );
+   const skillGap = await buildSkillGap(
+  userId
+);
 
-    const currentSkillsLower =
-      currentSkillNames.map(
-        (skill) =>
-          skill.toLowerCase()
-      );
-
-    const preferredSkills =
-      goal?.preferredSkills || [];
-
-    const missingSkills = [];
-    const skillGapWeakAreas = [];
-    const priorityAreas = [];
-    const skillGapRecommendations =
-      [];
-
-    // ------------------------------
-    // Goal-based missing skills
-    // ------------------------------
-
-    preferredSkills.forEach(
-      (preferredSkill) => {
-        const alreadyOwned =
-          currentSkillsLower.includes(
-            preferredSkill.toLowerCase()
-          );
-
-        if (!alreadyOwned) {
-          addUnique(
-            missingSkills,
-            preferredSkill
-          );
-        }
-      }
-    );
-
-    // ------------------------------
-    // ATS-based missing skills
-    // ------------------------------
-
-    if (
-      resume &&
-      resume.analysisStatus ===
-        "Analyzed" &&
-      Array.isArray(
-        resume.missingSkills
-      )
-    ) {
-      resume.missingSkills.forEach(
-        (missingSkill) => {
-          addUnique(
-            missingSkills,
-            missingSkill
-          );
-        }
-      );
-    }
-
-    // ------------------------------
-    // Practice weaknesses
-    // ------------------------------
-
-    categoryPerformance.forEach(
-      (item) => {
-        if (
-          item.totalAttempts >= 1 &&
-          item.accuracy < 60
-        ) {
-          addUnique(
-            skillGapWeakAreas,
-            `${item.category} practice performance (${item.accuracy}% accuracy)`
-          );
-
-          addUnique(
-            priorityAreas,
-            item.category
-          );
-        }
-      }
-    );
-
-    // ------------------------------
-    // Mock placement weakness
-    // ------------------------------
-
-    const completedMocks =
-      mockAttempts.filter(
-        (attempt) =>
-          attempt.status ===
-            "Completed" ||
-          attempt.completedAt
-      );
-
-    if (completedMocks.length > 0) {
-      const mockScores =
-        completedMocks.map(
-          (attempt) => {
-            if (
-              typeof attempt.percentage ===
-              "number"
-            ) {
-              return attempt.percentage;
-            }
-
-            if (
-              typeof attempt.score ===
-              "number"
-            ) {
-              return attempt.score;
-            }
-
-            return 0;
-          }
-        );
-
-      const averageMockScore =
-        mockScores.reduce(
-          (total, score) =>
-            total + score,
-          0
-        ) / mockScores.length;
-
-      if (averageMockScore < 60) {
-        addUnique(
-          skillGapWeakAreas,
-          `Mock placement performance (${Math.round(
-            averageMockScore
-          )}%)`
-        );
-
-        addUnique(
-          priorityAreas,
-          "Mock Placement Preparation"
-        );
-      }
-    }
-
-    // ------------------------------
-    // Skill recommendations
-    // ------------------------------
-
-    missingSkills.forEach(
-      (skill) => {
-        skillGapRecommendations.push(
-          `Learn and practice ${skill} based on your placement requirements.`
-        );
-      }
-    );
-
-    // ------------------------------
-    // Weak-area recommendations
-    // ------------------------------
-
-    skillGapWeakAreas.forEach(
-      (area) => {
-        skillGapRecommendations.push(
-          `Improve ${area} through targeted learning and practice.`
-        );
-      }
-    );
-
-    // ------------------------------
-    // Goal recommendation
-    // ------------------------------
-
-    if (!goal) {
-      skillGapRecommendations.push(
-        "Set a placement goal or target role to receive more accurate skill-gap recommendations."
-      );
-    }
-
-    // ------------------------------
-    // Resume recommendation
-    // ------------------------------
-
-    if (!resume) {
-      skillGapRecommendations.push(
-        "Upload and analyze your resume to identify ATS-based missing skills."
-      );
-    } else if (
-      resume.analysisStatus !==
-      "Analyzed"
-    ) {
-      skillGapRecommendations.push(
-        "Run ATS analysis on your resume to identify missing skills."
-      );
-    }
-
-    const uniqueSkillGapRecommendations =
-      [
-        ...new Set(
-          skillGapRecommendations
-        ),
-      ];
+   
 
     // ==============================
     // DASHBOARD RESPONSE
@@ -1078,29 +889,13 @@ const getStudentDashboard = async (
             : null,
       },
 
-      // ==============================
-      // MODULE 6 - SKILL GAP
-      // ==============================
+   
 
-      skillGap: {
-        targetRole:
-          goal?.targetRole || null,
+    // ==============================
+// MODULE 6 - SKILL GAP
+// ==============================
 
-        currentSkills:
-          currentSkillNames,
-
-        preferredSkills,
-
-        missingSkills,
-
-        weakAreas:
-          skillGapWeakAreas,
-
-        priorityAreas,
-
-        recommendations:
-          uniqueSkillGapRecommendations,
-      },
+skillGap,
 
       // ==============================
       // OVERALL DASHBOARD SUMMARY
@@ -1151,17 +946,16 @@ const getStudentDashboard = async (
         practiceStrengths:
           practiceStrengths,
 
-        // Skill Gap summary
+      // Skill Gap summary
 
-        missingSkillsCount:
-          missingSkills.length,
+missingSkillsCount:
+  skillGap.missingSkills.length,
 
-        weakAreasCount:
-          skillGapWeakAreas.length,
+weakAreasCount:
+  skillGap.weakAreas.length,
 
-        priorityAreasCount:
-          priorityAreas.length,
-
+priorityAreasCount:
+  skillGap.priorityAreas.length,
         // Interview summary
 
         totalInterviewSessions:

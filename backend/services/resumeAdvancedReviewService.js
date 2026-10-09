@@ -984,31 +984,54 @@ const buildImprovementFields = (
     });
   }
 
-  if (
+    if (
     !resume.languages?.length
   ) {
     fields.push({
       key: "languages",
       section: "Languages",
       label: "Languages Known",
-      fieldType: "list",
+      fieldType: "multi-select",
       required: false,
+
+      options: [
+        "English",
+        "Kannada",
+        "Hindi",
+        "Tamil",
+        "Telugu",
+        "Malayalam",
+        "Marathi",
+        "Bengali",
+        "Gujarati",
+        "Punjabi",
+        "Urdu",
+        "Odia",
+        "Assamese",
+        "Sanskrit",
+        "French",
+        "German",
+        "Spanish",
+        "Japanese",
+        "Korean",
+      ],
+
       reason:
-        "Languages can be included when relevant and space permits",
+        "Select only the languages you genuinely know",
+
       placeholder:
-        "Example: English, Kannada, Hindi",
+        "Select languages",
+
       currentValue: "",
       studentValue: "",
       status: "Missing",
     });
   }
 
-  if (
-    resume.projects?.length &&
-    !hasMeasurableImpact(
-      resume.projects.join(" ")
-    )
-  ) {
+ if (
+  resume.projects?.length &&
+  !cleanText(resume.projectImpact)
+) {
     fields.push({
       key: "projectImpact",
       section: "Projects",
@@ -1027,24 +1050,31 @@ const buildImprovementFields = (
     });
   }
 
-  if (
+    if (
     resume.missingSkills?.length
   ) {
     fields.push({
       key: "confirmedTargetSkills",
       section: "Skills",
       label:
-        "Target Skills You Actually Have",
-      fieldType: "list",
+        "Skills You Already Know",
+
+      fieldType: "multi-select",
       required: false,
+
+      options: uniqueStrings(
+        resume.missingSkills || []
+      ),
+
       reason:
-        `The target role mentions: ${resume.missingSkills.join(
-          ", "
-        )}. Only confirm skills you genuinely possess.`,
+        "These skills were not found in your resume. Select only the skills you genuinely already know. Unselected skills will remain skill gaps for your preparation roadmap.",
+
       placeholder:
-        "Enter only skills you genuinely have",
+        "Select only skills you genuinely know",
+
       currentValue: "",
       studentValue: "",
+
       status:
         "Needs Improvement",
     });
@@ -1159,6 +1189,107 @@ const reviewResume = ({
         resume
       );
 
+
+      // ==============================
+// POSITIVE DETECTION FEEDBACK
+// ==============================
+const positiveFeedback = [];
+
+const contact =
+  resume.contact || {};
+
+if (
+  contact.name &&
+  contact.email &&
+  contact.phone
+) {
+  positiveFeedback.push(
+    "Contact information detected"
+  );
+}
+
+if (resume.summary?.trim()) {
+  positiveFeedback.push(
+    "Professional Summary detected"
+  );
+}
+
+if (resume.education?.length) {
+  positiveFeedback.push(
+    "Education detected"
+  );
+}
+
+if (resume.extractedSkills?.length) {
+  positiveFeedback.push(
+    "Technical Skills detected"
+  );
+}
+
+if (resume.projects?.length) {
+  positiveFeedback.push(
+    "Projects detected"
+  );
+}
+
+if (
+  cleanText(
+    resume.projectImpact
+  )
+) {
+  positiveFeedback.push(
+    "Project Impact detected"
+  );
+}
+
+if (contact.portfolio) {
+  positiveFeedback.push(
+    "Portfolio detected"
+  );
+}
+
+if (contact.github) {
+  positiveFeedback.push(
+    "GitHub detected"
+  );
+}
+
+if (contact.linkedin) {
+  positiveFeedback.push(
+    "LinkedIn detected"
+  );
+}
+
+if (resume.internships?.length) {
+  positiveFeedback.push(
+    "Internship experience detected"
+  );
+}
+
+if (resume.experience?.length) {
+  positiveFeedback.push(
+    "Work experience detected"
+  );
+}
+
+if (resume.certifications?.length) {
+  positiveFeedback.push(
+    "Certifications detected"
+  );
+}
+
+if (resume.achievements?.length) {
+  positiveFeedback.push(
+    "Achievements detected"
+  );
+}
+
+if (resume.languages?.length) {
+  positiveFeedback.push(
+    "Languages detected"
+  );
+}
+
     const strengths = [];
 
     if (
@@ -1234,16 +1365,13 @@ const reviewResume = ({
     }
 
     if (
-      resume.projects?.length &&
-      !hasMeasurableImpact(
-        resume.projects.join(" ")
-      )
-    ) {
-      priorityImprovements.push(
-        "Strengthen project descriptions with truthful measurable outcomes where available"
-      );
-    }
-
+  resume.projects?.length &&
+  !cleanText(resume.projectImpact)
+) {
+  priorityImprovements.push(
+    "Add a truthful project result or impact where available"
+  );
+}
     if (
       resume.pageCount > 1
     ) {
@@ -1277,31 +1405,36 @@ const reviewResume = ({
     return {
       success: true,
 
-      data: {
-        overallScore,
+    data: {
+  overallScore,
 
-        contentQualityScore,
+  contentQualityScore,
 
-        sectionQualityScore,
+  sectionQualityScore,
 
-        projectQualityScore,
+  projectQualityScore,
 
-        impactScore,
+  impactScore,
 
-        roleRelevanceScore,
+  roleRelevanceScore,
 
-        formatScore,
+  formatScore,
 
-        sectionReviews,
+  sectionReviews,
 
-        formatReview,
+  formatReview,
 
-        improvementFields,
+  improvementFields,
 
-        strengths:
-          uniqueStrings(
-            strengths
-          ),
+  positiveFeedback:
+    uniqueStrings(
+      positiveFeedback
+    ),
+
+  strengths:
+    uniqueStrings(
+      strengths
+    ),
 
         priorityImprovements:
           uniqueStrings(

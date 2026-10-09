@@ -143,6 +143,98 @@ const mergeResumeSkills = (
   return merged;
 };
 
+
+// ==============================
+// RESUME PROCESSING PROGRESS
+// ==============================
+//
+// Sends real backend processing progress
+// to the currently authenticated student's
+// private Socket.IO room.
+//
+// This does NOT create artificial delays.
+// Progress changes only when actual backend
+// processing reaches a milestone.
+// ==============================
+
+const emitResumeProgress = (
+  req,
+  progress,
+  stage,
+  message,
+  extra = {}
+) => {
+  try {
+    const io = req.app.get("io");
+    const userId = req.user?.id;
+
+    if (!io || !userId) {
+      return;
+    }
+
+    io.to(`user:${userId}`).emit(
+      "resume:scan-progress",
+      {
+        progress: Math.min(
+          Math.max(
+            Number(progress) || 0,
+            0
+          ),
+          100
+        ),
+
+        stage,
+
+        message,
+
+        timestamp: new Date(),
+
+        ...extra,
+      }
+    );
+  } catch (error) {
+    // Socket progress must never interrupt
+    // actual resume processing.
+    console.log(
+      "Resume progress emit error:",
+      error.message
+    );
+  }
+};
+
+// ==============================
+// RESUME PROCESSING ERROR
+// ==============================
+
+const emitResumeError = (
+  req,
+  stage,
+  message
+) => {
+  try {
+    const io = req.app.get("io");
+    const userId = req.user?.id;
+
+    if (!io || !userId) {
+      return;
+    }
+
+    io.to(`user:${userId}`).emit(
+      "resume:scan-error",
+      {
+        stage,
+        message,
+        timestamp: new Date(),
+      }
+    );
+  } catch (error) {
+    console.log(
+      "Resume error emit failed:",
+      error.message
+    );
+  }
+};
+
 // ==============================
 // CREATE / UPDATE RESUME
 // ==============================
@@ -153,23 +245,78 @@ const saveResumeDetails = async (
   try {
     const userId = req.user.id;
 
+    // ==============================
+    // REAL PROGRESS — REQUEST STARTED
+    // ==============================
+
+    emitResumeProgress(
+      req,
+      5,
+      "request_received",
+      "Resume processing started"
+    );
+
     const {
-      targetRole,
-      targetCompany,
-      jobDescription,
-    } = req.body;
+    targetRole,
+    targetCompany,
+    jobDescription,
+    scanMode,
+} = req.body;
+
+    // ==============================
+    // REAL PROGRESS — FILE RECEIVED
+    // ==============================
+    //
+    // Multer has already completed the
+    // upload before this controller runs.
+    // Therefore this stage represents a
+    // genuinely received backend file.
+    // ==============================
+
+    if (req.file) {
+      emitResumeProgress(
+        req,
+        15,
+        "file_received",
+        "Resume uploaded successfully",
+        {
+          fileName: req.file.filename,
+          fileType: req.file.mimetype,
+          fileSize: req.file.size || 0,
+        }
+      );
+    }
+
+    // ==============================
+// EXISTING RESUME
+// ==============================
+// Used to preserve the original target
+// details during a Placify improved scan.
+
+const existingResume =
+    scanMode === "placify-improved"
+        ? await Resume.findOne({
+              user: userId,
+          })
+        : null;
 
     const updateData = {
       user: userId,
 
-      targetRole:
-        targetRole || "",
+     targetRole:
+    scanMode === "placify-improved"
+        ? existingResume?.targetRole || targetRole || ""
+        : targetRole || "",
 
-      targetCompany:
-        targetCompany || "",
+targetCompany:
+    scanMode === "placify-improved"
+        ? existingResume?.targetCompany || targetCompany || ""
+        : targetCompany || "",
 
-      jobDescription:
-        jobDescription || "",
+jobDescription:
+    scanMode === "placify-improved"
+        ? existingResume?.jobDescription || jobDescription || ""
+        : jobDescription || "",
 
       analysisStatus:
         "Not Analyzed",
@@ -212,22 +359,76 @@ const saveResumeDetails = async (
       };
 
       // ==============================
-      // EXTRACT PDF TEXT
-      // ==============================
-      const extractionResult =
-        await extractResumeText(
-          req.file.path
-        );
+// RESET ORIGINAL ATS BASELINE
+// ==============================
+//
+// A newly uploaded PDF represents a new
+// original resume. Its ATS baseline will
+// be created on the first ATS analysis.
+//
 
-      if (!extractionResult.success) {
-        return res.status(400).json({
-          message:
-            "Resume uploaded but text extraction failed",
+if (scanMode !== "placify-improved") {
+    updateData.originalAtsAnalysis = {};
+}
+     // ==============================
+// REAL PROGRESS — TEXT EXTRACTION
+// ==============================
 
-          error:
-            extractionResult.errorMessage,
-        });
-      }
+emitResumeProgress(
+  req,
+  25,
+  "extracting_text",
+  "Reading and extracting resume content"
+);
+
+// Actual PDF text extraction happens here.
+// Progress remains at 25% until this work
+// genuinely finishes.
+
+const extractionResult =
+  await extractResumeText(
+    req.file.path
+  );
+
+// ==============================
+// EXTRACTION FAILURE
+// ==============================
+
+if (!extractionResult.success) {
+  emitResumeError(
+    req,
+    "text_extraction_failed",
+    "Unable to extract readable text from the resume"
+  );
+
+  return res.status(400).json({
+    message:
+      "Resume uploaded but text extraction failed",
+
+    error:
+      extractionResult.errorMessage,
+  });
+}
+
+// ==============================
+// REAL PROGRESS — TEXT EXTRACTED
+// ==============================
+
+emitResumeProgress(
+  req,
+  45,
+  "text_extracted",
+  "Resume text extracted successfully",
+  {
+    pageCount:
+      extractionResult.pages || 0,
+
+    characterCount:
+      extractionResult.text?.length || 0,
+  }
+);
+
+
 
       updateData.extractedText =
         extractionResult.text;
@@ -235,26 +436,142 @@ const saveResumeDetails = async (
       updateData.pageCount =
         extractionResult.pages || 0;
 
-      // ==============================
-      // STRUCTURED EXTRACTION
-      // ==============================
-      const structuredResult =
-        extractStructuredResume({
-          resumeText:
-            extractionResult.text,
+// ==============================
+// REAL PROGRESS — STRUCTURED
+// RESUME EVALUATION
+// ==============================
 
-          pageCount:
-            extractionResult.pages ||
-            0,
-        });
+emitResumeProgress(
+  req,
+  55,
+  "evaluating_resume",
+  "Evaluating resume sections and information"
+);
 
-      if (!structuredResult.success) {
-        updateData.extractionStatus =
-          "Failed";
+// Actual structured resume evaluation happens
+// here. Progress remains at 55% until the
+// extractor genuinely finishes.
 
-        updateData.extractedAt =
-          null;
-      } else {
+const structuredResult =
+  extractStructuredResume({
+    resumeText:
+      extractionResult.text,
+
+    pageCount:
+      extractionResult.pages ||
+      0,
+  });
+
+// ==============================
+// STRUCTURED EXTRACTION RESULT
+// ==============================
+
+if (structuredResult.success) {
+  const structured =
+    structuredResult.data;
+
+  emitResumeProgress(
+    req,
+    75,
+    "resume_evaluated",
+    "Resume information evaluated successfully",
+    {
+      evaluatedSections: {
+        contact:
+          Boolean(
+            structured.contact
+          ),
+
+        summary:
+          Boolean(
+            structured.summary
+          ),
+
+        skills:
+          Array.isArray(
+            structured.skills
+          )
+            ? structured.skills.length
+            : 0,
+
+        education:
+          Array.isArray(
+            structured.education
+          )
+            ? structured.education.length
+            : 0,
+
+        projects:
+          Array.isArray(
+            structured.projects
+          )
+            ? structured.projects.length
+            : 0,
+
+        internships:
+          Array.isArray(
+            structured.internships
+          )
+            ? structured.internships.length
+            : 0,
+
+        experience:
+          Array.isArray(
+            structured.experience
+          )
+            ? structured.experience.length
+            : 0,
+
+        certifications:
+          Array.isArray(
+            structured.certifications
+          )
+            ? structured.certifications.length
+            : 0,
+
+        achievements:
+          Array.isArray(
+            structured.achievements
+          )
+            ? structured.achievements.length
+            : 0,
+
+        languages:
+          Array.isArray(
+            structured.languages
+          )
+            ? structured.languages.length
+            : 0,
+
+        interests:
+          Array.isArray(
+            structured.interests
+          )
+            ? structured.interests.length
+            : 0,
+      },
+    }
+  );
+}
+
+    if (!structuredResult.success) {
+  updateData.extractionStatus =
+    "Failed";
+
+  updateData.extractedAt =
+    null;
+
+  // ==============================
+  // STRUCTURED EVALUATION FAILED
+  // ==============================
+
+  emitResumeError(
+    req,
+    "resume_evaluation_failed",
+    structuredResult.errorMessage ||
+      "Resume information could not be structured completely"
+  );
+} else {
         const structured =
           structuredResult.data;
 
@@ -270,11 +587,14 @@ const saveResumeDetails = async (
         updateData.education =
           structured.education;
 
-        updateData.projects =
-          structured.projects;
+       updateData.projects =
+  structured.projects;
 
-        updateData.internships =
-          structured.internships;
+updateData.projectImpact =
+  structured.projectImpact || "";
+
+updateData.internships =
+  structured.internships;
 
         updateData.experience =
           structured.experience;
@@ -308,6 +628,18 @@ const saveResumeDetails = async (
       }
     }
 
+
+    // ==============================
+// REAL PROGRESS — DATABASE SAVE
+// ==============================
+
+emitResumeProgress(
+  req,
+  85,
+  "saving_resume",
+  "Saving evaluated resume information"
+);
+
     const resume =
       await Resume.findOneAndUpdate(
         {
@@ -321,23 +653,72 @@ const saveResumeDetails = async (
         }
       );
 
-    res.status(200).json({
-      message:
-        req.file
-          ? "Resume uploaded and structured information extracted successfully"
-          : "Resume details saved successfully",
+      // ==============================
+// REAL PROGRESS — SAVE COMPLETE
+// ==============================
 
-      resume,
-    });
-  } catch (error) {
-    res.status(500).json({
-      message:
-        "Failed to save resume",
+emitResumeProgress(
+  req,
+  95,
+  "resume_saved",
+  "Resume information saved successfully"
+);
 
-      error:
-        error.message,
-    });
+
+      // ==============================
+// REAL PROGRESS — COMPLETE
+// ==============================
+
+emitResumeProgress(
+  req,
+  100,
+  "processing_complete",
+  "Resume processing completed successfully",
+  {
+    extractionStatus:
+      resume.extractionStatus,
+
+    pageCount:
+      resume.pageCount || 0,
+
+    extractedLineCount:
+      resume.extractedLineCount || 0,
+
+    detectedSections:
+      resume.detectedSections || [],
   }
+);
+
+  res.status(200).json({
+    message:
+        req.file
+            ? scanMode === "placify-improved"
+                ? "Placify improved resume scanned and structured information extracted successfully"
+                : "Resume uploaded and structured information extracted successfully"
+            : "Resume details saved successfully",
+
+    scanMode:
+        scanMode === "placify-improved"
+            ? "placify-improved"
+            : "original",
+
+    resume,
+});
+ } catch (error) {
+  emitResumeError(
+    req,
+    "resume_processing_failed",
+    "Resume processing could not be completed"
+  );
+
+  res.status(500).json({
+    message:
+      "Failed to save resume",
+
+    error:
+      error.message,
+  });
+}
 };
 
 // ==============================
@@ -438,6 +819,57 @@ const analyzeStudentResume = async (
 
     resume.suggestions =
       analysis.suggestions;
+
+  // ==============================
+// SAVE ORIGINAL ATS SNAPSHOT
+// ==============================
+//
+// Preserve the first ATS analysis for the
+// currently uploaded original resume.
+// Re-running ATS must not replace it.
+//
+
+if (
+  !resume.originalAtsAnalysis?.analyzedAt
+) {
+  resume.originalAtsAnalysis = {
+    atsScore:
+      analysis.atsScore,
+
+    keywordScore:
+      analysis.keywordScore,
+
+    skillMatchScore:
+      analysis.skillMatchScore,
+
+    completenessScore:
+      analysis.completenessScore,
+
+    matchedKeywords:
+      analysis.matchedKeywords || [],
+
+    missingKeywords:
+      analysis.missingKeywords || [],
+
+    matchedSkills:
+      analysis.matchedSkills || [],
+
+    missingSkills:
+      analysis.missingSkills || [],
+
+    strengths:
+      analysis.strengths || [],
+
+    weaknesses:
+      analysis.weaknesses || [],
+
+    suggestions:
+      analysis.suggestions || [],
+
+    analyzedAt:
+      new Date(),
+  };
+}
 
     resume.analysisStatus =
       "Analyzed";

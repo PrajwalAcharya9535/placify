@@ -14,6 +14,12 @@ import MockPlacement from "./pages/student/mock-placement/MockPlacement";
 import MockTestDetails from "./pages/student/mock-placement/MockTestDetails";
 import MockAttempt from "./pages/student/mock-placement/MockAttempt";
 import MockHistory from "./pages/student/mock-placement/MockHistory";
+import StudentResume from "./pages/student/resume/StudentResume";
+import StudentRoadmap from "./pages/student/StudentRoadmap";
+import StudentInterview from "./pages/student/interview/StudentInterview";
+import AIInterviewRoom from "./pages/student/interview/AIInterviewRoom";
+import AIInterviewResult from "./pages/student/interview/AIInterviewResult";
+
 
 import "./App.css";
 
@@ -815,7 +821,54 @@ function App() {
         }
       />
 
+
+      <Route
+  path="/student/resume"
+  element={
+    <ProtectedRoute allowedRole="student">
+      <StudentResume />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/student/roadmap"
+  element={
+    <ProtectedRoute allowedRoles={["student"]}>
+      <StudentRoadmap />
+    </ProtectedRoute>
+  }
+/>
+
+
+{/* =========================
+    AI INTERVIEW
+========================== */}
+
+<Route
+  path="/student/interview"
+  element={
+    <ProtectedRoute allowedRole="student">
+      <StudentInterview />
+    </ProtectedRoute>
+  }
+/>
+
+
+<Route
+  path="/student/ai-interview/:sessionId"
+  element={<AIInterviewRoom />}
+/>
+
+
+<Route
+  path="/student/ai-interview/:sessionId/result"
+  element={<AIInterviewResult />}
+/>
+
     </Routes>
+
+    
   );
 }
 

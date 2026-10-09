@@ -1,10 +1,15 @@
+
+require("dotenv").config();
+
 const express = require("express");
 const path = require("path");
 const mongoose = require("mongoose");
-const dotenv = require("dotenv");
+const dns = require("node:dns");
 const http = require("http");
 const cors = require("cors");
 const { Server } = require("socket.io");
+
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
 const authRoutes = require("./routes/authRoutes");
 const studentRoutes = require("./routes/studentRoutes");
@@ -12,8 +17,6 @@ const adminRoutes = require("./routes/adminRoutes");
 
 const socketAuthMiddleware = require("./socket/socketAuthMiddleware");
 const gdSocketHandler = require("./socket/gdSocketHandler");
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -25,7 +28,7 @@ const PORT = process.env.PORT || 5000;
 const server = http.createServer(app);
 
 // ==============================
-// SOCKET.IO SERVER
+// SOCKET.IO
 // ==============================
 
 const io = new Server(server, {
@@ -34,6 +37,13 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+
+// ==============================
+// MAKE SOCKET.IO AVAILABLE
+// TO EXPRESS CONTROLLERS
+// ==============================
+
+app.set("io", io);
 
 // ==============================
 // SOCKET.IO AUTHENTICATION
@@ -45,7 +55,6 @@ io.use(socketAuthMiddleware);
 // EXPRESS MIDDLEWARE
 // ==============================
 
-// Allow Placify React frontend to access REST APIs
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -68,18 +77,6 @@ app.use(express.json());
 
 // ==============================
 // GENERATED RESUME FILES
-// ==============================
-//
-// Only generated improved resumes are
-// publicly served for frontend preview.
-//
-// Original uploaded student resumes remain
-// private and are NOT exposed through
-// /uploads/resumes.
-//
-// Generated resumes can be accessed through:
-//
-// http://localhost:5000/uploads/generated-resumes/file.pdf
 // ==============================
 
 app.use(
@@ -112,15 +109,20 @@ io.on("connection", (socket) => {
     socket.user?.id
   );
 
-  // ==============================
-  // GD REALTIME EVENTS
-  // ==============================
+  if (socket.user?.id) {
+    const userRoom = `user:${socket.user.id}`;
+
+    socket.join(userRoom);
+
+    console.log(
+      "Socket joined private user room:",
+      userRoom
+    );
+  }
 
   gdSocketHandler(io, socket);
 
-  // ==============================
-  // DISCONNECT
-  // ==============================
+  io.on;
 
   socket.on("disconnect", () => {
     console.log(
