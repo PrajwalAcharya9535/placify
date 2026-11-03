@@ -19,6 +19,7 @@
   import StudentRoadmap from "./pages/student/StudentRoadmap";
   import StudentInterview from "./pages/student/interview/StudentInterview";
   import StudentOpportunities from "./pages/student/opportunities/StudentOpportunities";
+  import StudentApplications from "./pages/student/applications/StudentApplications";
   import AIInterviewRoom from "./pages/student/interview/AIInterviewRoom";
   import AIInterviewResult from "./pages/student/interview/AIInterviewResult";
 
@@ -887,6 +888,19 @@
     element={
       <ProtectedRoute allowedRole="student">
         <StudentOpportunities />
+      </ProtectedRoute>
+    }
+  />
+
+  {/* =========================
+      STUDENT APPLICATIONS
+  ========================= */}
+
+  <Route
+    path="/student/applications"
+    element={
+      <ProtectedRoute allowedRole="student">
+        <StudentApplications />
       </ProtectedRoute>
     }
   />

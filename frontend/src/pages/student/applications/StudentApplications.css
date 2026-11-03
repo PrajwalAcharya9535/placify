@@ -1,0 +1,474 @@
+
+/* =========================================
+   PLACIFY — MY APPLICATIONS
+========================================= */
+
+.applications-page {
+  padding: 22px;
+  color: #15355d;
+  min-width: 0;
+}
+
+.applications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.applications-eyebrow {
+  display: block;
+  color: #2563eb;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.applications-header h1 {
+  margin: 5px 0;
+  font-size: 27px;
+  color: #15355d;
+}
+
+.applications-header p {
+  margin: 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+.applications-refresh,
+.applications-view {
+  background: #fff;
+  color: #1855bc;
+  border: 1px solid #cbd9ed;
+  border-radius: 9px;
+  padding: 10px 16px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.applications-refresh:hover,
+.applications-view:hover {
+  background: #eff6ff;
+}
+
+/* =========================================
+   OVERVIEW CARDS
+========================================= */
+
+.applications-stats {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.applications-stat {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 13px;
+  padding: 17px;
+  box-shadow: 0 2px 10px rgba(15, 35, 65, 0.03);
+}
+
+.applications-stat span {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.applications-stat strong {
+  display: block;
+  margin-top: 10px;
+  font-size: 29px;
+  line-height: 1;
+  color: #15355d;
+}
+
+/* =========================================
+   APPLICATIONS PANEL
+========================================= */
+
+.applications-panel {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 15px;
+  overflow: hidden;
+}
+
+.applications-toolbar {
+  display: flex;
+  gap: 12px;
+  padding: 17px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.applications-toolbar input,
+.applications-toolbar select {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #334155;
+  border-radius: 9px;
+  padding: 11px 13px;
+  font: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.applications-toolbar input {
+  flex: 1;
+  min-width: 0;
+}
+
+.applications-toolbar select {
+  min-width: 165px;
+}
+
+.applications-toolbar input:focus,
+.applications-toolbar select:focus {
+  border-color: #2563eb;
+}
+
+.applications-list {
+  padding: 15px;
+  display: grid;
+  gap: 12px;
+}
+
+/* =========================================
+   APPLICATION CARDS
+========================================= */
+
+.applications-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 18px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.applications-card:hover {
+  border-color: #93c5fd;
+  box-shadow: 0 5px 18px rgba(37, 99, 235, 0.06);
+}
+
+.applications-avatar {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: #eaf2ff;
+  color: #1855bc;
+  font-size: 20px;
+  font-weight: 800;
+  border-radius: 12px;
+}
+
+.applications-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.applications-card-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.applications-card-top > span:first-child {
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.applications-stage {
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: 4px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.applications-card h3 {
+  margin: 0 0 4px;
+  font-size: 16px;
+  color: #15355d;
+}
+
+.applications-card-content > strong {
+  display: block;
+  color: #475569;
+  font-size: 13px;
+}
+
+.applications-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 18px;
+  margin-top: 12px;
+  color: #64748b;
+  font-size: 12px;
+}
+
+/* =========================================
+   EMPTY / ERROR STATES
+========================================= */
+
+.applications-empty {
+  text-align: center;
+  padding: 65px 20px;
+  color: #64748b;
+}
+
+.applications-empty h3 {
+  color: #15355d;
+  margin-bottom: 8px;
+}
+
+.applications-error {
+  margin: 14px;
+  padding: 12px;
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+  font-size: 13px;
+}
+
+/* =========================================
+   MANAGE APPLICATION MODAL
+========================================= */
+
+.applications-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 23, 42, 0.55);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+
+.applications-modal {
+  width: 100%;
+  max-width: 720px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.2);
+}
+
+.applications-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+  padding: 22px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.applications-modal-header h2 {
+  margin: 6px 0;
+  font-size: 22px;
+}
+
+.applications-modal-header p {
+  margin: 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.applications-modal-header button {
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 8px 13px;
+  cursor: pointer;
+}
+
+.applications-modal-body {
+  padding: 20px 22px;
+  overflow-y: auto;
+}
+
+.applications-form-section {
+  padding: 20px 0;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.applications-form-section:first-child {
+  padding-top: 0;
+}
+
+.applications-form-section:last-child {
+  border-bottom: none;
+}
+
+.applications-form-section h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+  color: #15355d;
+}
+
+.applications-form-section p {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.applications-form-section label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 13px 0;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.applications-form-section input,
+.applications-form-section select,
+.applications-form-section textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  background: #fff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 13px;
+}
+
+.applications-form-section textarea {
+  resize: vertical;
+}
+
+.applications-form-section button {
+  background: #1855bc;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 17px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.applications-form-section button:hover {
+  background: #1746a0;
+}
+
+.applications-form-section button:disabled,
+.applications-refresh:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   STAGE HISTORY
+========================================= */
+
+.applications-history {
+  display: grid;
+  gap: 12px;
+  border-left: 2px solid #bfdbfe;
+  padding-left: 16px;
+  margin-top: 15px;
+}
+
+.applications-history > div {
+  position: relative;
+  padding: 2px 0;
+}
+
+.applications-history > div::before {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  background: #2563eb;
+  border-radius: 50%;
+  left: -21px;
+  top: 7px;
+}
+
+.applications-history strong {
+  display: block;
+  font-size: 13px;
+}
+
+.applications-history span {
+  color: #64748b;
+  font-size: 11px;
+}
+
+.applications-history p {
+  margin: 5px 0 0;
+}
+
+.applications-feedback {
+  padding: 12px 22px;
+  margin: 0;
+  color: #1855bc;
+  background: #eff6ff;
+  border-top: 1px solid #bfdbfe;
+  font-size: 13px;
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+
+@media (max-width: 1100px) {
+  .applications-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .applications-page {
+    padding: 12px;
+  }
+
+  .applications-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .applications-toolbar {
+    flex-direction: column;
+  }
+
+  .applications-toolbar select {
+    width: 100%;
+  }
+
+  .applications-card {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .applications-view {
+    width: 100%;
+  }
+
+  .applications-modal-backdrop {
+    padding: 10px;
+  }
+
+  .applications-modal-header,
+  .applications-modal-body {
+    padding: 16px;
+  }
+}
