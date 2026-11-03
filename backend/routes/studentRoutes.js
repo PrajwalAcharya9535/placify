@@ -53,6 +53,12 @@ const {
   getLearningRecommendations,
 } = require("../controllers/student/learningRecommendationController");
 
+
+const {
+  getLearningContent,
+  submitLearningQuiz,
+} = require("../controllers/student/learningContentController");
+
 // ==============================
 // PRACTICE CONTROLLERS
 // ==============================
@@ -224,6 +230,19 @@ const {
   getPlacementOpportunityById,
 } = require("../controllers/student/placementOpportunityController");
 
+// ========================================
+// TELEGRAM OPPORTUNITY CONTROLLER
+// ========================================
+
+const {
+  getTelegramAnnouncements,
+  updateTelegramOpportunityResponse,
+} = require(
+  "../controllers/student/telegramOpportunityController"
+);
+
+
+
 const {
   getOpportunityMatch,
 } = require("../controllers/student/opportunityMatchController");
@@ -276,7 +295,13 @@ const {
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteNotification,
-} = require("../controllers/student/notificationController");
+  getTelegramOpportunityUnreadCount,
+  markTelegramOpportunitiesAsRead,
+} = require(
+  "../controllers/student/notificationController"
+);
+
+
 
 // ==============================
 // CALENDAR CONTROLLER
@@ -336,6 +361,9 @@ const {
   getAIInterviewResult,
   getAIInterviewHistory,
 } = require("../controllers/student/aiInterviewController");
+
+
+
 
 
 const router = express.Router();
@@ -476,6 +504,24 @@ router.get(
   protect,
   authorizeRoles("student"),
   getLearningRecommendations
+);
+
+router.get(
+  "/learning/:topicId/content",
+  protect,
+  authorizeRoles("student"),
+  getLearningContent
+);
+
+// ==========================================
+// LEARNING MCQ SUBMISSION & EVALUATION
+// ==========================================
+
+router.post(
+  "/learning/:topicId/quiz/submit",
+  protect,
+  authorizeRoles("student"),
+  submitLearningQuiz
 );
 
 router.get(
@@ -778,7 +824,7 @@ router.post(
   protect,
   authorizeRoles("student"),
   startAIInterview
-);  
+);
 
 
 // ==============================
@@ -1100,6 +1146,27 @@ router.post(
 
 // Get all active opportunities
 
+
+// ========================================
+// TELEGRAM OPPORTUNITY ROUTES
+// ========================================
+
+// Get Telegram placement announcements
+router.get(
+  "/telegram-opportunities",
+  protect,
+  authorizeRoles("student"),
+  getTelegramAnnouncements
+);
+
+// Update student's response to announcement
+router.patch(
+  "/telegram-opportunities/:announcementId/response",
+  protect,
+  authorizeRoles("student"),
+  updateTelegramOpportunityResponse
+);
+
 router.get(
   "/opportunities",
   protect,
@@ -1294,6 +1361,27 @@ router.get(
   protect,
   authorizeRoles("student"),
   getUnreadNotificationCount
+);
+
+
+// ========================================
+// TELEGRAM OPPORTUNITY NOTIFICATIONS
+// ========================================
+
+// Get unread Telegram placement alert count
+router.get(
+  "/notifications/telegram-opportunities/unread-count",
+  protect,
+  authorizeRoles("student"),
+  getTelegramOpportunityUnreadCount
+);
+
+// Mark Telegram placement alerts as read
+router.patch(
+  "/notifications/telegram-opportunities/read-all",
+  protect,
+  authorizeRoles("student"),
+  markTelegramOpportunitiesAsRead
 );
 
 // Mark all notifications as read

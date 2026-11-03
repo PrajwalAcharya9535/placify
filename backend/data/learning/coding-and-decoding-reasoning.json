@@ -1,0 +1,204 @@
+
+{
+  "topicTitle": "Coding and Decoding Reasoning",
+  "lessons": [
+    {
+      "title": "Introduction to Coding and Decoding",
+      "description": "Understand coded messages, alphabet positions and common reasoning patterns.",
+      "content": "Coding and Decoding is a logical reasoning topic in which letters, numbers, words or symbols are transformed according to a hidden rule. Your task is to identify the rule and apply it consistently.\n\nCommon types include letter shifting, number coding, substitution coding, symbol coding and mixed coding.\n\nAlphabet positions:\nA=1, B=2, C=3, ..., Z=26.\n\nReverse alphabet positions:\nA=26, B=25, ..., Z=1.\n\nExample: If CAT is coded as DBU, find the code for DOG.\n\nC becomes D, A becomes B and T becomes U. Each letter moves forward by one position.\n\nD becomes E, O becomes P and G becomes H.\n\nAnswer: EPH.\n\nImportant steps:\n1. Compare the original word with its code.\n2. Check the position of each letter.\n3. Identify forward or backward shifts.\n4. Check whether letters are reversed or rearranged.\n5. Apply the same rule to the new word.\n\nFor alphabet shifts, wrap around after Z. For example, shifting Z forward by one produces A.\n\nPlacement tip: Never assume a coding rule from a single letter. Verify it against every available letter."
+    },
+    {
+      "title": "Letter Shifting and Alphabet Coding",
+      "description": "Solve forward shifting, backward shifting, alternating shifts and reverse alphabet coding.",
+      "content": "Letter coding transforms letters using alphabet positions.\n\nForward shifting:\nIf BOOK becomes CPPL, each letter moves forward by one position.\nB to C, O to P, O to P and K to L.\n\nTherefore, PEN becomes QFO.\n\nBackward shifting:\nIf FISH becomes EHRG, every letter moves backward by one position.\n\nAlternating shifts:\nSuppose ABCD becomes BBDD.\nA moves forward one position to B.\nB stays B.\nC moves forward one position to D.\nD stays D.\n\nThe rule alternates between +1 and 0.\n\nReverse alphabet coding uses opposite alphabet letters:\nA ↔ Z, B ↔ Y, C ↔ X and so on.\n\nExample: CAT becomes XZG.\nC becomes X, A becomes Z and T becomes G.\n\nPosition-based shifting may apply different increments:\nABC becomes BDF when the first letter moves +1, second +2 and third +3.\n\nA becomes B.\nB becomes D.\nC becomes F.\n\nImportant: Some questions reverse the order of letters before applying shifts. For example, CAT reversed is TAC.\n\nSolving strategy:\n1. Write alphabet positions below the letters.\n2. Calculate position differences.\n3. Check for a common shift or alternating pattern.\n4. Test reverse-order and opposite-letter rules.\n5. Confirm the pattern against the complete example.\n\nPlacement tip: Memorizing alphabet positions of E, J, O, T and Y can help estimate letter positions quickly."
+    },
+    {
+      "title": "Number Coding and Mathematical Patterns",
+      "description": "Decode words represented by numbers using alphabet values and arithmetic operations.",
+      "content": "Number coding replaces letters or words with numbers according to a mathematical rule.\n\nAlphabet-position coding:\nA=1, B=2, ..., Z=26.\n\nExample: CAT = 3 + 1 + 20 = 24.\nDOG = 4 + 15 + 7 = 26.\n\nIf the rule is the sum of alphabet positions, BAT = 2 + 1 + 20 = 23.\n\nAnother rule may multiply alphabet positions.\n\nExample: BAD = 2 × 1 × 4 = 8.\n\nSome questions use letter positions independently.\n\nExample: DOG becomes 4-15-7.\n\nOther questions combine the number of letters with their values.\n\nExample: If the code equals the alphabet-position sum plus the number of letters, CAT becomes 24 + 3 = 27.\n\nA code may also use squares:\nA=1, B=4, C=9 and D=16 if each letter is represented by the square of its alphabet position.\n\nWhen solving number coding:\n1. Convert letters into alphabet positions.\n2. Test addition, subtraction, multiplication or squares.\n3. Look for patterns involving the first and last letters.\n4. Verify the rule using every supplied example.\n5. Avoid choosing a rule that matches only one example when multiple examples are provided.\n\nPlacement tip: Number coding often combines basic arithmetic with alphabet-position knowledge."
+    },
+    {
+      "title": "Substitution Coding and Symbol Coding",
+      "description": "Understand coded words, renamed objects and symbol-based transformations.",
+      "content": "Substitution coding replaces words or objects with other names. The meaning of the question determines whether you should answer with the actual object or its assigned code.\n\nExample:\nIf 'water' is called 'milk', 'milk' is called 'juice' and 'juice' is called 'tea', what is water called?\n\nAnswer: Milk.\n\nThe question asks for the assigned name of water, not the name of another substance.\n\nSymbol coding assigns symbols to letters or numbers.\n\nExample:\nA = @\nB = #\nC = $\nD = %\n\nThen BAD becomes #@%.\n\nIn coded-language questions, multiple sentences may be given.\n\nExample:\n'good morning' = 'ka mi'\n'good night' = 'ka tu'\n\nThe common word is 'good' and the common code is 'ka'. Therefore, 'good' corresponds to 'ka'.\n\nThis inference assumes the coding system consistently assigns distinct codes to distinct words.\n\nAdditional example:\n'blue sky' = 'pa lo'\n'clear sky' = 'ni lo'\n\nThe common word 'sky' corresponds to 'lo'.\n\nCommon mistakes:\n1. Confusing an object's actual name with its coded name.\n2. Ignoring repeated words in coded sentences.\n3. Assuming symbol meanings without sufficient evidence.\n4. Reversing a code mapping incorrectly.\n\nPlacement tip: For sentence coding, identify common words and common codes before attempting the remaining mappings."
+    },
+    {
+      "title": "Advanced Coding and Decoding Techniques",
+      "description": "Solve mixed coding, conditional transformations and multi-step placement reasoning problems.",
+      "content": "Advanced coding-decoding questions may combine letter shifts, reversals, number conversions and conditional rules.\n\nExample 1: Reverse and shift.\nSuppose a word is first reversed and then each letter is shifted forward by one.\n\nCAT becomes TAC after reversal.\nT becomes U, A becomes B and C becomes D.\nFinal code: UBD.\n\nExample 2: Alternating shifts.\nIf ABCD becomes BDFH, the shifts are +1, +2, +3 and +4.\n\nApply the same pattern to WXYZ:\nW+1 = X.\nX+2 = Z.\nY+3 wraps to B.\nZ+4 wraps to D.\nAnswer: XZBD.\n\nExample 3: Number and letter coding.\nSuppose a word's code is the sum of the positions of its first and last letters.\n\nCAT = C(3) + T(20) = 23.\nDOG = D(4) + G(7) = 11.\n\nExample 4: Conditional coding.\nRule: If a word starts with a vowel, reverse the word. Otherwise, shift each letter forward by one.\n\nAPPLE becomes ELPPA.\nCAT becomes DBU.\n\nFor multi-step questions, follow the operations in the exact order stated. Reversing before shifting may produce a different answer from shifting before reversing when position-dependent rules are involved.\n\nA systematic solving process:\n1. Identify the type of code.\n2. Translate letters into positions if necessary.\n3. Separate multiple operations.\n4. Apply the operations in order.\n5. Check alphabet wraparound.\n6. Verify the answer against the supplied examples.\n\nPlacement tip: Focus on identifying a rule that consistently explains the complete example rather than guessing from the answer choices."
+    }
+  ],
+  "videos": [
+    {
+      "title": "Coding Decoding Basics and Letter Coding - Parcham Classes",
+      "youtubeUrl": "https://www.youtube.com/watch?v=yinNGtb5mzA",
+      "description": "Introduction to letter coding, alphabet positions, substitution and practice questions.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Coding Decoding Reasoning Concepts and Tricks - Chinmaya Panda",
+      "youtubeUrl": "https://www.youtube.com/watch?v=-5IejfbM_QE",
+      "description": "Coding-decoding reasoning concepts and letter coding for competitive examinations.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Coding Decoding Reasoning - Banking by Rojgar With Ankit",
+      "youtubeUrl": "https://www.youtube.com/watch?v=NSOvXf-Eu5Y",
+      "description": "Letter, number, symbol and pattern-based coding-decoding practice.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Coding Decoding Part 2 - Banking by Rojgar With Ankit",
+      "youtubeUrl": "https://www.youtube.com/watch?v=op0o6S5W2IM",
+      "description": "Additional coding-decoding examples and exam-oriented practice.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Coding Decoding Advanced Practice - Parcham Classes",
+      "youtubeUrl": "https://www.youtube.com/watch?v=yinNGtb5mzA",
+      "description": "Revisit the advanced and challenge-question sections of this coding-decoding lesson.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "If CAT is coded as DBU, how is DOG coded using the same rule?",
+      "options": ["EPH", "CNE", "FQI", "EOG"],
+      "correctAnswer": 0,
+      "explanation": "Each letter moves forward by one position: D to E, O to P and G to H.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "If BOOK is coded as CPPL, what is the code for PEN?",
+      "options": ["ODM", "QFO", "RGP", "QEN"],
+      "correctAnswer": 1,
+      "explanation": "Each letter shifts forward by one: P to Q, E to F and N to O.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "If A=1, B=2 and so on, what is the sum of the alphabet positions in DOG?",
+      "options": ["24", "25", "26", "27"],
+      "correctAnswer": 2,
+      "explanation": "D=4, O=15 and G=7. Total = 26.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Using reverse alphabet coding A=Z, B=Y and C=X, how is CAT coded?",
+      "options": ["XZG", "DBU", "YAT", "WZG"],
+      "correctAnswer": 0,
+      "explanation": "C maps to X, A maps to Z and T maps to G.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "If water is called milk, milk is called juice and juice is called tea, what is water called?",
+      "options": ["Water", "Milk", "Juice", "Tea"],
+      "correctAnswer": 1,
+      "explanation": "The assigned coded name for water is milk.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "If A=@, B=#, C=$ and D=%, what is the code for BAD?",
+      "options": ["@#%", "#@%", "$@#", "%#@"],
+      "correctAnswer": 1,
+      "explanation": "B=#, A=@ and D=%, giving #@%.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "If CAT is coded as 24 by adding alphabet positions, what is the code for BAT?",
+      "options": ["21", "22", "23", "24"],
+      "correctAnswer": 2,
+      "explanation": "B=2, A=1 and T=20. Sum = 23.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "In a coding system, 'good morning' is 'ka mi' and 'good night' is 'ka tu'. What is the code for 'good'?",
+      "options": ["mi", "tu", "ka", "Cannot be determined"],
+      "correctAnswer": 2,
+      "explanation": "The common word is good and the common code is ka.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "A word is reversed and then every letter is shifted forward by one. How is CAT coded?",
+      "options": ["DBU", "UBD", "TAC", "VCF"],
+      "correctAnswer": 1,
+      "explanation": "CAT reverses to TAC, then T to U, A to B and C to D, producing UBD.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "If ABCD is coded as BDFH using shifts of +1, +2, +3 and +4, how is WXYZ coded?",
+      "options": ["XYZA", "XZBD", "YZAC", "XZCE"],
+      "correctAnswer": 1,
+      "explanation": "W+1=X, X+2=Z, Y+3=B and Z+4=D, with alphabet wraparound.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Basic Letter Shifting",
+      "description": "Apply a constant alphabet shift to encode words.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "Encode the words JAVA, CODE and DATA by shifting every letter forward by two alphabet positions. Use wraparound after Z and explain each transformation."
+    },
+    {
+      "title": "Alphabet Position Number Coding",
+      "description": "Convert words into numerical codes using alphabet positions.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "Using A=1 through Z=26, calculate the sum of alphabet positions for JAVA, SQL, CODE and LOGIC. Show the individual letter values."
+    },
+    {
+      "title": "Reverse Alphabet Coding",
+      "description": "Decode words using opposite alphabet positions.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Using the reverse alphabet mapping A=Z, B=Y, C=X and so on, encode PLACIFY, LOGIC and REASON. Show how each letter is transformed."
+    },
+    {
+      "title": "Substitution and Sentence Coding",
+      "description": "Identify word-code relationships from coded statements.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Given 'red flower' = 'mi ka', 'blue flower' = 'lo ka' and 'red car' = 'mi tu', determine the codes for red, flower, blue and car. Explain how repeated words reveal the mappings."
+    },
+    {
+      "title": "Advanced Mixed Coding Challenge",
+      "description": "Apply multiple transformations in the correct order.",
+      "type": "Written",
+      "difficulty": "Hard",
+      "instructions": "A coding rule first reverses a word and then shifts the first letter forward by one, the second by two, the third by three and so on, wrapping around after Z. Encode CAT, JAVA and LOGIC. Show each intermediate step and the final code."
+    }
+  ],
+  "resources": [
+    {
+      "title": "IndiaBIX - Coding and Decoding",
+      "type": "Website",
+      "url": "https://www.indiabix.com/verbal-reasoning/coding-and-decoding/",
+      "description": "Practice coding-decoding reasoning questions with explanations."
+    },
+    {
+      "title": "GeeksforGeeks - Logical Reasoning",
+      "type": "Website",
+      "url": "https://www.geeksforgeeks.org/aptitude/logical-reasoning/",
+      "description": "Logical reasoning concepts and competitive-exam practice."
+    },
+    {
+      "title": "IndiaBIX - Logical Reasoning Questions",
+      "type": "Website",
+      "url": "https://www.indiabix.com/logical-reasoning/questions-and-answers/",
+      "description": "Additional placement-oriented logical reasoning practice."
+    },
+    {
+      "title": "GeeksforGeeks - Aptitude Preparation",
+      "type": "Website",
+      "url": "https://www.geeksforgeeks.org/aptitude/",
+      "description": "Aptitude and reasoning tutorials for placement preparation."
+    },
+    {
+      "title": "IndiaBIX - Verbal Reasoning",
+      "type": "Website",
+      "url": "https://www.indiabix.com/verbal-reasoning/questions-and-answers/",
+      "description": "Reasoning exercises including coding, relationships and classification."
+    }
+  ]
+}

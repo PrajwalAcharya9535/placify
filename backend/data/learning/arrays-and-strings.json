@@ -1,0 +1,298 @@
+{
+  "topicTitle": "Arrays and Strings",
+  "lessons": [
+    {
+      "title": "Arrays: Indexing, Traversal and Updates",
+      "description": "Understand ordered sequences, zero-based indexing, traversal and operation costs.",
+      "content": "An array stores elements in a fixed order and supports access by position. In Python, a list is a dynamic array: it can grow and shrink, and it allows O(1) average-time indexed access. Valid nonnegative indices are 0 through len(values)-1; negative indices count backward from the end. Accessing an invalid index raises IndexError.\n\nTraversal means visiting each element, commonly with `for value in values` or `for index, value in enumerate(values)`. A full traversal is O(n) time. Updating a known position is O(1); appending to the end is amortized O(1); inserting or deleting near the beginning is O(n) because later elements shift. A slice such as values[1:4] creates a new list and costs time and memory proportional to the slice length.\n\nAlways consider an empty list, a single element, duplicate values, and negative numbers. When a problem asks for an in-place solution, avoid creating a full extra copy. In an interview, state whether your complexity includes the output list.",
+      "examples": [
+        {
+          "title": "Arrays: Indexing, Traversal and Updates Example",
+          "language": "python",
+          "explanation": "Run with Python 3, then change the input and trace the output.",
+          "code": "values = [8, 3, 8, 1]\nfor index, value in enumerate(values):\n    print(index, value)\nvalues[1] = 5\nvalues.append(9)\nprint(values)\nprint(values[-1])\nprint(values[1:4])"
+        }
+      ],
+      "estimatedMinutes": 22
+    },
+    {
+      "title": "Array Problem Patterns: Prefix Sums and Hash Maps",
+      "description": "Solve range-sum, frequency-counting and two-sum problems efficiently.",
+      "content": "Many array problems can be solved by identifying repeated work. A prefix-sum array stores cumulative totals: prefix[0]=0 and prefix[i+1]=prefix[i]+values[i]. Then the sum of the half-open range [left,right) is prefix[right]-prefix[left], requiring O(1) per query after O(n) preprocessing and O(n) extra memory. This also works with negative numbers.\n\nA frequency dictionary maps each value to its occurrence count. Building it is O(n) expected time and O(k) space for k distinct values. A hash-map-based two-sum algorithm stores values already seen and their indices; for each current value x, it looks for target-x before storing x. This prevents reusing the same element and achieves O(n) expected time and O(n) space. The brute-force alternative tests all pairs in O(n²) time.\n\nBe careful about duplicate values, multiple valid pairs, and whether the question requires indices or values. Hash-table complexity is expected/average, not an unconditional worst-case guarantee.",
+      "examples": [
+        {
+          "title": "Array Problem Patterns: Prefix Sums and Hash Maps Example",
+          "language": "python",
+          "explanation": "Run with Python 3, then change the input and trace the output.",
+          "code": "def range_sums(nums, queries):\n    prefix = [0]\n    for x in nums:\n        prefix.append(prefix[-1] + x)\n    return [prefix[r] - prefix[l] for l, r in queries]\n\ndef two_sum(nums, target):\n    seen = {}\n    for i, x in enumerate(nums):\n        if target - x in seen:\n            return [seen[target - x], i]\n        seen[x] = i\n    return []\n\nprint(range_sums([2, -1, 4, 3], [(0, 2), (1, 4)]))\nprint(two_sum([2, 7, 11, 15], 9))"
+        }
+      ],
+      "estimatedMinutes": 25
+    },
+    {
+      "title": "Strings: Indexing, Slicing and Character Processing",
+      "description": "Use immutable strings, normalization and character frequency counting.",
+      "content": "A string is an ordered sequence of Unicode characters. Python strings support indexing, slicing, iteration, `len`, `in`, `split`, `join`, `strip`, `lower` and `replace`. Unlike lists, strings are immutable: assigning text[0]='x' raises TypeError. Build a modified string with slicing, joining pieces, or a list of characters.\n\nA palindrome reads the same forward and backward. For a basic check, compare text with text[::-1], which creates a reversed copy and uses O(n) extra memory. For case-insensitive alphanumeric palindromes, normalize by keeping only alphanumeric characters and converting to lowercase. For large text, repeated string concatenation in a loop can be inefficient; collect parts and use ''.join(parts).\n\nCharacter frequencies help solve anagram and first-nonrepeating-character problems. Anagrams have the same counts for every character; Python's `collections.Counter` can express this concisely. Clarify whether case, spaces, punctuation and Unicode normalization matter.",
+      "examples": [
+        {
+          "title": "Strings: Indexing, Slicing and Character Processing Example",
+          "language": "python",
+          "explanation": "Run with Python 3, then change the input and trace the output.",
+          "code": "from collections import Counter\n\ndef is_palindrome(text):\n    clean = ''.join(ch.lower() for ch in text if ch.isalnum())\n    return clean == clean[::-1]\n\ndef are_anagrams(a, b):\n    return Counter(a.lower()) == Counter(b.lower())\n\nprint(is_palindrome('A man, a plan, a canal: Panama'))\nprint(are_anagrams('listen', 'silent'))\nprint('hello world'.split())"
+        }
+      ],
+      "estimatedMinutes": 22
+    },
+    {
+      "title": "Two Pointers and In-Place Array Operations",
+      "description": "Apply left/right pointers to sorted arrays, reversals and duplicate removal.",
+      "content": "The two-pointer pattern maintains two indices whose movement is governed by an invariant. For a sorted array and a target sum, start left at the beginning and right at the end. If the sum is too small, move left forward; if too large, move right backward. Because the input is sorted, each movement safely rules out candidates. The scan takes O(n) time and O(1) auxiliary space.\n\nFor in-place reversal, swap the outermost elements and move both pointers inward. For removing duplicates from a sorted array, a read pointer scans the input and a write pointer stores each new distinct value. Return the new logical length; elements beyond that length are not part of the result.\n\nDo not use the sorted-array two-sum technique on an unsorted array without sorting first. Sorting may change original indices and costs O(n log n) time. Explain pointer invariants and termination conditions during interviews.",
+      "examples": [
+        {
+          "title": "Two Pointers and In-Place Array Operations Example",
+          "language": "python",
+          "explanation": "Run with Python 3, then change the input and trace the output.",
+          "code": "def sorted_pair(nums, target):\n    left, right = 0, len(nums) - 1\n    while left < right:\n        total = nums[left] + nums[right]\n        if total == target:\n            return (left, right)\n        if total < target:\n            left += 1\n        else:\n            right -= 1\n    return None\n\ndef unique_sorted_in_place(nums):\n    if not nums:\n        return 0\n    write = 1\n    for read in range(1, len(nums)):\n        if nums[read] != nums[write - 1]:\n            nums[write] = nums[read]\n            write += 1\n    return write\n\nprint(sorted_pair([1, 2, 4, 7, 11], 9))\nvalues = [1, 1, 2, 2, 3]\nk = unique_sorted_in_place(values)\nprint(values[:k])"
+        }
+      ],
+      "estimatedMinutes": 25
+    },
+    {
+      "title": "Sliding Windows and Interview Problem Solving",
+      "description": "Solve fixed and variable window problems and reason about complexity.",
+      "content": "A sliding window tracks a contiguous section of an array or string. For a fixed window size k, compute the first window sum and update it by subtracting the outgoing value and adding the incoming value. This avoids summing every window from scratch: O(n) time instead of O(nk), with O(1) auxiliary space. Define behavior for invalid k such as zero or k greater than the array length.\n\nVariable windows grow the right boundary and shrink the left boundary until an invariant is restored. For the longest substring without repeating characters, store each character's most recent index. When a repeated character occurs inside the current window, move left to one beyond its previous position. The left pointer never moves backward, giving O(n) expected time.\n\nSliding windows usually work for contiguous segments. For sum constraints involving negative numbers, some popular grow/shrink techniques fail because extending a window does not always increase its sum. Before coding, clarify inputs, outputs, constraints, edge cases, time target and whether the window is fixed or variable.",
+      "examples": [
+        {
+          "title": "Sliding Windows and Interview Problem Solving Example",
+          "language": "python",
+          "explanation": "Run with Python 3, then change the input and trace the output.",
+          "code": "def max_window_sum(nums, k):\n    if not 1 <= k <= len(nums):\n        return None\n    current = sum(nums[:k])\n    best = current\n    for right in range(k, len(nums)):\n        current += nums[right] - nums[right - k]\n        best = max(best, current)\n    return best\n\ndef longest_unique_substring(text):\n    last_seen = {}\n    left = 0\n    best = 0\n    for right, char in enumerate(text):\n        if char in last_seen:\n            left = max(left, last_seen[char] + 1)\n        last_seen[char] = right\n        best = max(best, right - left + 1)\n    return best\n\nprint(max_window_sum([2, 1, 5, 1, 3, 2], 3))\nprint(longest_unique_substring('abcabcbb'))"
+        }
+      ],
+      "estimatedMinutes": 25
+    }
+  ],
+  "videos": [
+    {
+      "title": "Algorithms and Data Structures Tutorial - Full Course for Beginners",
+      "youtubeUrl": "https://www.youtube.com/watch?v=8hly31xKli0",
+      "description": "Broader introduction with array and algorithm foundations.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Big O Notation: What It Is and Why You Should Care",
+      "youtubeUrl": "https://www.youtube.com/watch?v=KSNx22U4uWE",
+      "description": "Analyze the cost of array and string algorithms.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Data Structures - Full Course Using C and C++",
+      "youtubeUrl": "https://www.youtube.com/watch?v=B31LgI4Y4DQ",
+      "description": "Supplementary explanation of array representation and data structures using C/C++.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "What is Binary Search?",
+      "youtubeUrl": "https://www.youtube.com/watch?v=KsoUiNv1SZA",
+      "description": "Practice index boundaries and ordered-array reasoning.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Understanding Sorting Algorithms",
+      "youtubeUrl": "https://www.youtube.com/watch?v=l7-f9gS8VOs",
+      "description": "Learn how sorting enables ordered-array two-pointer patterns.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "What is the average time complexity of accessing a Python list element by index?",
+      "options": [
+        "O(n)",
+        "O(1)",
+        "O(log n)",
+        "O(n²)"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A list supports constant-time indexed access.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the result of [4, 7, 9][-1]?",
+      "options": [
+        "4",
+        "7",
+        "9",
+        "IndexError"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Index -1 refers to the final element.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the worst-case time complexity of inserting at index 0 in a Python list?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Existing elements may need to shift.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which expression gives the sum of nums[left:right] using a prefix array with prefix[0]=0?",
+      "options": [
+        "prefix[right] - prefix[left]",
+        "prefix[right] + prefix[left]",
+        "prefix[left] - prefix[right]",
+        "prefix[right - 1]"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Subtract the sum before left from the sum before right.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Why does a hash-map two-sum algorithm check the complement before inserting the current item?",
+      "options": [
+        "To sort the input",
+        "To avoid reusing the same index",
+        "To remove duplicates automatically",
+        "To ensure O(1) worst-case time"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Checking first ensures a pair uses two distinct positions.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which statement about Python strings is correct?",
+      "options": [
+        "They can be modified by assigning to an index",
+        "They are always ASCII",
+        "They are immutable",
+        "They do not support slicing"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Strings cannot be changed in place.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which tool is most suitable for counting character occurrences?",
+      "options": [
+        "set only",
+        "collections.Counter",
+        "sorted only",
+        "range"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Counter maps elements to occurrence counts.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "The standard two-pointer pair-sum technique that moves inward from both ends requires which property?",
+      "options": [
+        "Sorted input",
+        "Only positive values",
+        "Exactly two items",
+        "Unique values"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Sorted order justifies pointer movements.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the time complexity of finding the maximum sum of a fixed-size window with a rolling sum?",
+      "options": [
+        "O(nk)",
+        "O(n)",
+        "O(n²)",
+        "O(log n)"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Each value is added and removed at most once.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "For longest substring without repeated characters, when should the left pointer move?",
+      "options": [
+        "Whenever the string contains any repeated character",
+        "Only at the end",
+        "When a repeated character was last seen inside the current window",
+        "After every character"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Only repeats within the active window force left forward.",
+      "difficulty": "Medium"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Array Statistics and Edge Cases",
+      "description": "Traverse an array and compute useful statistics.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Write a Python function array_stats(nums) that returns a dictionary with count, sum, min and max. For an empty list, return count=0, sum=0, min=None and max=None. Do not mutate the input. Test [], [5] and [-3, 2, -3]. Explain O(n) time and O(1) auxiliary space."
+    },
+    {
+      "title": "Prefix Sum Range Queries",
+      "description": "Answer repeated subarray sum queries efficiently.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Implement range_sums(nums, queries), where each query is a valid half-open interval [left,right). Build one prefix array, then answer every query in O(1). Test nums=[2,-1,4,3] with queries [(0,2),(1,4),(2,2)]. Explain preprocessing time and extra space."
+    },
+    {
+      "title": "Anagram and Palindrome Utilities",
+      "description": "Practice string normalization and frequency counting.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Implement is_normalized_palindrome(text), ignoring case and non-alphanumeric characters. Also implement are_anagrams(a,b), ignoring case but not spaces. Test punctuation, empty strings and repeated characters. Describe the normalization rules explicitly."
+    },
+    {
+      "title": "Repair a Two-Pointer Pair Search",
+      "description": "Debug incorrect pointer updates in a sorted two-sum solution.",
+      "type": "Debugging",
+      "difficulty": "Medium",
+      "instructions": "A buggy solution starts left=0 and right=len(nums)-1, but when nums[left]+nums[right] is smaller than target it decrements right, and when larger it increments left. Explain why both movements are wrong, fix the implementation, and test [1,2,4,7,11] with target 9 and target 100. Return None if no pair exists."
+    },
+    {
+      "title": "Sliding Window Interview Challenge",
+      "description": "Implement fixed-window sums and longest unique substring.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Implement max_window_sum(nums,k) in O(n) time and longest_unique_substring(text) in O(n) expected time. Return None for invalid k. Test [2,1,5,1,3,2] with k=3 and strings abcabcbb, bbbbb and empty string. State your invariants and complexity."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Python Tutorial: Data Structures",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/tutorial/datastructures.html",
+      "description": "Official list methods and common sequence operations."
+    },
+    {
+      "title": "Python Standard Types: Sequence Types",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/library/stdtypes.html#sequence-types-list-tuple-range",
+      "description": "Indexing, slicing and sequence behavior."
+    },
+    {
+      "title": "Python collections.Counter",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/library/collections.html#collections.Counter",
+      "description": "Character and element frequency counting."
+    },
+    {
+      "title": "VisuAlgo",
+      "type": "Website",
+      "url": "https://visualgo.net/en",
+      "description": "Interactive visual explanations of data structures and algorithms."
+    },
+    {
+      "title": "GeeksforGeeks: Sliding Window Technique",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/window-sliding-technique/",
+      "description": "Worked examples of fixed and variable sliding windows."
+    }
+  ]
+}

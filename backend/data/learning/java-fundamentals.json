@@ -1,0 +1,249 @@
+
+{
+  "topicTitle": "Java Fundamentals",
+  "lessons": [
+    {
+      "title": "Introduction to Java and the JVM",
+      "description": "Understand Java, the JDK, JRE, JVM and the execution process.",
+      "content": "Java is a high-level, class-based programming language widely used for backend, enterprise and Android-related development.\n\nJava source files use the .java extension. The Java compiler converts source code into bytecode stored in .class files. The Java Virtual Machine (JVM) executes the bytecode.\n\nJDK: Java Development Kit, containing development tools such as javac.\nJRE: Java Runtime Environment, providing components needed to run Java programs.\nJVM: Java Virtual Machine, responsible for executing Java bytecode.\n\nJava supports object-oriented programming, automatic memory management, exception handling and multithreading.\n\nA typical program begins execution in the main method: public static void main(String[] args).",
+      "examples": [
+        {
+          "title": "Hello World",
+          "language": "java",
+          "explanation": "A simple Java program with a main method.",
+          "code": "public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello, Placify!\");\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 12
+    },
+    {
+      "title": "Variables, Data Types and Operators",
+      "description": "Learn Java primitive types, variables, casting and operators.",
+      "content": "A variable stores a value that can be used by a program. Java is statically typed, so each variable has a declared type.\n\nThe eight primitive types are byte, short, int, long, float, double, char and boolean.\n\nReference types include String, arrays and objects.\n\nArithmetic operators: +, -, *, / and %.\nComparison operators: ==, !=, >, <, >= and <=.\nLogical operators: &&, || and !.\nAssignment operators: =, +=, -= and others.\n\nInteger division removes the fractional part. For example, 7 / 2 produces 3 when both operands are integers.\n\nWidening conversions are generally automatic; narrowing conversions require explicit casting.",
+      "examples": [
+        {
+          "title": "Variables and Operators",
+          "language": "java",
+          "explanation": "Demonstrates variables, arithmetic and comparison.",
+          "code": "int age = 22;\ndouble salary = 25000.50;\nboolean eligible = age >= 18;\nSystem.out.println(eligible);\nSystem.out.println(7 / 2);"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Conditional Statements and Loops",
+      "description": "Control program execution using decisions and repetition.",
+      "content": "Control flow statements determine which instructions execute.\n\nif executes code when a condition is true. else handles the alternative. else if supports additional conditions.\n\nswitch selects among multiple cases and is useful for menu-based programs.\n\nfor loops are useful when the number of iterations is known.\nwhile loops repeat while a condition remains true.\ndo-while loops execute their body at least once.\n\nbreak exits a loop or switch. continue skips to the next loop iteration.\n\nAvoid infinite loops by ensuring the loop condition can eventually become false.",
+      "examples": [
+        {
+          "title": "Print Even Numbers",
+          "language": "java",
+          "explanation": "Uses a loop and modulus operator.",
+          "code": "for (int i = 1; i <= 10; i++) {\n    if (i % 2 == 0) {\n        System.out.println(i);\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Methods, Arrays and Strings",
+      "description": "Learn reusable methods and fundamental data structures.",
+      "content": "A method groups reusable instructions and may accept parameters and return a value.\n\nMethod overloading allows multiple methods with the same name but different parameter lists.\n\nAn array stores a fixed number of elements of the same type. Array indices begin at zero.\n\nString represents text and is immutable in Java. Operations such as toUpperCase() return a new String rather than changing the original.\n\nUse equals() to compare String content. The == operator compares references for objects.\n\nStringBuilder is useful when text must be modified repeatedly.",
+      "examples": [
+        {
+          "title": "Method and Array",
+          "language": "java",
+          "explanation": "Adds numbers using a method and loops through an array.",
+          "code": "public static int add(int a, int b) {\n    return a + b;\n}\n\npublic static void main(String[] args) {\n    int[] marks = {70, 80, 90};\n    for (int mark : marks) {\n        System.out.println(mark);\n    }\n    System.out.println(add(5, 7));\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Classes, Objects and Java Program Structure",
+      "description": "Understand the basics of object-oriented Java programs.",
+      "content": "A class defines fields and methods. An object is an instance of a class.\n\nA constructor initializes a newly created object. Constructors have the same name as the class and do not declare a return type.\n\nThe new keyword creates an object.\n\nInstance fields belong to objects, while static fields belong to the class.\n\nAccess modifiers such as public and private control visibility.\n\nPackages organize related classes, and import statements allow convenient use of classes from other packages.\n\nEncapsulation commonly uses private fields and public methods to control access.",
+      "examples": [
+        {
+          "title": "Student Class",
+          "language": "java",
+          "explanation": "Creates an object using a constructor.",
+          "code": "class Student {\n    String name;\n\n    Student(String name) {\n        this.name = name;\n    }\n\n    void display() {\n        System.out.println(name);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Student student = new Student(\"Rahul\");\n        student.display();\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    }
+  ],
+  "videos": [
+    {
+      "title": "Java Full Course - Bro Code",
+      "youtubeUrl": "https://www.youtube.com/watch?v=xk4_1vDrzzo",
+      "description": "A broad Java programming course covering syntax, variables, conditions, loops and object-oriented concepts.",
+      "durationMinutes": 720
+    },
+    {
+      "title": "Java Tutorial for Beginners - Programming with Mosh",
+      "youtubeUrl": "https://www.youtube.com/watch?v=eIrMbAQSU34",
+      "description": "Introduction to Java syntax, variables, types, operators and fundamental programming techniques.",
+      "durationMinutes": 150
+    },
+    {
+      "title": "Java Tutorial for Beginners - freeCodeCamp",
+      "youtubeUrl": "https://www.youtube.com/watch?v=grEKMHGYyns",
+      "description": "Java programming fundamentals with demonstrations and practical examples.",
+      "durationMinutes": 570
+    },
+    {
+      "title": "Java Tutorial for Beginners - Telusko",
+      "youtubeUrl": "https://www.youtube.com/watch?v=BGTx91t8q50",
+      "description": "Java beginner concepts including program structure, data types and object-oriented programming.",
+      "durationMinutes": 150
+    },
+    {
+      "title": "Java Tutorial - Derek Banas",
+      "youtubeUrl": "https://www.youtube.com/watch?v=WPvGqX-TXP0",
+      "description": "An introduction to Java programming concepts and syntax.",
+      "durationMinutes": 30
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Which component executes Java bytecode?",
+      "options": ["Java compiler", "JVM", "Text editor", "Maven"],
+      "correctAnswer": 1,
+      "explanation": "The JVM executes Java bytecode. The compiler converts Java source code into bytecode.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which method is the standard entry point of a Java application?",
+      "options": ["start()", "run()", "public static void main(String[] args)", "execute()"],
+      "correctAnswer": 2,
+      "explanation": "The JVM starts a standard Java application by invoking the main method with the required signature.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which of the following is not a primitive Java data type?",
+      "options": ["int", "boolean", "double", "String"],
+      "correctAnswer": 3,
+      "explanation": "String is a reference type. Java has eight primitive types, including int, double and boolean.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the output of System.out.println(7 / 2);?",
+      "options": ["3.5", "3", "4", "Compilation error"],
+      "correctAnswer": 1,
+      "explanation": "Both operands are integers, so Java performs integer division and discards the fractional part.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which operator performs logical AND with short-circuit evaluation?",
+      "options": ["&", "&&", "|", "=="],
+      "correctAnswer": 1,
+      "explanation": "The && operator evaluates the right operand only when the left operand is true.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which loop executes its body at least once?",
+      "options": ["for", "while", "do-while", "Enhanced for"],
+      "correctAnswer": 2,
+      "explanation": "A do-while loop evaluates its condition after executing the loop body.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the first valid index of a Java array?",
+      "options": ["1", "-1", "0", "Depends on the array size"],
+      "correctAnswer": 2,
+      "explanation": "Java arrays use zero-based indexing. The first element is accessed using index 0.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which method should generally be used to compare the contents of two Strings?",
+      "options": ["equals()", "==", "compareReference()", "same()"],
+      "correctAnswer": 0,
+      "explanation": "equals() compares String content, whereas == compares object references.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What does the new keyword do when creating an object?",
+      "options": ["Deletes an object", "Creates a new object instance", "Imports a package", "Declares an interface"],
+      "correctAnswer": 1,
+      "explanation": "The new keyword creates an object instance and invokes the selected constructor.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which statement about Java method overloading is correct?",
+      "options": ["Methods must have different names", "Only the return type must change", "Methods share a name but have different parameter lists", "Overloading is not supported in Java"],
+      "correctAnswer": 2,
+      "explanation": "Method overloading uses the same method name with different parameter lists. Changing only the return type is insufficient.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Write Your First Java Program",
+      "description": "Create and execute a Java Hello World program.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Create a Main class containing public static void main(String[] args). Print Hello, Placify! to the console. Explain what javac and the JVM do."
+    },
+    {
+      "title": "Build a Simple Calculator",
+      "description": "Practice arithmetic operators and user input.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Write a Java program that accepts two numbers and an operator (+, -, *, /). Use Scanner to read input and a switch statement to perform the operation. Handle division by zero."
+    },
+    {
+      "title": "Find the Largest Number in an Array",
+      "description": "Practice arrays, loops and conditional statements.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Create an integer array containing at least five numbers. Use a loop to find and print the largest value without using Arrays.sort(). Test the program with positive and negative numbers."
+    },
+    {
+      "title": "Create a Student Grade Calculator",
+      "description": "Use methods, arrays and conditional statements.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Write a Java program that stores marks for five subjects, calculates total and average using methods, and assigns a grade based on the average. Validate that marks are between 0 and 100."
+    },
+    {
+      "title": "Debug String Comparison",
+      "description": "Identify and correct an incorrect String comparison.",
+      "type": "Debugging",
+      "difficulty": "Medium",
+      "instructions": "Review this code: String a = new String(\"Java\"); String b = new String(\"Java\"); if (a == b) System.out.println(\"Same\"); Explain why the condition is false and rewrite it using equals() to compare content."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Oracle Java Documentation",
+      "type": "Documentation",
+      "url": "https://docs.oracle.com/en/java/",
+      "description": "Official Java documentation, tutorials, language specifications and API references."
+    },
+    {
+      "title": "Dev.java Learn Java",
+      "type": "Documentation",
+      "url": "https://dev.java/learn/",
+      "description": "Official Java learning materials covering language basics and modern Java features."
+    },
+    {
+      "title": "Java Tutorials - W3Schools",
+      "type": "Website",
+      "url": "https://www.w3schools.com/java/",
+      "description": "Beginner-friendly Java examples and exercises."
+    },
+    {
+      "title": "Java Tutorial - GeeksforGeeks",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/java/java/",
+      "description": "Java programming concepts, examples and interview-oriented explanations."
+    },
+    {
+      "title": "Java Tutorial - Programiz",
+      "type": "Website",
+      "url": "https://www.programiz.com/java-programming",
+      "description": "Structured Java lessons and examples for beginners."
+    }
+  ]
+}

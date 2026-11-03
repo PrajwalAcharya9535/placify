@@ -1,0 +1,298 @@
+{
+  "topicTitle": "Searching and Sorting Algorithms",
+  "lessons": [
+    {
+      "title": "Linear Search and Searching Fundamentals",
+      "description": "Understand sequential search, invariants, and the trade-offs between ordered and unordered data.",
+      "content": "Searching means locating a target value or determining that it is absent. Linear search checks elements from left to right until it finds a match. It works on unsorted arrays, uses O(1) auxiliary space, and has O(n) worst-case time; its best case is O(1) when the first element matches. If duplicate values exist, returning the first matching index is a useful explicit contract. An empty input returns -1.\n\nCorrectness invariant: before checking index i, none of the positions 0 through i-1 contains the target. If the element at i matches, return i; otherwise continue. If the loop ends, every position has been checked and the target is absent.\n\nA hash set or dictionary can offer expected O(1) membership queries after O(n) preprocessing, but costs O(n) additional memory and does not automatically preserve a sorted order. For a one-off search of an unsorted list, linear search is often simpler and sufficient. For many queries, choose a representation based on how often data changes.",
+      "examples": [
+        {
+          "title": "Linear Search and Searching Fundamentals - Python Example",
+          "language": "python",
+          "explanation": "Run the example with Python 3, then change the inputs and trace each step.",
+          "code": "def linear_search(values, target):\n    for index, value in enumerate(values):\n        if value == target:\n            return index\n    return -1\n\nprint(linear_search([7, 3, 9, 3], 3))  # 1\nprint(linear_search([], 5))           # -1"
+        }
+      ],
+      "estimatedMinutes": 18
+    },
+    {
+      "title": "Binary Search and Search Boundaries",
+      "description": "Search sorted data in logarithmic time and avoid off-by-one errors.",
+      "content": "Binary search requires sorted input (ascending order in this lesson). Maintain an inclusive search interval [left, right]. At each step inspect mid = left + (right-left)//2. If values[mid] equals target, return its index. If it is smaller, discard the left half; otherwise discard the right half. Every iteration shrinks the interval, so the loop terminates in O(log n) time with O(1) extra space.\n\nFor duplicate elements, a basic binary search can return any matching index. To find the first occurrence, use a lower-bound search: locate the smallest index i such that values[i] >= target. Maintain a half-open interval [left, right) and return left. Verify that left is in range and values[left] == target. The same approach is useful for insertion positions.\n\nCommon errors: binary searching an unsorted list, mixing inclusive and half-open interval rules, forgetting to move boundaries beyond mid, and assuming the first duplicate is returned. In Python, bisect_left implements lower bound for a sorted list.",
+      "examples": [
+        {
+          "title": "Binary Search and Search Boundaries - Python Example",
+          "language": "python",
+          "explanation": "Run the example with Python 3, then change the inputs and trace each step.",
+          "code": "def binary_search(values, target):\n    left, right = 0, len(values) - 1\n    while left <= right:\n        mid = left + (right - left) // 2\n        if values[mid] == target:\n            return mid\n        if values[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1\n\nprint(binary_search([1, 4, 6, 8, 12], 8))  # 3"
+        }
+      ],
+      "estimatedMinutes": 22
+    },
+    {
+      "title": "Bubble Sort, Selection Sort and Insertion Sort",
+      "description": "Compare elementary sorting algorithms and their stability and complexity.",
+      "content": "Bubble sort repeatedly compares adjacent items and swaps out-of-order pairs. After each full pass, the largest remaining element is in its final position. With an early-stop flag, already sorted input takes O(n) time; worst-case time is O(n²). Adjacent swaps make the usual implementation stable.\n\nSelection sort repeatedly selects the minimum of the unsorted suffix and swaps it into place. It performs O(n²) comparisons even for sorted input and at most O(n) swaps. A simple swap-based selection sort is not stable.\n\nInsertion sort grows a sorted prefix: remove the next value, shift larger prefix values one position right, then insert the value. It takes O(n) time on sorted input and O(n²) worst-case time, uses O(1) auxiliary space, and is stable when shifting only strictly greater elements. Insertion sort is especially useful for small or nearly sorted arrays.\n\nFor interviews, be ready to trace each algorithm on [5, 2, 4, 1], explain comparisons versus swaps, and discuss why stable sorting matters when records share the same key.",
+      "examples": [
+        {
+          "title": "Bubble Sort, Selection Sort and Insertion Sort - Python Example",
+          "language": "python",
+          "explanation": "Run the example with Python 3, then change the inputs and trace each step.",
+          "code": "def insertion_sort(values):\n    arr = values.copy()\n    for i in range(1, len(arr)):\n        key = arr[i]\n        j = i - 1\n        while j >= 0 and arr[j] > key:\n            arr[j + 1] = arr[j]\n            j -= 1\n        arr[j + 1] = key\n    return arr\n\nprint(insertion_sort([5, 2, 4, 1]))  # [1, 2, 4, 5]"
+        }
+      ],
+      "estimatedMinutes": 25
+    },
+    {
+      "title": "Merge Sort and Divide and Conquer",
+      "description": "Implement a stable O(n log n) sort by dividing and merging.",
+      "content": "Merge sort divides an array into two halves, recursively sorts each half, and merges the sorted halves. Its recurrence is T(n)=2T(n/2)+O(n), yielding O(n log n) time in best, average and worst cases. The straightforward list-based implementation uses O(n) auxiliary memory overall (plus O(log n) recursion stack).\n\nMerging two sorted arrays uses two pointers. Repeatedly take the smaller current item, then append the remaining suffix. Taking from the left half when values are equal preserves the original order of equal-key records; this makes merge sort stable.\n\nThe base case is a list of zero or one item. Avoid an infinite recursion by splitting at the midpoint and making both recursive inputs smaller. Merge sort is attractive when predictable performance and stability are important. External merge sort is also useful when a dataset is too large for memory.",
+      "examples": [
+        {
+          "title": "Merge Sort and Divide and Conquer - Python Example",
+          "language": "python",
+          "explanation": "Run the example with Python 3, then change the inputs and trace each step.",
+          "code": "def merge_sort(values):\n    if len(values) <= 1:\n        return values[:]\n    mid = len(values) // 2\n    left = merge_sort(values[:mid])\n    right = merge_sort(values[mid:])\n    result = []\n    i = j = 0\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            result.append(left[i]); i += 1\n        else:\n            result.append(right[j]); j += 1\n    return result + left[i:] + right[j:]\n\nprint(merge_sort([8, 3, 5, 1, 3]))"
+        }
+      ],
+      "estimatedMinutes": 25
+    },
+    {
+      "title": "Quicksort, Partitioning and Algorithm Selection",
+      "description": "Learn pivot partitioning and choose an appropriate searching or sorting strategy.",
+      "content": "Quicksort chooses a pivot, partitions values into elements on either side of the pivot, and recursively sorts the partitions. Partitioning puts the pivot in its final position in common in-place variants. With reasonably balanced partitions, quicksort takes O(n log n) expected time. Repeatedly choosing an extreme pivot can cause O(n²) time and O(n) recursion depth. Randomized pivot selection helps reduce the risk of pathological input.\n\nTypical in-place quicksort implementations are not stable and use O(log n) expected recursion stack space, though worst-case recursion space can reach O(n). By contrast, merge sort guarantees O(n log n) time and can be stable, but usually needs O(n) auxiliary space for arrays.\n\nIn production Python, use sorted(values) or values.sort() instead of hand-writing a sorting algorithm unless the exercise explicitly asks for one. Python's Timsort is stable and efficient on partially ordered data. For searching, use linear search on unsorted input, binary search on sorted input, and a set/dictionary for repeated membership lookups when memory permits. State assumptions, test empty arrays and duplicates, and compare time and space before choosing an approach.",
+      "examples": [
+        {
+          "title": "Quicksort, Partitioning and Algorithm Selection - Python Example",
+          "language": "python",
+          "explanation": "Run the example with Python 3, then change the inputs and trace each step.",
+          "code": "def quicksort(values):\n    if len(values) <= 1:\n        return values[:]\n    pivot = values[len(values) // 2]\n    smaller = [x for x in values if x < pivot]\n    equal = [x for x in values if x == pivot]\n    larger = [x for x in values if x > pivot]\n    return quicksort(smaller) + equal + quicksort(larger)\n\nprint(quicksort([9, 4, 9, 1, 6]))  # [1, 4, 6, 9, 9]\n# This easy-to-read variant allocates extra lists."
+        }
+      ],
+      "estimatedMinutes": 25
+    }
+  ],
+  "videos": [
+    {
+      "title": "Binary Search Iterative Method — Abdul Bari",
+      "youtubeUrl": "https://www.youtube.com/watch?v=C2apEw9pgtw",
+      "description": "Step-by-step iterative binary search and time-complexity analysis.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Binary Search Recursive Method — Abdul Bari",
+      "youtubeUrl": "https://www.youtube.com/watch?v=uEUXGcc2VXM",
+      "description": "Recursive binary search using divide and conquer.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Merge Sort Algorithm — Abdul Bari",
+      "youtubeUrl": "https://www.youtube.com/watch?v=mB5HXBb_HY8",
+      "description": "Recursive merge sort, merging process and analysis.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "QuickSort Algorithm — Abdul Bari",
+      "youtubeUrl": "https://www.youtube.com/watch?v=7h1s2SojIRw",
+      "description": "Pivot partitioning and quicksort algorithm.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "QuickSort Analysis — Abdul Bari",
+      "youtubeUrl": "https://www.youtube.com/watch?v=-qOVVRIZzao",
+      "description": "Best, average and worst-case quicksort complexity.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "What is the worst-case time complexity of linear search in an array of n elements?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Linear search may inspect all n elements.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What precondition is required for ordinary binary search?",
+      "options": [
+        "Elements must be distinct",
+        "Array must be sorted",
+        "Array must have even length",
+        "Array must be reversed"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Binary search discards halves based on sorted order.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Binary search on n sorted elements has worst-case time complexity:",
+      "options": [
+        "O(n²)",
+        "O(n)",
+        "O(log n)",
+        "O(1)"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Each iteration approximately halves the search interval.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What does lower_bound return in a sorted array?",
+      "options": [
+        "Index of the final element",
+        "Index of the smallest element",
+        "First index with value greater than or equal to target",
+        "Index of any matching element"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Lower bound finds the earliest position whose value is at least the target.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which sort can run in O(n) time on an already sorted array?",
+      "options": [
+        "Insertion sort",
+        "Selection sort",
+        "Merge sort",
+        "Quicksort in every implementation"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Insertion sort needs one comparison per element on sorted input.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which algorithm typically performs O(n²) comparisons even on sorted input?",
+      "options": [
+        "Binary search",
+        "Selection sort",
+        "Merge sort",
+        "Counting sort"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Selection sort scans the remaining suffix for every position.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the worst-case time complexity of merge sort?",
+      "options": [
+        "O(n²)",
+        "O(n log n)",
+        "O(log n)",
+        "O(1)"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Merge sort splits logarithmically and merges O(n) work per level.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "To make merging stable, which side should be chosen first when keys are equal?",
+      "options": [
+        "Right half",
+        "Random side",
+        "Left half",
+        "Neither side"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Taking equal keys from the left preserves original relative order.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is quicksort’s worst-case time complexity with very unbalanced partitions?",
+      "options": [
+        "O(n²)",
+        "O(n log n)",
+        "O(log n)",
+        "O(1)"
+      ],
+      "correctAnswer": 0,
+      "explanation": "An extreme pivot can leave a subproblem of size n-1 repeatedly.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which Python built-in is recommended for general-purpose stable sorting?",
+      "options": [
+        "reversed()",
+        "sorted()",
+        "set()",
+        "enumerate()"
+      ],
+      "correctAnswer": 1,
+      "explanation": "sorted() uses Python’s stable built-in sorting implementation.",
+      "difficulty": "Easy"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Implement Linear Search",
+      "description": "Find the first occurrence of a target in an unsorted list.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Write linear_search(nums, target) returning the first matching index or -1. Test [], [4], [2,4,2] and a missing value. Explain O(n) time and O(1) space."
+    },
+    {
+      "title": "Binary Search with Duplicates",
+      "description": "Find the first position of a target in a sorted list.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Implement first_occurrence(nums, target) using binary search in O(log n) time. Return -1 when absent. Test [], [2,2,2], [1,2,2,3] and [1,3,5]."
+    },
+    {
+      "title": "Insertion Sort from Scratch",
+      "description": "Sort a list without calling sorted() or list.sort().",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Implement stable insertion_sort(nums). Trace [5,2,4,1], and test duplicates, negative values, already sorted and reverse-sorted arrays."
+    },
+    {
+      "title": "Stable Merge Sort",
+      "description": "Implement merge sort with an explicit merge helper.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Write merge_sort(nums) and merge(left,right) in Python. Ensure equal keys are taken from the left half first. Analyze O(n log n) time and O(n) auxiliary space."
+    },
+    {
+      "title": "Quicksort Partition and Comparison",
+      "description": "Implement quicksort and compare algorithm behavior.",
+      "type": "Coding",
+      "difficulty": "Hard",
+      "instructions": "Implement an in-place quicksort using a partition function, test random and already sorted inputs, explain pivot choices, and compare expected O(n log n) and worst-case O(n²) performance."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Python bisect — Binary Search on Sorted Lists",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/library/bisect.html",
+      "description": "Official lower-bound and upper-bound helpers for sorted sequences."
+    },
+    {
+      "title": "Python Sorting HOWTO",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/howto/sorting.html",
+      "description": "Official guide to sorting, keys, stability and performance."
+    },
+    {
+      "title": "VisuAlgo — Sorting",
+      "type": "Website",
+      "url": "https://visualgo.net/en/sorting",
+      "description": "Animated demonstrations of sorting algorithms."
+    },
+    {
+      "title": "CP-Algorithms — Binary Search",
+      "type": "Article",
+      "url": "https://cp-algorithms.com/num_methods/binary_search.html",
+      "description": "Binary search invariants, boundary search and applications."
+    },
+    {
+      "title": "GeeksforGeeks — Sorting Algorithms",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/dsa/sorting-algorithms/",
+      "description": "Reference overview of common sorting methods and complexity."
+    }
+  ]
+}

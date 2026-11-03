@@ -1,0 +1,254 @@
+
+{
+  "topicTitle": "Computer Networks Fundamentals",
+  "lessons": [
+    {
+      "title": "Introduction to Computer Networks and Network Models",
+      "description": "Understand computer networks, network types, topologies, OSI layers and the TCP/IP model.",
+      "content": "A computer network connects two or more devices to exchange data and share resources using communication protocols.\n\nExamples include office networks, college networks, home Wi-Fi networks and the internet.\n\nAdvantages of computer networks:\n1. Resource sharing.\n2. Data communication.\n3. Centralized services.\n4. Remote access.\n5. Distributed applications.\n6. Collaboration between users.\n\nTypes of networks:\nPAN: Personal Area Network, commonly connecting nearby personal devices.\nLAN: Local Area Network, usually covering a home, office or campus building.\nMAN: Metropolitan Area Network, spanning a city or metropolitan region.\nWAN: Wide Area Network, connecting locations over large geographical distances.\n\nNetwork topologies:\nBus: Devices share a common communication medium.\nStar: Devices connect to a central network device.\nRing: Devices are arranged in a logical or physical ring.\nMesh: Devices have multiple interconnections.\nTree: A hierarchical arrangement of network connections.\n\nOSI Reference Model:\nLayer 7 - Application: Provides network services to applications.\nLayer 6 - Presentation: Handles data representation, encoding and related transformations.\nLayer 5 - Session: Manages communication sessions in the conceptual model.\nLayer 4 - Transport: Provides end-to-end transport services.\nLayer 3 - Network: Handles logical addressing and routing.\nLayer 2 - Data Link: Handles framing and local-link communication.\nLayer 1 - Physical: Transmits bits through physical media.\n\nMnemonic from Layer 7 to Layer 1: All People Seem To Need Data Processing.\n\nTCP/IP model commonly uses four layers:\nApplication.\nTransport.\nInternet.\nLink.\n\nIn practical internet networking, protocols do not always map perfectly to individual OSI layers.\n\nEncapsulation:\nWhen data travels down a network stack, protocol headers and sometimes trailers are added to support communication.\n\nExample:\nApplication Data -> TCP Segment -> IP Packet -> Ethernet Frame.\n\nThe receiving device processes the corresponding protocol information to recover the application data.\n\nInterview question: What is the difference between OSI and TCP/IP?\n\nAnswer: OSI is a seven-layer reference model, while TCP/IP describes the protocol architecture used by internet communications, commonly represented using four layers."
+    },
+    {
+      "title": "IP Addressing, Subnetting and Network Devices",
+      "description": "Learn IPv4, IPv6, subnet masks, CIDR, routing basics and common networking devices.",
+      "content": "An IP address identifies a network interface within an IP network and enables packet delivery.\n\nIPv4 uses 32-bit addresses.\nExample: 192.168.1.10.\n\nIPv6 uses 128-bit addresses.\nExample: 2001:db8::1.\n\nIPv4 addresses are commonly written using four decimal octets separated by dots.\n\nPrivate IPv4 address ranges:\n10.0.0.0/8.\n172.16.0.0/12.\n192.168.0.0/16.\n\nPrivate addresses are not globally routed on the public internet.\n\nSubnet Mask:\nSeparates the network portion of an IPv4 address from the host portion.\n\nExample:\nIP Address: 192.168.1.25.\nSubnet Mask: 255.255.255.0.\nCIDR Prefix: /24.\n\nNetwork Address: 192.168.1.0.\nDirected Broadcast Address: 192.168.1.255.\n\nA conventional /24 IPv4 subnet has 256 total addresses and 254 generally usable host addresses.\n\nCIDR means Classless Inter-Domain Routing.\n\nFor IPv4, total addresses in a subnet = 2^(32 - prefix length).\n\nExample:\n192.168.10.0/26.\nHost bits = 32 - 26 = 6.\nTotal addresses = 2^6 = 64.\nGenerally usable host addresses = 62.\n\nThe conventional subtraction of two addresses has exceptions, including /31 point-to-point links and /32 host routes.\n\nNetwork devices:\nHub: Repeats received signals to connected ports in traditional Ethernet networks.\nSwitch: Commonly forwards Ethernet frames using MAC address information.\nRouter: Forwards IP packets between networks.\nAccess Point: Connects wireless devices to a network.\nModem: Converts signals for particular communication technologies.\nFirewall: Applies security rules to network traffic.\n\nMAC Address:\nA link-layer address associated with a network interface. Ethernet MAC addresses are commonly 48 bits.\n\nARP:\nAddress Resolution Protocol resolves IPv4 addresses to link-layer addresses on supported local networks.\n\nIPv6 uses Neighbor Discovery rather than IPv4 ARP.\n\nDefault Gateway:\nA router used to reach destinations outside the local network when no more specific route applies.\n\nInterview question: Switch vs router?\n\nAnswer: A conventional Layer 2 switch forwards frames within a local network using MAC addresses, while a router forwards IP packets between networks using routing information."
+    },
+    {
+      "title": "TCP, UDP and Transport Layer Protocols",
+      "description": "Understand transport protocols, ports, reliability, flow control, congestion control and connection establishment.",
+      "content": "The transport layer provides communication services between application endpoints.\n\nTwo important internet transport protocols are TCP and UDP.\n\nTCP stands for Transmission Control Protocol.\n\nTCP features:\n1. Connection-oriented communication.\n2. Reliable ordered byte-stream delivery.\n3. Sequence numbers and acknowledgments.\n4. Retransmission of lost data.\n5. Flow control.\n6. Congestion control.\n\nTCP connection establishment commonly uses a three-way handshake:\n1. Client sends SYN.\n2. Server replies SYN-ACK.\n3. Client sends ACK.\n\nAfter connection establishment, applications exchange data through the connection.\n\nUDP stands for User Datagram Protocol.\n\nUDP features:\n1. Connectionless communication.\n2. Datagram-oriented delivery.\n3. No built-in guarantee of delivery or ordering.\n4. Lower protocol overhead than TCP in many situations.\n5. Applications can implement additional reliability when needed.\n\nTCP use cases:\nTraditional HTTP/1.1 and HTTP/2 connections.\nSSH.\nSMTP.\nMany database connections.\n\nUDP use cases:\nDNS queries in many common situations.\nVoice and video applications.\nOnline games.\nQUIC transport, which supports HTTP/3.\n\nImportant: HTTP/3 uses QUIC over UDP rather than TCP.\n\nPort Numbers:\nPorts identify transport endpoints used by applications.\n\nCommon ports:\nHTTP: 80.\nHTTPS: 443.\nSSH: 22.\nFTP control: 21.\nDNS: 53, commonly UDP or TCP.\nSMTP: 25.\n\nThese are conventional port assignments, not guarantees that a service always uses the same port.\n\nFlow Control:\nPrevents a sender from overwhelming a receiver's available capacity.\n\nCongestion Control:\nAdjusts sending behavior to reduce network congestion.\n\nTCP provides a byte stream rather than preserving application message boundaries.\n\nInterview question: TCP vs UDP?\n\nAnswer: TCP provides reliable, ordered, connection-oriented byte-stream communication. UDP provides connectionless datagram communication without built-in delivery or ordering guarantees."
+    },
+    {
+      "title": "Application Layer Protocols and Web Communication",
+      "description": "Understand HTTP, HTTPS, DNS, DHCP, email protocols and the request-response lifecycle.",
+      "content": "Application-layer protocols define how network applications exchange information.\n\nHTTP:\nHypertext Transfer Protocol is used to exchange web resources and API messages.\n\nCommon HTTP methods:\nGET: Retrieve a resource representation.\nPOST: Submit data for processing or resource creation.\nPUT: Create or replace a resource at a specified URI according to server semantics.\nPATCH: Apply partial modifications.\nDELETE: Request deletion of a resource.\n\nCommon HTTP status codes:\n200 OK.\n201 Created.\n204 No Content.\n301 Moved Permanently.\n400 Bad Request.\n401 Unauthorized, meaning authentication is required or invalid.\n403 Forbidden.\n404 Not Found.\n500 Internal Server Error.\n503 Service Unavailable.\n\nHTTPS:\nHTTP protected using TLS, providing encryption, integrity protection and authenticated communication under correct configuration.\n\nDNS:\nDomain Name System maps domain names to records such as IPv4 and IPv6 addresses.\n\nExample:\nA browser needs to access example.com.\nDNS resolution helps obtain an address associated with the requested hostname.\n\nCommon DNS records:\nA: IPv4 address.\nAAAA: IPv6 address.\nCNAME: Alias to another domain name.\nMX: Mail exchange information.\nTXT: Text information used for various purposes.\n\nDHCP:\nDynamic Host Configuration Protocol can automatically provide IP configuration to devices.\n\nA common IPv4 DHCP exchange is summarized as DORA:\nDiscover.\nOffer.\nRequest.\nAcknowledge.\n\nEmail protocols:\nSMTP: Used for email submission and transfer.\nIMAP: Used to access and synchronize email messages.\nPOP3: Used to retrieve email messages, often with download-oriented workflows.\n\nWhat happens when a URL is entered in a browser?\n1. The browser interprets the URL.\n2. DNS resolution may occur if an address is not already available.\n3. The client establishes suitable transport connectivity.\n4. TLS negotiation occurs for HTTPS connections when needed.\n5. The browser sends an HTTP request.\n6. The server processes the request and returns a response.\n7. The browser processes and renders the received content.\n\nCaching, connection reuse, proxies and modern transport protocols can alter these steps.\n\nInterview question: HTTP vs HTTPS?\n\nAnswer: HTTPS uses HTTP over a secure transport protected by TLS, while plain HTTP does not provide that TLS protection."
+    },
+    {
+      "title": "Network Security, Troubleshooting and Interview Preparation",
+      "description": "Learn firewalls, NAT, VPNs, common network commands and essential networking interview concepts.",
+      "content": "Network security protects data, devices and communication channels from unauthorized access and disruption.\n\nCommon security concepts:\nConfidentiality: Prevents unauthorized disclosure of information.\nIntegrity: Protects against unauthorized modification.\nAvailability: Ensures services remain accessible when required.\n\nFirewall:\nA system that permits or blocks network traffic according to configured security policies.\n\nNAT:\nNetwork Address Translation modifies network address information as traffic passes through a translating device.\n\nA common use of NAT allows multiple private IPv4 hosts to share a public IPv4 address through address and port translation.\n\nVPN:\nVirtual Private Network provides a protected communication tunnel over another network when correctly configured.\n\nTLS:\nTransport Layer Security protects application communication through cryptographic mechanisms.\n\nCommon network attacks:\nDenial of Service: Attempts to disrupt availability.\nMan-in-the-Middle: Attempts to intercept or manipulate communications between parties.\nSpoofing: Impersonating another identity or address.\nPhishing: Deceptive communication intended to obtain information or induce harmful actions.\n\nNetwork troubleshooting commands:\n\nping:\nTests reachability using ICMP echo messages where supported.\nExample: ping example.com.\n\ntracert or traceroute:\nDisplays information about the route packets take toward a destination, subject to network behavior.\n\nipconfig:\nDisplays IP configuration on Windows.\n\nip addr:\nDisplays network interface addresses on many Linux systems.\n\nnslookup:\nQueries DNS information.\n\nnetstat:\nDisplays network connections and statistics on supported systems.\n\nss:\nDisplays socket information on many Linux systems.\n\nTroubleshooting workflow:\n1. Verify physical or wireless connectivity.\n2. Check IP configuration.\n3. Test the local gateway.\n4. Test reachability to an external IP address.\n5. Test DNS resolution.\n6. Check the application service and port.\n7. Review firewall rules and logs.\n\nA failed ping does not always mean a host is offline because ICMP traffic may be blocked.\n\nImportant interview comparisons:\n\nIP Address vs MAC Address:\nIP addresses support network-layer routing. MAC addresses are used for local-link communication in technologies such as Ethernet.\n\nHub vs Switch:\nA hub repeats traffic to connected ports. A conventional Ethernet switch learns MAC addresses and forwards frames selectively.\n\nRouter vs Gateway:\nA router forwards packets between networks. Gateway is a broader term for a device or service connecting different networks or systems.\n\nBandwidth vs Latency:\nBandwidth refers to communication capacity. Latency refers to delay.\n\nInternet vs Intranet:\nThe internet is a global network of interconnected networks. An intranet is a private network or collection of internal services within an organization.\n\nInterview preparation checklist:\n1. OSI and TCP/IP models.\n2. IPv4 and IPv6.\n3. Subnetting and CIDR.\n4. MAC addresses and ARP.\n5. Switches and routers.\n6. TCP and UDP.\n7. HTTP and HTTPS.\n8. DNS and DHCP.\n9. Firewalls, NAT and VPNs.\n10. Network troubleshooting.\n\nPlacement tip: Explain networking concepts using practical examples such as opening a website, connecting to Wi-Fi or sending an API request."
+    }
+  ],
+  "videos": [
+    {
+      "title": "Computer Networking Full Course",
+      "youtubeUrl": "https://www.youtube.com/watch?v=qiQR5rTSshw",
+      "description": "Supplementary networking course reference covering foundational networking concepts. Verify playback and topic coverage before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Computer Networks and OSI Model",
+      "youtubeUrl": "https://www.youtube.com/watch?v=IPvYjXCsTg8",
+      "description": "Supplementary video reference for network architecture and OSI layers. Verify playback and topic coverage before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "TCP and UDP Networking",
+      "youtubeUrl": "https://www.youtube.com/watch?v=uwoD5YsGACg",
+      "description": "Supplementary video reference for transport-layer concepts. Verify playback and topic coverage before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "DNS and Web Communication",
+      "youtubeUrl": "https://www.youtube.com/watch?v=72snZctFFtA",
+      "description": "Supplementary video reference for DNS and application-layer networking. Verify playback and topic coverage before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Networking Fundamentals and Interview Revision",
+      "youtubeUrl": "https://www.youtube.com/watch?v=3QhU9jd03a0",
+      "description": "Supplementary video reference for networking concepts and interview preparation. Verify playback and topic coverage before publishing.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Which OSI layer is primarily responsible for logical addressing and routing?",
+      "options": [
+        "Physical Layer",
+        "Data Link Layer",
+        "Network Layer",
+        "Application Layer"
+      ],
+      "correctAnswer": 2,
+      "explanation": "The Network Layer handles logical addressing and routing between networks.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "How many bits are present in an IPv4 address?",
+      "options": [
+        "16 bits",
+        "32 bits",
+        "64 bits",
+        "128 bits"
+      ],
+      "correctAnswer": 1,
+      "explanation": "IPv4 addresses contain 32 bits.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which device commonly forwards Ethernet frames based on MAC addresses?",
+      "options": [
+        "Router",
+        "Switch",
+        "Modem",
+        "Repeater"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A conventional Layer 2 Ethernet switch forwards frames using MAC address information.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which protocol provides reliable, ordered byte-stream delivery?",
+      "options": [
+        "UDP",
+        "IP",
+        "TCP",
+        "ARP"
+      ],
+      "correctAnswer": 2,
+      "explanation": "TCP provides reliable, ordered byte-stream communication.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which port is conventionally associated with HTTPS?",
+      "options": [
+        "21",
+        "22",
+        "80",
+        "443"
+      ],
+      "correctAnswer": 3,
+      "explanation": "HTTPS conventionally uses port 443.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the primary purpose of DNS?",
+      "options": [
+        "To encrypt every network packet",
+        "To resolve domain names to DNS records such as IP addresses",
+        "To assign CPU time",
+        "To replace network routers"
+      ],
+      "correctAnswer": 1,
+      "explanation": "DNS resolves domain names to records including A and AAAA address records.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the conventional number of usable host addresses in a /26 IPv4 subnet?",
+      "options": [
+        "30",
+        "62",
+        "126",
+        "254"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A /26 subnet has 6 host bits, giving 64 total addresses and conventionally 62 usable host addresses.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which sequence correctly represents the common TCP three-way handshake?",
+      "options": [
+        "ACK, SYN, FIN",
+        "SYN, SYN-ACK, ACK",
+        "SYN, FIN, ACK",
+        "GET, POST, PUT"
+      ],
+      "correctAnswer": 1,
+      "explanation": "TCP connection establishment commonly uses SYN, SYN-ACK and ACK.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which statement about HTTP/3 is correct?",
+      "options": [
+        "HTTP/3 always uses TCP directly",
+        "HTTP/3 uses QUIC over UDP",
+        "HTTP/3 does not support encryption",
+        "HTTP/3 is a physical-layer protocol"
+      ],
+      "correctAnswer": 1,
+      "explanation": "HTTP/3 uses QUIC, which operates over UDP and provides secure transport functionality.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "A computer can reach an external IP address but cannot access a website using its domain name. Which issue should be investigated first?",
+      "options": [
+        "CPU scheduling",
+        "DNS resolution",
+        "Hard disk fragmentation",
+        "Screen resolution"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Successful IP connectivity combined with failure to access a domain name suggests checking DNS resolution first.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "OSI and TCP/IP Model Comparison",
+      "description": "Explain the layers and functions of common networking models.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "List all seven OSI layers in order and explain the primary responsibility of each. Then list the four commonly used TCP/IP layers and describe how they relate to the OSI model. Give an example protocol or technology for at least five layers."
+    },
+    {
+      "title": "IPv4 Addressing and Subnetting",
+      "description": "Calculate network addresses, broadcast addresses and host capacity.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "For each IPv4 address and prefix, determine the network address, directed broadcast address, total number of addresses and conventional usable host range: (1) 192.168.1.25/24, (2) 192.168.10.70/26, (3) 10.0.5.130/27. Show your calculations."
+    },
+    {
+      "title": "TCP vs UDP Comparison",
+      "description": "Choose suitable transport protocols for different application requirements.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Compare TCP and UDP based on connection establishment, reliability, ordering, overhead and use cases. Explain why traditional HTTP/2 uses TCP, why many DNS queries use UDP and how HTTP/3 uses QUIC over UDP."
+    },
+    {
+      "title": "HTTP Request and DNS Resolution",
+      "description": "Explain how a browser communicates with a web server.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Describe the major steps involved when a user enters https://example.com in a browser. Include DNS resolution, transport connection establishment, TLS, HTTP requests, HTTP responses and rendering. Explain the meanings of status codes 200, 201, 400, 401, 403, 404 and 500."
+    },
+    {
+      "title": "Network Troubleshooting Scenario",
+      "description": "Diagnose connectivity problems using networking concepts and diagnostic commands.",
+      "type": "Written",
+      "difficulty": "Hard",
+      "instructions": "A student's laptop connects to college Wi-Fi but cannot open a placement portal. Design a troubleshooting procedure using IP configuration, gateway checks, ping, DNS queries, traceroute and browser or application checks. Explain how to distinguish DNS failure, local connectivity failure, routing problems, firewall restrictions and server unavailability. Include the limitations of ICMP-based tests."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Cisco Networking Basics",
+      "type": "Website",
+      "url": "https://www.cisco.com/c/en/us/solutions/small-business/resource-center/networking/networking-basics.html",
+      "description": "Introduction to computer networking, network devices and basic concepts."
+    },
+    {
+      "title": "Cloudflare Learning Center - Networking",
+      "type": "Website",
+      "url": "https://www.cloudflare.com/learning/network-layer/what-is-a-computer-network/",
+      "description": "Networking concepts including IP addressing, routing and communication protocols."
+    },
+    {
+      "title": "GeeksforGeeks - Computer Networks",
+      "type": "Website",
+      "url": "https://www.geeksforgeeks.org/computer-networks/",
+      "description": "Computer networking tutorials covering OSI, TCP/IP, subnetting and network protocols."
+    },
+    {
+      "title": "MDN - HTTP Overview",
+      "type": "Documentation",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Overview",
+      "description": "HTTP concepts, web requests, responses and application-layer communication."
+    },
+    {
+      "title": "IETF RFC 9293 - Transmission Control Protocol",
+      "type": "Documentation",
+      "url": "https://www.rfc-editor.org/rfc/rfc9293",
+      "description": "Technical specification of TCP behavior and protocol operation."
+    }
+  ]
+}

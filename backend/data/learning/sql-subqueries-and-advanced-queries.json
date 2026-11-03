@@ -1,0 +1,254 @@
+
+{
+  "topicTitle": "SQL Subqueries and Advanced Queries",
+  "lessons": [
+    {
+      "title": "Introduction to SQL Subqueries",
+      "description": "Understand nested queries, scalar subqueries and subqueries in WHERE clauses.",
+      "content": "A subquery is a SELECT statement nested inside another SQL statement. The inner query produces a value or result set that the outer query uses. Subqueries commonly appear in WHERE, FROM and SELECT clauses.\n\nExample tables: employees(employee_id, name, salary, department_id) and departments(department_id, department_name).\n\nTo find employees earning above the company average:\n\nSELECT name, salary\nFROM employees\nWHERE salary > (\n  SELECT AVG(salary)\n  FROM employees\n);\n\nThe inner SELECT calculates the average salary. The outer SELECT returns employees whose salaries exceed that value.\n\nA scalar subquery returns one column and at most one row. It can be compared using operators such as =, > and <. If it returns multiple rows, a scalar comparison normally produces an error.\n\nSubqueries improve readability when a query depends on a calculated value. However, not every subquery is faster than a JOIN. Database optimizers may transform subqueries internally.\n\nInterview tip: Identify what the inner query returns before analyzing the outer query."
+    },
+    {
+      "title": "IN, NOT IN, ANY and ALL Subqueries",
+      "description": "Use subqueries returning multiple values to filter records.",
+      "content": "A subquery can return multiple rows. The IN operator checks whether a value belongs to the returned set.\n\nFind employees working in departments located in Bengaluru:\n\nSELECT name\nFROM employees\nWHERE department_id IN (\n  SELECT department_id\n  FROM departments\n  WHERE location = 'Bengaluru'\n);\n\nNOT IN selects values absent from a set, but NULL values require special care. If the subquery returns NULL, NOT IN may return no matching rows because SQL uses three-valued logic. NOT EXISTS is often safer for anti-matching queries.\n\nANY compares a value with at least one value returned by a subquery. ALL requires the comparison to hold for every returned value.\n\nExample:\nSELECT name, salary\nFROM employees\nWHERE salary > ALL (\n  SELECT salary\n  FROM employees\n  WHERE department_id = 10\n);\n\nThis returns employees earning more than every non-NULL salary in department 10, assuming the subquery contains salaries. If the subquery is empty, the ALL condition is true; NULL comparisons may yield UNKNOWN.\n\nChoose IN for membership, EXISTS for checking matching rows, and ALL or ANY when the comparison logic specifically requires them."
+    },
+    {
+      "title": "Correlated Subqueries and EXISTS",
+      "description": "Learn how inner queries reference the current row of an outer query.",
+      "content": "A correlated subquery references a column from its surrounding query. Conceptually, the condition is evaluated for each candidate outer row, although the database optimizer may execute it differently.\n\nFind employees whose salaries exceed their own department's average:\n\nSELECT e.name, e.salary\nFROM employees AS e\nWHERE e.salary > (\n  SELECT AVG(e2.salary)\n  FROM employees AS e2\n  WHERE e2.department_id = e.department_id\n);\n\nThe reference e.department_id connects the inner query to the current employee.\n\nEXISTS returns TRUE when its subquery produces at least one row. The selected expressions inside EXISTS do not determine the result; SELECT 1 is conventional.\n\nFind departments containing at least one employee:\n\nSELECT d.department_name\nFROM departments AS d\nWHERE EXISTS (\n  SELECT 1\n  FROM employees AS e\n  WHERE e.department_id = d.department_id\n);\n\nFind departments with no employees:\n\nSELECT d.department_name\nFROM departments AS d\nWHERE NOT EXISTS (\n  SELECT 1\n  FROM employees AS e\n  WHERE e.department_id = d.department_id\n);\n\nEXISTS is useful for checking relationships without duplicating outer rows. Always use aliases to distinguish inner and outer references."
+    },
+    {
+      "title": "GROUP BY, HAVING and Nested Aggregations",
+      "description": "Filter grouped results and combine aggregation with subqueries.",
+      "content": "WHERE filters individual rows before grouping. HAVING filters groups after GROUP BY has calculated aggregates.\n\nFind departments with at least three employees:\n\nSELECT department_id, COUNT(*) AS employee_count\nFROM employees\nGROUP BY department_id\nHAVING COUNT(*) >= 3;\n\nCOUNT(*) counts rows. COUNT(column_name) counts only non-NULL values in that column.\n\nTo find departments whose average salary exceeds the overall company average:\n\nSELECT department_id, AVG(salary) AS average_salary\nFROM employees\nGROUP BY department_id\nHAVING AVG(salary) > (\n  SELECT AVG(salary)\n  FROM employees\n);\n\nThe subquery calculates the company average, while the outer query groups employees by department.\n\nA common logical processing order is FROM, WHERE, GROUP BY, HAVING, SELECT and ORDER BY. This helps explain why aggregate functions generally belong in HAVING rather than WHERE.\n\nAvoid selecting nonaggregated columns that are neither grouped nor functionally dependent on grouping columns. Different database engines enforce grouping rules differently.\n\nInterview tip: Use WHERE for row-level filtering and HAVING for aggregate-based filtering."
+    },
+    {
+      "title": "Derived Tables, CTEs and Advanced Query Patterns",
+      "description": "Organize complex SQL using FROM subqueries and common table expressions.",
+      "content": "A derived table is a subquery inside the FROM clause. It behaves like a temporary result set within the statement and normally requires an alias.\n\nExample:\n\nSELECT department_id, average_salary\nFROM (\n  SELECT department_id, AVG(salary) AS average_salary\n  FROM employees\n  GROUP BY department_id\n) AS department_stats\nWHERE average_salary > 50000;\n\nA common table expression (CTE) gives a named result set using WITH:\n\nWITH department_stats AS (\n  SELECT department_id, AVG(salary) AS average_salary\n  FROM employees\n  GROUP BY department_id\n)\nSELECT department_id, average_salary\nFROM department_stats\nWHERE average_salary > 50000;\n\nCTEs can make long queries easier to understand and maintain. A CTE is not necessarily stored permanently or executed only once; behavior depends on the database optimizer.\n\nAdvanced queries may combine JOIN, EXISTS, GROUP BY, HAVING and CTEs. Break complex requirements into smaller logical steps: identify source tables, define relationships, apply row filters, aggregate if needed, and finally filter or sort results.\n\nPerformance considerations include indexes on join and filter columns, avoiding unnecessary SELECT *, and examining query plans with EXPLAIN. Compare alternative queries using actual execution plans rather than assuming one syntax is always faster.\n\nPractice writing the same problem using a subquery, a JOIN and a CTE, then explain the readability and performance trade-offs."
+    }
+  ],
+  "videos": [
+    {
+      "title": "SQL Tutorial - Full Database Course for Beginners",
+      "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+      "description": "freeCodeCamp SQL course covering relational queries, nested queries and related database concepts.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL Subqueries - Video Search",
+      "youtubeUrl": "https://www.youtube.com/watch?v=0OQJDd3QqQM",
+      "description": "Supplementary SQL query practice. This existing video focuses on joins rather than subqueries.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL SELECT and FROM Statements",
+      "youtubeUrl": "https://www.youtube.com/watch?v=PyYgERKq25I",
+      "description": "Review SELECT and FROM syntax before building nested SQL queries.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL WHERE Statement",
+      "youtubeUrl": "https://www.youtube.com/watch?v=A9TOuDZTPDU",
+      "description": "Understand row filtering, which is essential when writing WHERE subqueries.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL GROUP BY and ORDER BY Statements",
+      "youtubeUrl": "https://www.youtube.com/watch?v=LXwfzIRD-Ds",
+      "description": "Review grouping and sorting before combining aggregates with HAVING and nested queries.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "What is a subquery in SQL?",
+      "options": [
+        "A query nested inside another SQL statement",
+        "A database backup",
+        "A type of primary key",
+        "A stored table"
+      ],
+      "correctAnswer": 0,
+      "explanation": "A subquery is a SELECT statement used inside another SQL statement.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which operator checks whether a value belongs to a set returned by a subquery?",
+      "options": [
+        "BETWEEN",
+        "LIKE",
+        "IN",
+        "ORDER BY"
+      ],
+      "correctAnswer": 2,
+      "explanation": "IN tests membership in a list or subquery result.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which clause filters groups based on aggregate values?",
+      "options": [
+        "WHERE",
+        "HAVING",
+        "FROM",
+        "DISTINCT"
+      ],
+      "correctAnswer": 1,
+      "explanation": "HAVING filters groups after aggregation.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What makes a subquery correlated?",
+      "options": [
+        "It contains ORDER BY",
+        "It uses DISTINCT",
+        "It always returns one row",
+        "It references a column from the outer query"
+      ],
+      "correctAnswer": 3,
+      "explanation": "A correlated subquery depends on values from its surrounding query.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What does EXISTS test?",
+      "options": [
+        "Whether a subquery returns at least one row",
+        "Whether a table has a primary key",
+        "Whether every column is non-NULL",
+        "Whether a query contains GROUP BY"
+      ],
+      "correctAnswer": 0,
+      "explanation": "EXISTS evaluates to TRUE when the subquery produces at least one row.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which expression finds employees earning above the company average?",
+      "options": [
+        "salary > COUNT(*)",
+        "salary > (SELECT AVG(salary) FROM employees)",
+        "salary = GROUP BY salary",
+        "salary IN ORDER BY salary"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A scalar subquery calculates the average salary for comparison.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is a common problem with NOT IN when the subquery returns NULL?",
+      "options": [
+        "It always deletes rows",
+        "It creates duplicate tables",
+        "It may return no rows because comparisons become UNKNOWN",
+        "It automatically converts to INNER JOIN"
+      ],
+      "correctAnswer": 2,
+      "explanation": "NULL values in a NOT IN result can make the predicate UNKNOWN for candidate rows.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "Which SQL keyword begins a common table expression?",
+      "options": [
+        "WITH",
+        "EXPLAIN",
+        "HAVING",
+        "UNION"
+      ],
+      "correctAnswer": 0,
+      "explanation": "WITH introduces one or more common table expressions.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Where is a derived table written?",
+      "options": [
+        "Only in ORDER BY",
+        "Only in INSERT",
+        "Inside a primary key definition",
+        "Inside the FROM clause"
+      ],
+      "correctAnswer": 3,
+      "explanation": "A derived table is a subquery used as a table expression in FROM.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What does > ALL (subquery) mean for a nonempty result containing no NULLs?",
+      "options": [
+        "Greater than at least one returned value",
+        "Greater than every returned value",
+        "Equal to the maximum returned value",
+        "Less than every returned value"
+      ],
+      "correctAnswer": 1,
+      "explanation": "ALL requires the comparison to be true for every value in the subquery result.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Employees Above Average Salary",
+      "description": "Use a scalar subquery to compare employee salaries against the company average.",
+      "type": "SQL",
+      "difficulty": "Easy",
+      "instructions": "Table: employees(employee_id, employee_name, salary, department_id). Write a query returning employee_name and salary for employees whose salary is greater than the average salary of all employees. Use a subquery with AVG(salary)."
+    },
+    {
+      "title": "Employees in Bengaluru Departments",
+      "description": "Use IN with a subquery to filter employees by department location.",
+      "type": "SQL",
+      "difficulty": "Easy",
+      "instructions": "Tables: employees(employee_id, employee_name, department_id) and departments(department_id, department_name, location). Return employee_name for employees whose department is located in Bengaluru. Use WHERE department_id IN (SELECT ...)."
+    },
+    {
+      "title": "Employees Above Their Department Average",
+      "description": "Solve a department-based salary comparison using a correlated subquery.",
+      "type": "SQL",
+      "difficulty": "Medium",
+      "instructions": "Table: employees(employee_id, employee_name, salary, department_id). Return employee_name, department_id and salary for employees earning more than the average salary of their own department. Use table aliases and a correlated AVG subquery."
+    },
+    {
+      "title": "Departments Without Employees",
+      "description": "Identify departments with no matching employees using NOT EXISTS.",
+      "type": "SQL",
+      "difficulty": "Medium",
+      "instructions": "Tables: departments(department_id, department_name) and employees(employee_id, employee_name, department_id). Return department_id and department_name for departments containing no employees. Use NOT EXISTS with a correlated subquery."
+    },
+    {
+      "title": "High-Paying Departments Using HAVING and CTE",
+      "description": "Combine grouping, aggregate filtering and common table expressions.",
+      "type": "SQL",
+      "difficulty": "Hard",
+      "instructions": "Table: employees(employee_id, employee_name, salary, department_id). Write one query using GROUP BY and HAVING to return departments whose average salary exceeds the overall company average. Then write an equivalent query using WITH to calculate department averages. Return department_id and average_salary."
+    }
+  ],
+  "resources": [
+    {
+      "title": "MySQL Reference Manual - Subqueries",
+      "type": "Documentation",
+      "url": "https://dev.mysql.com/doc/refman/8.4/en/subqueries.html",
+      "description": "Official MySQL documentation explaining scalar, row and table subqueries."
+    },
+    {
+      "title": "MySQL Reference Manual - EXISTS and NOT EXISTS",
+      "type": "Documentation",
+      "url": "https://dev.mysql.com/doc/refman/8.4/en/exists-and-not-exists-subqueries.html",
+      "description": "Official examples of existence tests and correlated subqueries."
+    },
+    {
+      "title": "MySQL Reference Manual - GROUP BY",
+      "type": "Documentation",
+      "url": "https://dev.mysql.com/doc/refman/8.4/en/group-by-modifiers.html",
+      "description": "Reference material for grouped query behavior and grouping extensions."
+    },
+    {
+      "title": "PostgreSQL Documentation - Subquery Expressions",
+      "type": "Documentation",
+      "url": "https://www.postgresql.org/docs/current/functions-subquery.html",
+      "description": "Detailed explanation of EXISTS, IN, ANY and ALL subquery expressions."
+    },
+    {
+      "title": "PostgreSQL Documentation - WITH Queries",
+      "type": "Documentation",
+      "url": "https://www.postgresql.org/docs/current/queries-with.html",
+      "description": "Official guide to common table expressions and complex query organization."
+    }
+  ]
+}

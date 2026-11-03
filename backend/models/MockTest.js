@@ -1,8 +1,9 @@
+
 const mongoose = require("mongoose");
 
-// ==============================
+// ==========================================
 // MOCK ROUND SCHEMA
-// ==============================
+// ==========================================
 const mockRoundSchema = new mongoose.Schema(
   {
     roundName: {
@@ -20,8 +21,17 @@ const mockRoundSchema = new mongoose.Schema(
         "Technical",
         "Coding",
         "SQL",
+        "Communication",
+        "Interview",
       ],
       required: true,
+    },
+
+    // More specific assessment category
+    sectionKey: {
+      type: String,
+      trim: true,
+      default: "",
     },
 
     order: {
@@ -34,6 +44,13 @@ const mockRoundSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 1,
+    },
+
+    // Optional shortened duration for demo
+    demoDurationMinutes: {
+      type: Number,
+      min: 1,
+      default: null,
     },
 
     totalMarks: {
@@ -54,15 +71,29 @@ const mockRoundSchema = new mongoose.Schema(
       min: 0,
       default: 0,
     },
+
+    demoNumberOfQuestions: {
+      type: Number,
+      min: 0,
+      default: null,
+    },
+
+    instructions: {
+      type: [String],
+      default: [],
+    },
+
+    isOptional: {
+      type: Boolean,
+      default: false,
+    },
   },
-  {
-    _id: true,
-  }
+  { _id: true }
 );
 
-// ==============================
+// ==========================================
 // MOCK TEST SCHEMA
-// ==============================
+// ==========================================
 const mockTestSchema = new mongoose.Schema(
   {
     title: {
@@ -81,6 +112,41 @@ const mockTestSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+    },
+
+    hiringTrack: {
+      type: String,
+      trim: true,
+      default: "General Graduate Hiring",
+    },
+
+    targetRole: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
+    // Identifies which published pattern is used
+    patternYear: {
+      type: Number,
+      default: null,
+    },
+
+    patternSourceUrl: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+
+    patternVerifiedAt: {
+      type: Date,
+      default: null,
+    },
+
+    patternStatus: {
+      type: String,
+      enum: ["Draft", "Verified", "Archived"],
+      default: "Draft",
     },
 
     difficulty: {
@@ -118,22 +184,71 @@ const mockTestSchema = new mongoose.Schema(
       default: [],
     },
 
-    // ==============================
+    // ======================================
+    // PRACTICE CONFIGURATION
+    // ======================================
+    practiceEnabled: {
+      type: Boolean,
+      default: true,
+    },
+
+    allowRoundPractice: {
+      type: Boolean,
+      default: true,
+    },
+
+    allowFullSimulation: {
+      type: Boolean,
+      default: true,
+    },
+
+    allowDemoMode: {
+      type: Boolean,
+      default: true,
+    },
+
+    allowRetry: {
+      type: Boolean,
+      default: true,
+    },
+
+    showSolutionsAfterSubmission: {
+      type: Boolean,
+      default: true,
+    },
+
+    // ======================================
+    // AI INTERVIEW
+    // ======================================
+    aiInterviewEnabled: {
+      type: Boolean,
+      default: true,
+    },
+
+    interviewQuestionCount: {
+      type: Number,
+      min: 1,
+      default: 5,
+    },
+
+    // ======================================
     // PROCTORING CONFIGURATION
-    // ==============================
+    // ======================================
     proctoringEnabled: {
       type: Boolean,
       default: true,
     },
 
+    // Practice mode should not require
+    // fullscreen or camera by default.
     requireFullscreen: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
     requireCamera: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
     maxTabSwitches: {
@@ -142,14 +257,22 @@ const mockTestSchema = new mongoose.Schema(
       default: 3,
     },
 
+    // Keep this field for compatibility,
+    // but default to warnings only.
     autoSubmitOnViolation: {
       type: Boolean,
-      default: true,
+      default: false,
     },
 
-    // ==============================
+    proctoringMode: {
+      type: String,
+      enum: ["Off", "Warning", "Strict"],
+      default: "Warning",
+    },
+
+    // ======================================
     // AVAILABILITY
-    // ==============================
+    // ======================================
     startDate: {
       type: Date,
       default: null,
@@ -160,10 +283,11 @@ const mockTestSchema = new mongoose.Schema(
       default: null,
     },
 
+    // Null means unlimited attempts.
     maxAttempts: {
       type: Number,
       min: 1,
-      default: 1,
+      default: null,
     },
 
     isActive: {
@@ -182,6 +306,22 @@ const mockTestSchema = new mongoose.Schema(
   }
 );
 
+// ==========================================
+// INDEXES
+// ==========================================
+mockTestSchema.index({
+  companyName: 1,
+  isActive: 1,
+});
+
+mockTestSchema.index({
+  companyName: 1,
+  hiringTrack: 1,
+});
+
+// ==========================================
+// EXPORT
+// ==========================================
 module.exports = mongoose.model(
   "MockTest",
   mockTestSchema

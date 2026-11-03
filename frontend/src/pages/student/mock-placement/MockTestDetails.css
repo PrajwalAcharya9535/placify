@@ -772,3 +772,38 @@
     padding: 12px;
   }
 }
+
+
+
+/* ==========================================
+   MOCK DETAILS — SCROLL FIX
+========================================== */
+
+.mock-details-page {
+  min-height: 100vh;
+  height: auto;
+  overflow-y: auto;
+}
+
+.mock-details-container {
+  height: auto;
+  min-height: 100%;
+  overflow: visible;
+}
+
+.mock-details-layout {
+  height: auto;
+  align-items: start;
+}
+
+.mock-attempt-panel {
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  align-self: start;
+  padding-bottom: 24px;
+}
+
+.mock-rounds-section {
+  min-height: 0;
+}

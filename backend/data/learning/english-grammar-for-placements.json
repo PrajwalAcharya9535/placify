@@ -1,0 +1,234 @@
+
+{
+  "topicTitle": "English Grammar for Placements",
+  "lessons": [
+    {
+      "title": "Parts of Speech and Sentence Structure",
+      "description": "Understand the fundamental components of English sentences and their grammatical functions.",
+      "content": "English grammar is an important part of verbal ability assessments conducted during campus placements and recruitment examinations.\n\nThe eight traditional parts of speech are nouns, pronouns, verbs, adjectives, adverbs, prepositions, conjunctions and interjections.\n\n1. Noun: Names a person, place, thing or idea.\nExample: The developer completed the project.\n\n2. Pronoun: Replaces a noun.\nExample: She completed the assignment.\n\n3. Verb: Expresses an action or state.\nExample: The application runs successfully.\n\n4. Adjective: Describes a noun or pronoun.\nExample: He developed an efficient algorithm.\n\n5. Adverb: Modifies a verb, adjective or another adverb.\nExample: The application runs efficiently.\n\n6. Preposition: Expresses relationships involving time, place, direction or other connections.\nExample: The interview starts at 10 AM.\n\n7. Conjunction: Connects words, phrases or clauses.\nExample: I know Java and Python.\n\n8. Interjection: Expresses an immediate reaction.\nExample: Wow! That was impressive.\n\nBasic sentence structure:\nSubject + Verb + Object.\nExample: The student solved the problem.\n\nSubject = The student.\nVerb = solved.\nObject = the problem.\n\nOther common patterns include:\nSubject + Verb: The server crashed.\nSubject + Verb + Complement: The result is correct.\nSubject + Verb + Indirect Object + Direct Object: The trainer gave students feedback.\n\nSentence types:\nDeclarative: She completed the project.\nInterrogative: Did she complete the project?\nImperative: Complete the project.\nExclamatory: What an excellent presentation!\n\nCommon placement errors:\nIncorrect: He is a honest employee.\nCorrect: He is an honest employee.\n\nIncorrect: She is good in Java.\nCorrect: She is good at Java.\n\nPlacement tip: Identify the subject, main verb and intended meaning before correcting a sentence."
+    },
+    {
+      "title": "Tenses and Verb Forms",
+      "description": "Learn present, past and future tenses and their correct usage in verbal aptitude questions.",
+      "content": "Tenses indicate the time of an action or state. English also uses grammatical aspect to distinguish simple, continuous, perfect and perfect continuous forms.\n\nPresent Simple:\nStructure: Subject + base verb, with -s or -es for most third-person singular subjects.\nExample: She writes Java programs.\n\nPresent Continuous:\nStructure: Subject + am/is/are + verb-ing.\nExample: She is preparing for an interview.\n\nPresent Perfect:\nStructure: Subject + has/have + past participle.\nExample: She has completed the assignment.\n\nPresent Perfect Continuous:\nStructure: Subject + has/have been + verb-ing.\nExample: She has been studying for two hours.\n\nPast Simple:\nExample: He attended the interview yesterday.\n\nPast Continuous:\nExample: He was studying when the recruiter called.\n\nPast Perfect:\nExample: The interview had started before he arrived.\n\nPast Perfect Continuous:\nExample: She had been working for three hours before the break.\n\nFuture Simple:\nExample: I will attend the interview tomorrow.\n\nFuture Continuous:\nExample: I will be preparing at 8 PM.\n\nFuture Perfect:\nExample: I will have completed the course by Friday.\n\nFuture Perfect Continuous:\nExample: By December, she will have been working here for two years.\n\nImportant rules:\n1. Use the past simple for completed actions at a specified past time.\n2. Use the present perfect when a past event has a relevant connection to the present and no finished past-time expression is specified.\n3. Use the past perfect to clarify an action completed before another past event.\n4. Use 'since' for a starting point and 'for' for a duration.\n\nIncorrect: I have completed my degree last year.\nCorrect: I completed my degree last year.\n\nIncorrect: She is working here since 2022.\nCorrect: She has been working here since 2022.\n\nPlacement tip: Time expressions such as yesterday, since, for, already, by and tomorrow help identify the appropriate tense."
+    },
+    {
+      "title": "Subject-Verb Agreement and Articles",
+      "description": "Understand agreement rules, determiners and correct usage of a, an and the.",
+      "content": "Subject-verb agreement means that a verb must agree with its subject in number and person.\n\nSingular subject:\nThe student works hard.\n\nPlural subject:\nThe students work hard.\n\nCommon rules:\n1. He, she and it usually take a verb ending in -s or -es in the present simple.\n2. I and you take the base verb form in the present simple.\n3. A phrase between the subject and verb usually does not change agreement.\n4. Subjects connected by 'and' generally take a plural verb when they refer to separate people or things.\n5. Words such as everyone, somebody and each normally take singular agreement.\n\nExamples:\nCorrect: Each student has a laptop.\nCorrect: The list of candidates is ready.\nCorrect: The manager and the developer are attending the meeting.\n\nEither-or and neither-nor constructions commonly use agreement with the nearer subject in formal placement grammar exercises.\n\nExample: Neither the manager nor the employees are available.\nExample: Neither the employees nor the manager is available.\n\nArticles:\nA is used before a consonant sound.\nAn is used before a vowel sound.\nThe identifies something specific or already known.\n\nExamples:\nA university, because university begins with a consonant /y/ sound.\nAn hour, because hour begins with a vowel sound.\nAn engineer.\nThe employee who submitted the report.\n\nIncorrect: She is an university student.\nCorrect: She is a university student.\n\nIncorrect: Everyone have submitted the form.\nCorrect: Everyone has submitted the form.\n\nPlacement tip: Determine the true subject rather than the noun closest to the verb."
+    },
+    {
+      "title": "Prepositions, Conjunctions and Modifiers",
+      "description": "Learn correct word relationships, sentence connections and modifier placement.",
+      "content": "Prepositions express relationships between words and phrases.\n\nCommon prepositions include in, on, at, by, with, from, to, for, between and among.\n\nTime expressions:\nAt 9 AM.\nOn Monday.\nIn October.\nSince 2023.\nFor three years.\n\nPlace expressions:\nAt the office.\nIn Bengaluru.\nOn the table.\n\nCommon verb-preposition combinations:\nDepend on.\nInterested in.\nResponsible for.\nGood at.\nApply for a job.\n\nConjunctions connect ideas.\n\nCoordinating conjunctions include for, and, nor, but, or, yet and so.\n\nExample: She prepared well, but she was nervous.\n\nSubordinating conjunctions include because, although, while, if, unless and since.\n\nExample: Although the question was difficult, he solved it.\n\nCorrelative conjunctions include either...or, neither...nor and not only...but also.\n\nExample: She knows both Java and Python.\n\nModifiers provide additional information about words or phrases. Incorrect placement can change meaning.\n\nAmbiguous: She almost completed all the assignments.\nClearer: She completed almost all the assignments.\n\nThe first sentence may suggest that she came close to completing them without actually doing so. The second clearly means that most assignments were completed.\n\nParallel structure requires related elements to follow a consistent grammatical pattern.\n\nIncorrect: She enjoys coding, testing and to design applications.\nCorrect: She enjoys coding, testing and designing applications.\n\nPlacement tip: For sentence correction, check prepositions, conjunction pairs, modifier placement and parallel structure."
+    },
+    {
+      "title": "Error Detection, Sentence Correction and Voice",
+      "description": "Practice identifying grammatical errors, improving sentences and converting active and passive voice.",
+      "content": "Error detection and sentence correction are common verbal aptitude question types.\n\nA reliable correction process is:\n1. Identify the subject and main verb.\n2. Check subject-verb agreement.\n3. Verify tense consistency.\n4. Examine articles and prepositions.\n5. Check pronouns and modifiers.\n6. Ensure the corrected sentence preserves the intended meaning.\n\nExample 1:\nIncorrect: He do not know the answer.\nCorrect: He does not know the answer.\n\nExample 2:\nIncorrect: She has went to the office.\nCorrect: She has gone to the office.\n\nExample 3:\nIncorrect: I am senior than him.\nCorrect: I am senior to him.\n\nExample 4:\nIncorrect: The informations are useful.\nCorrect: The information is useful.\n\nActive voice places the subject performing the action in focus.\nExample: The developer fixed the bug.\n\nPassive voice places the affected object in subject position.\nExample: The bug was fixed by the developer.\n\nPassive construction commonly uses an appropriate form of 'be' plus the past participle.\n\nPresent simple:\nActive: The team reviews the code.\nPassive: The code is reviewed by the team.\n\nPast simple:\nActive: The tester identified the issue.\nPassive: The issue was identified by the tester.\n\nFuture simple:\nActive: The manager will announce the result.\nPassive: The result will be announced by the manager.\n\nDirect and indirect speech:\nDirect: He said, 'I am ready.'\nIndirect: He said that he was ready.\n\nReported speech changes depend on reporting context, time reference and whether the information remains true.\n\nPlacement tip: Do not change a grammatically correct sentence simply because an alternative wording sounds more formal."
+    }
+  ],
+  "videos": [
+    {
+      "title": "English Grammar - Parts of Speech",
+      "youtubeUrl": "https://www.youtube.com/watch?v=0l69KEx7GQo",
+      "description": "Supplementary English grammar video reference. Exact topic and playback have not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "English Tenses Explained",
+      "youtubeUrl": "https://www.youtube.com/watch?v=3lI3R9_Z1HY",
+      "description": "Supplementary video reference for tense revision. Exact topic and playback have not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Subject-Verb Agreement and Articles",
+      "youtubeUrl": "https://www.youtube.com/watch?v=AVYfyTvc9KY",
+      "description": "Supplementary grammar video reference. Exact topic and playback have not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Prepositions and Sentence Structure",
+      "youtubeUrl": "https://www.youtube.com/watch?v=8F9h4Z7V6pA",
+      "description": "Supplementary video reference. Exact topic and playback have not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "English Grammar Error Detection Practice",
+      "youtubeUrl": "https://www.youtube.com/watch?v=QzY57FaENXg",
+      "description": "Supplementary video reference. Exact topic and playback have not been verified.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Choose the grammatically correct sentence.",
+      "options": [
+        "She go to college every day.",
+        "She goes to college every day.",
+        "She going to college every day.",
+        "She gone to college every day."
+      ],
+      "correctAnswer": 1,
+      "explanation": "The third-person singular subject 'she' takes 'goes' in the present simple.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Choose the correct article: He is ___ honest employee.",
+      "options": ["a", "an", "the", "no article"],
+      "correctAnswer": 1,
+      "explanation": "'Honest' begins with a vowel sound because the h is silent, so 'an' is appropriate.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Choose the correct verb: Each of the students ___ a laptop.",
+      "options": ["have", "has", "having", "are having"],
+      "correctAnswer": 1,
+      "explanation": "'Each' is singular and takes 'has'.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Fill in the blank: She has been working here ___ 2022.",
+      "options": ["for", "since", "from", "during"],
+      "correctAnswer": 1,
+      "explanation": "'Since' introduces the starting point of an action continuing into the present.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Identify the correct past tense sentence.",
+      "options": [
+        "He has attended the interview yesterday.",
+        "He attends the interview yesterday.",
+        "He attended the interview yesterday.",
+        "He had attend the interview yesterday."
+      ],
+      "correctAnswer": 2,
+      "explanation": "The past simple is appropriate for a completed action at the specified past time 'yesterday'.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Choose the correct preposition: She is interested ___ software development.",
+      "options": ["on", "at", "in", "for"],
+      "correctAnswer": 2,
+      "explanation": "The standard expression is 'interested in'.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Choose the sentence with correct parallel structure.",
+      "options": [
+        "He likes coding, testing and to debug.",
+        "He likes coding, testing and debugging.",
+        "He likes code, testing and to debug.",
+        "He likes coding, to test and debugging."
+      ],
+      "correctAnswer": 1,
+      "explanation": "Coding, testing and debugging use parallel -ing forms.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Select the correct passive voice of: The developer fixed the bug.",
+      "options": [
+        "The bug fixed the developer.",
+        "The bug was fixed by the developer.",
+        "The bug is fixing by the developer.",
+        "The developer was fixed by the bug."
+      ],
+      "correctAnswer": 1,
+      "explanation": "Past simple passive uses 'was/were + past participle'.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Choose the correct sentence.",
+      "options": [
+        "Neither the manager nor the employees is available.",
+        "Neither the manager nor the employees are available.",
+        "Neither the manager nor the employees has available.",
+        "Neither the manager nor the employees was available yesterday are."
+      ],
+      "correctAnswer": 1,
+      "explanation": "With neither...nor, formal placement grammar commonly uses agreement with the nearer subject. 'Employees' is plural, so 'are' is used.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "Choose the correct sentence using the present perfect.",
+      "options": [
+        "She has wrote the report.",
+        "She have written the report.",
+        "She has written the report.",
+        "She has writing the report."
+      ],
+      "correctAnswer": 2,
+      "explanation": "The present perfect uses 'has/have + past participle'. The past participle of 'write' is 'written'.",
+      "difficulty": "Medium"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Identify Parts of Speech",
+      "description": "Recognize grammatical functions in a professional sentence.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "Identify the parts of speech of the words 'skilled', 'developer', 'quickly', 'fixed' and 'the' in this sentence: 'The skilled developer quickly fixed the application.' Explain the function of each word."
+    },
+    {
+      "title": "Tense Correction Practice",
+      "description": "Correct errors involving tense and verb forms.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Correct these sentences and explain each correction: (1) She has completed her degree last year. (2) I am learning Java since January. (3) He has went to the office. (4) They was preparing for the interview. (5) She will completed the task tomorrow."
+    },
+    {
+      "title": "Subject-Verb Agreement Challenge",
+      "description": "Choose correct verbs for singular, plural and compound subjects.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Fill in the correct verbs: (1) Each student ___ a resume. (has/have) (2) The list of candidates ___ ready. (is/are) (3) Neither the trainer nor the students ___ absent. (is/are) (4) The manager and the developer ___ attending. (is/are) (5) Everyone ___ submitted the form. (has/have)."
+    },
+    {
+      "title": "Sentence Improvement and Error Detection",
+      "description": "Improve grammatical accuracy and professional clarity.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Rewrite these sentences correctly: (1) He is good in Java. (2) She is an university student. (3) The informations are useful. (4) He do not understand the question. (5) She enjoys coding, testing and to design applications. Explain the error in each sentence."
+    },
+    {
+      "title": "Placement Grammar Assessment",
+      "description": "Practice advanced grammar, voice and reported speech.",
+      "type": "Written",
+      "difficulty": "Hard",
+      "instructions": "Complete the following tasks: (1) Convert 'The team reviews the code' into passive voice. (2) Convert 'The tester identified the issue' into passive voice. (3) Rewrite 'He said, I am ready' using reported speech, assuming the reporting context requires tense backshift. (4) Correct 'Neither the employees nor the manager are available.' (5) Explain the difference between 'She worked here for three years' and 'She has worked here for three years'."
+    }
+  ],
+  "resources": [
+    {
+      "title": "British Council - English Grammar",
+      "type": "Website",
+      "url": "https://learnenglish.britishcouncil.org/grammar",
+      "description": "Grammar explanations and interactive exercises for English learners."
+    },
+    {
+      "title": "Cambridge Dictionary - English Grammar",
+      "type": "Documentation",
+      "url": "https://dictionary.cambridge.org/grammar/british-grammar/",
+      "description": "Reference material covering grammar rules and usage."
+    },
+    {
+      "title": "Purdue OWL - Grammar",
+      "type": "Website",
+      "url": "https://owl.purdue.edu/owl/general_writing/grammar/index.html",
+      "description": "Grammar guidance, sentence structure and writing rules."
+    },
+    {
+      "title": "IndiaBIX - Verbal Ability",
+      "type": "Website",
+      "url": "https://www.indiabix.com/verbal-ability/questions-and-answers/",
+      "description": "Placement-oriented English grammar and verbal ability practice."
+    },
+    {
+      "title": "Perfect English Grammar",
+      "type": "Website",
+      "url": "https://www.perfect-english-grammar.com/",
+      "description": "Tense explanations, grammar exercises and revision materials."
+    }
+  ]
+}

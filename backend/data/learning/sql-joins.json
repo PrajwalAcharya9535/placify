@@ -1,0 +1,253 @@
+{
+  "topicTitle": "SQL Joins",
+  "lessons": [
+    {
+      "title": "Understanding Joins and INNER JOIN",
+      "description": "Connect related rows using matching keys.",
+      "content": "A relational database often separates data into related tables to reduce duplication. A JOIN combines rows from two tables according to a condition, typically a foreign key referring to a primary key. Consider departments(department_id, department_name) and employees(employee_id, employee_name, department_id). One department can have many employees. Use aliases to keep column references clear.\n\nINNER JOIN returns only row combinations where the ON condition is TRUE. SQL example:\nSELECT e.employee_name, d.department_name\nFROM employees AS e\nINNER JOIN departments AS d ON e.department_id = d.department_id;\n\nIf an employee has no matching department, that employee is absent from the result. If a department has no employees, it is absent too. When keys are not unique, joins can return more than one result per row. This is not automatically a duplicate bug: a one-to-many relationship legitimately multiplies rows. Always identify the intended relationship and join keys before writing the query.\n\nFor a practical check, start with employees (Asha, department 10), (Ravi, department 20), (Neha, NULL) and departments (10, Engineering), (30, HR). The INNER JOIN returns only Asha–Engineering. In a join, NULL = NULL is UNKNOWN, not TRUE, so NULL join keys do not match using =. Use explicit table aliases for shared column names. Avoid comma-separated implicit joins because forgetting the condition can produce a Cartesian product."
+    },
+    {
+      "title": "LEFT JOIN and Missing Relationships",
+      "description": "Keep every row from the left table and detect unmatched records.",
+      "content": "LEFT JOIN, also called LEFT OUTER JOIN, preserves all rows from the table on the left. When no matching right-hand row exists, right-side columns are NULL. This is useful when you want all customers, including customers with no orders.\n\nSELECT c.customer_id, c.customer_name, o.order_id\nFROM customers AS c\nLEFT JOIN orders AS o ON o.customer_id = c.customer_id;\n\nOne customer with three orders appears three times. A customer with no orders appears once with NULL order_id. To find customers without orders, filter for a nonnullable right-side key:\nSELECT c.customer_id, c.customer_name\nFROM customers AS c\nLEFT JOIN orders AS o ON o.customer_id = c.customer_id\nWHERE o.order_id IS NULL;\n\nThe location of conditions matters. To keep all customers while attaching only shipped orders, put the order filter in ON:\nLEFT JOIN orders AS o ON o.customer_id = c.customer_id AND o.status = 'shipped'.\nPutting o.status = 'shipped' in WHERE would remove customers without matching shipped orders, effectively losing the outer-join preservation. For aggregations, COUNT(o.order_id) counts only matching non-NULL orders; COUNT(*) counts the unmatched placeholder row too. GROUP BY c.customer_id, c.customer_name when calculating order counts."
+    },
+    {
+      "title": "RIGHT JOIN and FULL OUTER JOIN",
+      "description": "Compare join directions and learn how to include unmatched rows on both sides.",
+      "content": "RIGHT JOIN preserves every row from the right-hand table and fills unmatched left-side columns with NULL. It is logically equivalent to swapping the tables in a LEFT JOIN:\nSELECT e.employee_name, d.department_name\nFROM employees AS e\nRIGHT JOIN departments AS d ON e.department_id = d.department_id;\n\nThis returns every department, including departments with no employees. Many teams prefer LEFT JOIN because reading the preserved table first is often clearer.\n\nFULL OUTER JOIN preserves all matched rows and all unmatched rows from both tables. Standard SQL example:\nSELECT a.account_id, b.payment_id\nFROM accounts AS a\nFULL OUTER JOIN payments AS b ON a.account_id = b.account_id;\n\nDatabase support differs. PostgreSQL and SQL Server support FULL OUTER JOIN; MySQL does not provide a native FULL OUTER JOIN operator. In MySQL, one common equivalent is a LEFT JOIN result UNION ALL with the right-only rows from a reversed LEFT JOIN, filtered on a nonnullable left-side key. Do not use UNION without considering its duplicate-removal semantics. An unmatched row from either side has NULL values for the missing table. Test cases with matches, left-only rows, right-only rows, and repeated join keys to validate correctness."
+    },
+    {
+      "title": "SELF JOIN, CROSS JOIN and Multi-Table Joins",
+      "description": "Join a table to itself and compose queries across three or more tables.",
+      "content": "A SELF JOIN joins a table to itself using different aliases. It is useful for hierarchical relationships such as employee-manager pairs when employees(manager_id) references employees(employee_id).\n\nSELECT e.employee_name AS employee, m.employee_name AS manager\nFROM employees AS e\nLEFT JOIN employees AS m ON e.manager_id = m.employee_id;\n\nLEFT JOIN keeps top-level employees whose manager_id is NULL. With INNER JOIN, they would disappear.\n\nCROSS JOIN produces every combination of left and right rows: a table with 4 sizes crossed with 3 colors yields 12 combinations. This is useful for generating combinations but can explode in size, so use it deliberately:\nSELECT s.size_name, c.color_name FROM sizes AS s CROSS JOIN colors AS c;\n\nFor a multi-table query, chain joins and connect each table using the correct relationship:\nSELECT o.order_id, c.customer_name, p.product_name, oi.quantity\nFROM orders AS o\nJOIN customers AS c ON c.customer_id = o.customer_id\nJOIN order_items AS oi ON oi.order_id = o.order_id\nJOIN products AS p ON p.product_id = oi.product_id;\n\nThe output grain here is one row per order item, not one row per order. To count orders without inflating totals from order_items, use COUNT(DISTINCT o.order_id) when appropriate. Prefer explicit JOIN ... ON clauses and qualify ambiguous columns."
+    },
+    {
+      "title": "Join Debugging, Aggregation and Performance",
+      "description": "Avoid accidental row multiplication, misplaced filters and slow join plans.",
+      "content": "Before joining, determine the expected output grain: one row per customer, order, or order item? A join against a one-to-many table multiplies rows. This can cause incorrect SUM or COUNT results. For example, joining orders to order_items and then counting COUNT(*) counts items, not orders. To count orders use COUNT(DISTINCT o.order_id), or aggregate order_items to order level before joining.\n\nSELECT c.customer_id, c.customer_name, COUNT(o.order_id) AS order_count\nFROM customers AS c\nLEFT JOIN orders AS o ON o.customer_id = c.customer_id\nGROUP BY c.customer_id, c.customer_name;\n\nUse COUNT(o.order_id), not COUNT(*), when customers with no orders should have count 0. To compare a join with an existence test, use EXISTS when you only need to know whether related rows exist:\nSELECT c.customer_id\nFROM customers AS c\nWHERE EXISTS (SELECT 1 FROM orders AS o WHERE o.customer_id = c.customer_id);\n\nEXISTS avoids multiplying customer rows by their orders. Indexes on foreign keys and join columns often help the optimizer locate matching rows. Use EXPLAIN to inspect query plans, row estimates and access paths; performance depends on table sizes, data distribution, indexes and database engine. Debug joins incrementally: start with one table, add one join at a time, compare counts, inspect NULLs, and verify ON versus WHERE conditions. Do not assume SELECT DISTINCT fixes an incorrect join; fix the relationship or aggregation instead."
+    }
+  ],
+  "videos": [
+    {
+      "title": "SQL JOINS Tutorial for beginners | Practice SQL Queries using JOINS - Part 1 (techTFQ)",
+      "youtubeUrl": "https://www.youtube.com/watch?v=0OQJDd3QqQM",
+      "description": "Focused beginner explanation of INNER JOIN, LEFT JOIN and RIGHT JOIN with query examples.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL Joins (Inner, Left, Right, Full Outer Joins) | SQL Tutorial For Beginners (Analytics with Nags)",
+      "youtubeUrl": "https://www.youtube.com/watch?v=fkb6YdZAaag",
+      "description": "Walkthrough of major SQL join types with practical examples.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL Tutorial - Full Database Course for Beginners (freeCodeCamp)",
+      "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+      "description": "Broader SQL course with joins and related database concepts; consult its joining section.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL Basics Tutorial For Beginners | Select + From Statements | 2/4 (Alex The Analyst)",
+      "youtubeUrl": "https://www.youtube.com/watch?v=PyYgERKq25I",
+      "description": "Prerequisite review of selecting columns and tables before writing joins.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL Basics Tutorial For Beginners | Group By + Order By Statements | 4/4 (Alex The Analyst)",
+      "youtubeUrl": "https://www.youtube.com/watch?v=LXwfzIRD-Ds",
+      "description": "Supplementary lesson for aggregating and ordering results after joins.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Which join returns only rows with matching keys in both tables?",
+      "options": [
+        "LEFT JOIN",
+        "INNER JOIN",
+        "CROSS JOIN",
+        "FULL OUTER JOIN"
+      ],
+      "correctAnswer": 1,
+      "explanation": "INNER JOIN retains only matching row combinations.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which join keeps every row from the left table?",
+      "options": [
+        "RIGHT JOIN",
+        "INNER JOIN",
+        "LEFT JOIN",
+        "CROSS JOIN"
+      ],
+      "correctAnswer": 2,
+      "explanation": "LEFT JOIN preserves all left-side rows and adds NULLs for missing right-side matches.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "A customer has no orders. What is o.order_id in a LEFT JOIN result?",
+      "options": [
+        "0",
+        "An empty string",
+        "NULL",
+        "The customer ID"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Unmatched right-table columns become NULL.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which condition correctly matches employees to departments?",
+      "options": [
+        "ON e.employee_id = d.department_id",
+        "ON e.department_id = d.department_id",
+        "WHERE e.employee_name = d.department_name",
+        "ON e.department_id IS NULL"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The employee foreign key should match the department primary key.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which filter finds customers without orders after a LEFT JOIN?",
+      "options": [
+        "WHERE o.order_id IS NULL",
+        "WHERE o.order_id = NULL",
+        "WHERE o.order_id > 0",
+        "WHERE COUNT(*) = 0"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Use IS NULL on a nonnullable right-side key to find unmatched rows.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the equivalent of A RIGHT JOIN B?",
+      "options": [
+        "A LEFT JOIN B",
+        "B LEFT JOIN A",
+        "A CROSS JOIN B",
+        "B INNER JOIN A"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Swapping table positions turns RIGHT JOIN into an equivalent LEFT JOIN.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What does CROSS JOIN produce for 3 rows and 4 rows?",
+      "options": [
+        "7 rows",
+        "12 rows",
+        "1 row",
+        "At most 4 rows"
+      ],
+      "correctAnswer": 1,
+      "explanation": "CROSS JOIN produces every pair: 3 × 4 = 12.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which join is used to relate employees to their managers stored in the same table?",
+      "options": [
+        "CROSS JOIN",
+        "SELF JOIN",
+        "FULL OUTER JOIN only",
+        "No join is possible"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A SELF JOIN uses two aliases of the same table.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Why might COUNT(*) over a LEFT JOIN show 1 for a customer with no orders?",
+      "options": [
+        "The database created an order",
+        "The unmatched left row still exists",
+        "NULL always counts as two",
+        "The query became an INNER JOIN"
+      ],
+      "correctAnswer": 1,
+      "explanation": "COUNT(*) counts the preserved customer row even when right-side columns are NULL.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which statement about FULL OUTER JOIN in MySQL is accurate?",
+      "options": [
+        "It is directly supported in every MySQL version",
+        "It always equals INNER JOIN",
+        "MySQL lacks a native FULL OUTER JOIN operator",
+        "It cannot be simulated"
+      ],
+      "correctAnswer": 2,
+      "explanation": "MySQL has no native FULL OUTER JOIN; combine left and right-only rows when necessary.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Employee Department INNER JOIN",
+      "description": "Return employee names with their matching department names.",
+      "type": "SQL",
+      "difficulty": "Easy",
+      "instructions": "Tables: employees(employee_id, employee_name, department_id), departments(department_id, department_name). Write an INNER JOIN returning employee_name and department_name. Explain why employees with unmatched department IDs are omitted."
+    },
+    {
+      "title": "Customers Without Orders",
+      "description": "Find customers who have never placed an order.",
+      "type": "SQL",
+      "difficulty": "Easy",
+      "instructions": "Tables: customers(customer_id, customer_name), orders(order_id, customer_id, status). Use LEFT JOIN and IS NULL to return customer_id and customer_name for customers without orders. Do not use = NULL."
+    },
+    {
+      "title": "Departments Including Empty Ones",
+      "description": "List every department with its employee count.",
+      "type": "SQL",
+      "difficulty": "Medium",
+      "instructions": "Tables: departments(department_id, department_name), employees(employee_id, department_id). Return every department and its employee_count, including 0. Use LEFT JOIN, GROUP BY, and COUNT(e.employee_id), not COUNT(*)."
+    },
+    {
+      "title": "Employee Manager SELF JOIN",
+      "description": "Display each employee and their manager if one exists.",
+      "type": "SQL",
+      "difficulty": "Medium",
+      "instructions": "Table: employees(employee_id, employee_name, manager_id). Use a self LEFT JOIN with two aliases to return employee, manager. Keep employees without a manager in the result."
+    },
+    {
+      "title": "Multi-Table Order Report",
+      "description": "Join customers, orders and order items without incorrect counting.",
+      "type": "SQL",
+      "difficulty": "Hard",
+      "instructions": "Tables: customers(customer_id, name), orders(order_id, customer_id), order_items(order_id, product_id, quantity), products(product_id, product_name). Return customer name, order ID, product name and quantity for every order item. Then write a separate query counting DISTINCT orders per customer, including customers with zero orders. Explain why a naive COUNT(*) after joining items can overcount orders."
+    }
+  ],
+  "resources": [
+    {
+      "title": "MySQL 8.4 Reference — JOIN Clause",
+      "type": "Documentation",
+      "url": "https://dev.mysql.com/doc/refman/8.4/en/join.html",
+      "description": "Official MySQL JOIN syntax, ON conditions, and supported join forms."
+    },
+    {
+      "title": "PostgreSQL Documentation — Table Expressions",
+      "type": "Documentation",
+      "url": "https://www.postgresql.org/docs/current/queries-table-expressions.html",
+      "description": "Detailed JOIN behavior including inner, outer and cross joins."
+    },
+    {
+      "title": "SQLBolt — SQL Joins",
+      "type": "Website",
+      "url": "https://sqlbolt.com/lesson/select_queries_with_joins",
+      "description": "Interactive examples introducing joins between related tables."
+    },
+    {
+      "title": "W3Schools — SQL JOIN",
+      "type": "Article",
+      "url": "https://www.w3schools.com/sql/sql_join.asp",
+      "description": "Illustrated overview of SQL join types and their results."
+    },
+    {
+      "title": "SQLite Documentation — SELECT",
+      "type": "Documentation",
+      "url": "https://www.sqlite.org/lang_select.html",
+      "description": "Reference for join processing, ON conditions, and query execution semantics."
+    }
+  ]
+}

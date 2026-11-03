@@ -1,0 +1,214 @@
+
+{
+  "topicTitle": "Logical Reasoning Fundamentals",
+  "lessons": [
+    {
+      "title": "Introduction to Logical Reasoning",
+      "description": "Understand logical thinking, deductive reasoning, inductive reasoning and problem-solving techniques.",
+      "content": "Logical reasoning is the ability to analyze information, recognize relationships and draw valid conclusions. It is commonly tested in placement aptitude examinations.\n\nTwo important reasoning approaches are deductive and inductive reasoning.\n\nDeductive reasoning starts with general rules and derives conclusions that must follow if the premises are true.\n\nExample:\nPremise 1: All software developers are employees.\nPremise 2: Ravi is a software developer.\nConclusion: Ravi is an employee.\n\nThe conclusion follows logically from the premises.\n\nInductive reasoning identifies patterns and suggests likely conclusions, but these conclusions are not guaranteed.\n\nExample: A company has hired graduates from a college for five consecutive years. It may hire graduates again next year, but that is not certain.\n\nCommon placement reasoning topics include number series, letter series, analogies, classifications, syllogisms, blood relations, directions, coding-decoding and arrangements.\n\nA useful solving method is:\n1. Read the question carefully.\n2. Identify the given facts.\n3. Separate facts from assumptions.\n4. Look for patterns or relationships.\n5. Eliminate unsupported conclusions.\n6. Verify the final answer.\n\nImportant distinction: A statement may sound realistic without being logically supported. In reasoning questions, use the stated information rather than personal assumptions.\n\nPlacement tip: Accuracy is more important than guessing a pattern too quickly."
+    },
+    {
+      "title": "Number Series and Letter Series",
+      "description": "Identify arithmetic, geometric, alternating and alphabetical patterns.",
+      "content": "Series questions test the ability to identify relationships between consecutive or alternating terms.\n\nArithmetic series:\n2, 5, 8, 11, 14, ?\nEach term increases by 3.\nAnswer = 17.\n\nGeometric series:\n3, 6, 12, 24, ?\nEach term is multiplied by 2.\nAnswer = 48.\n\nSquare number series:\n1, 4, 9, 16, 25, ?\nThese are consecutive perfect squares.\nAnswer = 36.\n\nIncreasing difference series:\n2, 4, 7, 11, 16, ?\nDifferences are 2, 3, 4, 5.\nNext difference = 6.\nAnswer = 22.\n\nAlternating series:\n2, 10, 4, 20, 6, 30, ?\nOdd-position terms: 2, 4, 6, 8.\nEven-position terms: 10, 20, 30.\nAnswer = 8.\n\nLetter series use alphabet positions: A=1, B=2, ..., Z=26.\n\nExample: A, C, F, J, O, ?\nPositions are 1, 3, 6, 10, 15.\nDifferences are 2, 3, 4, 5.\nNext difference = 6.\nPosition 21 = U.\n\nFor alphabet patterns, check forward shifts, backward shifts, alternating positions and repeated cycles.\n\nPlacement tip: Examine differences first, then multiplication, squares, cubes and alternating patterns."
+    },
+    {
+      "title": "Analogies and Classification",
+      "description": "Recognize relationships between words, numbers and objects and identify the odd one out.",
+      "content": "Analogy questions test whether two pairs share the same relationship.\n\nExample: Doctor : Hospital :: Teacher : ?\nA doctor commonly works in a hospital. A teacher commonly works in a school.\nAnswer = School.\n\nExample: Bird : Fly :: Fish : ?\nThe relationship is a typical form of movement.\nAnswer = Swim.\n\nNumber analogy:\n4 : 16 :: 7 : ?\nThe relationship is squaring the number.\n4 squared = 16.\n7 squared = 49.\n\nCommon analogy relationships include occupation and workplace, object and function, cause and effect, part and whole, synonym and antonym, and mathematical operations.\n\nClassification questions ask which item does not belong to a group.\n\nExample: Apple, Mango, Banana, Carrot.\nApple, Mango and Banana are fruits. Carrot is a vegetable.\nAnswer = Carrot.\n\nNumber classification:\n4, 9, 16, 25, 30.\nThe first four are perfect squares. 30 is not.\nAnswer = 30.\n\nLetter classification:\nAB, CD, EF, GH, JK.\nThe first four pairs contain consecutive alphabet letters. JK is also consecutive, so no unique odd item is established by that rule. This illustrates why a valid classification question must have a clear distinguishing property.\n\nSolving strategy:\n1. Identify the relationship shared by most items.\n2. Test whether the relationship applies consistently.\n3. Eliminate options that violate the relationship.\n4. Avoid choosing an answer based on an arbitrary property.\n\nPlacement tip: Prefer the simplest consistent relationship supported by the question."
+    },
+    {
+      "title": "Syllogisms and Logical Conclusions",
+      "description": "Understand categorical statements, valid conclusions and Venn-diagram reasoning.",
+      "content": "Syllogisms involve drawing conclusions from statements about groups or categories.\n\nCommon statement forms:\nAll A are B.\nSome A are B.\nNo A are B.\nSome A are not B.\n\nExample 1:\nAll programmers are professionals.\nAll professionals are employees.\nConclusion: All programmers are employees.\nThis conclusion follows.\n\nExample 2:\nAll cats are animals.\nSome animals are pets.\nConclusion: Some cats are pets.\nThis conclusion does not necessarily follow because the pet animals might not include cats.\n\nExample 3:\nNo squares are circles.\nAll squares are shapes.\nConclusion: No squares are circles.\nThis follows directly from the first premise.\n\nVenn diagrams can help visualize relationships between sets.\n\nFor All A are B, represent A as a subset of B.\nFor No A are B, represent the sets as disjoint.\nFor Some A are B, mark an overlap containing at least one member.\n\nImportant: In standard formal logic, 'All A are B' does not by itself establish that any A exists. Therefore, avoid inferring 'Some A are B' without an existence premise. Some aptitude tests use different conventions, so follow the examination's stated rules.\n\nCommon mistakes:\n1. Reversing an all-statement.\n2. Treating a possible conclusion as a necessary conclusion.\n3. Assuming unstated relationships.\n4. Confusing 'some' with 'all'.\n\nPlacement tip: A conclusion follows only when it is guaranteed by the given premises."
+    },
+    {
+      "title": "Blood Relations, Directions and Basic Arrangements",
+      "description": "Solve family relationships, directional movement and simple seating-arrangement problems.",
+      "content": "Blood relation questions describe family connections and require identifying relationships between people.\n\nExample: A is the father of B. B is the mother of C.\nA is C's maternal grandfather.\n\nUse a family tree to represent relationships clearly. Do not assume a person's gender unless the question states it or the relationship logically establishes it.\n\nDirection sense questions involve north, south, east and west.\n\nExample: A person walks 3 km east and then 4 km north.\nThe straight-line distance from the starting point is sqrt(3 squared + 4 squared) = 5 km.\nThe final position is northeast of the starting point.\n\nDirection changes:\nFacing north, turning right means east.\nFacing east, turning right means south.\nFacing south, turning right means west.\nFacing west, turning right means north.\n\nSeating arrangements test positions and ordering.\n\nExample: Five students A, B, C, D and E sit in a row facing north.\nA is immediately left of B.\nC is immediately right of B.\nD sits at the extreme left.\nE sits at the extreme right.\n\nOne valid arrangement is D, A, B, C, E.\n\nFor arrangements, draw numbered positions and apply each clue systematically. Distinguish between 'immediately left' and 'somewhere to the left'.\n\nWhen people face south, their left and right directions are reversed relative to a viewer looking at the arrangement from the front.\n\nProblem-solving strategy:\n1. Draw a family tree, compass or seating diagram.\n2. Record confirmed relationships first.\n3. Apply remaining clues.\n4. Check all conditions.\n5. Avoid assuming information not supplied.\n\nPlacement tip: Visual diagrams are usually more reliable than trying to remember every relationship mentally."
+    }
+  ],
+  "videos": [
+    {
+      "title": "Logical Reasoning Introduction",
+      "youtubeUrl": "https://www.youtube.com/watch?v=QzY57FaENXg",
+      "description": "Supplementary video reference. Topic and playback have not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Number Series and Letter Series",
+      "youtubeUrl": "https://www.youtube.com/watch?v=6sQDTgOqh-I",
+      "description": "Supplementary video reference. Topic and playback have not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Analogies and Classification",
+      "youtubeUrl": "https://www.youtube.com/watch?v=GFQaEYEc8_8",
+      "description": "Supplementary video reference. Topic and playback have not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Syllogisms and Logical Conclusions",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ztHopE5Wnpc",
+      "description": "Supplementary video reference. Topic and playback have not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Blood Relations and Direction Sense",
+      "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+      "description": "Supplementary video reference. Topic and playback have not been verified.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Find the next number: 2, 4, 8, 16, ?",
+      "options": ["20", "24", "32", "36"],
+      "correctAnswer": 2,
+      "explanation": "Each term is multiplied by 2. The next term is 32.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Find the next number: 3, 6, 9, 12, ?",
+      "options": ["13", "14", "15", "18"],
+      "correctAnswer": 2,
+      "explanation": "Each term increases by 3. The next term is 15.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Doctor : Hospital :: Teacher : ?",
+      "options": ["Market", "School", "Airport", "Bank"],
+      "correctAnswer": 1,
+      "explanation": "A doctor commonly works in a hospital, while a teacher commonly works in a school.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Find the odd one out: Apple, Mango, Banana, Carrot.",
+      "options": ["Apple", "Mango", "Banana", "Carrot"],
+      "correctAnswer": 3,
+      "explanation": "Carrot is a vegetable, while the others are fruits.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "If A=1, B=2 and C=3, what is the sum of the alphabet positions of CAT?",
+      "options": ["21", "22", "24", "26"],
+      "correctAnswer": 2,
+      "explanation": "C=3, A=1 and T=20. Total = 24.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "All programmers are employees. All employees are professionals. Which conclusion follows?",
+      "options": [
+        "All professionals are programmers",
+        "All programmers are professionals",
+        "No programmers are professionals",
+        "All employees are programmers"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The subset relationship is Programmers within Employees within Professionals.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "A person walks 3 km east and 4 km north. What is the shortest distance from the starting point?",
+      "options": ["4 km", "5 km", "6 km", "7 km"],
+      "correctAnswer": 1,
+      "explanation": "Using the Pythagorean theorem, distance = sqrt(3² + 4²) = 5 km.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "A is the father of B. B is the mother of C. How is A related to C?",
+      "options": ["Uncle", "Brother", "Maternal grandfather", "Father"],
+      "correctAnswer": 2,
+      "explanation": "A is the father of C's mother, making A the maternal grandfather.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Find the next letter: A, C, F, J, O, ?",
+      "options": ["S", "T", "U", "V"],
+      "correctAnswer": 2,
+      "explanation": "Alphabet positions are 1, 3, 6, 10, 15. The next increment is 6, giving position 21, U.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "Statements: All cats are animals. Some animals are pets. Which conclusion must follow?",
+      "options": [
+        "All cats are pets",
+        "Some cats are pets",
+        "No cats are pets",
+        "None of these conclusions necessarily follows"
+      ],
+      "correctAnswer": 3,
+      "explanation": "The premises do not establish whether cats overlap with the animals that are pets.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Number Series Pattern Challenge",
+      "description": "Identify arithmetic and multiplication patterns.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "Find the next two terms in each series and explain the pattern: (a) 5, 10, 15, 20; (b) 2, 6, 18, 54; (c) 1, 4, 9, 16."
+    },
+    {
+      "title": "Analogy and Odd-One-Out Practice",
+      "description": "Identify relationships and classify items.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "Solve these questions with explanations: (a) Book : Reading :: Pen : ? (b) 5 : 25 :: 8 : ? (c) Find the odd one out: 4, 9, 16, 25, 35."
+    },
+    {
+      "title": "Syllogism Conclusion Analysis",
+      "description": "Evaluate which conclusions necessarily follow from given premises.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Statements: All engineers are graduates. All graduates are educated people. Determine whether each conclusion follows: (1) All engineers are educated people. (2) All educated people are engineers. (3) Some educated people are not graduates. Explain your reasoning without assuming extra facts."
+    },
+    {
+      "title": "Blood Relations and Direction Sense",
+      "description": "Solve family relationships and movement-based reasoning problems.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Part A: P is the mother of Q. Q is the father of R. Determine P's relationship to R. Part B: A person walks 6 km north, 8 km east and 6 km south. Find the final direction and shortest distance from the starting point."
+    },
+    {
+      "title": "Logical Arrangement Challenge",
+      "description": "Solve a seating arrangement using multiple constraints.",
+      "type": "Written",
+      "difficulty": "Hard",
+      "instructions": "Five students A, B, C, D and E sit in a straight row facing north. D sits at the extreme left. E sits at the extreme right. B sits in the middle. A sits immediately left of B, and C sits immediately right of B. Determine the complete seating order and verify every clue."
+    }
+  ],
+  "resources": [
+    {
+      "title": "IndiaBIX - Logical Reasoning",
+      "type": "Website",
+      "url": "https://www.indiabix.com/logical-reasoning/questions-and-answers/",
+      "description": "Placement-oriented logical reasoning questions and solutions."
+    },
+    {
+      "title": "IndiaBIX - Number Series",
+      "type": "Website",
+      "url": "https://www.indiabix.com/logical-reasoning/number-series/",
+      "description": "Practice numerical pattern recognition and series completion."
+    },
+    {
+      "title": "IndiaBIX - Letter and Symbol Series",
+      "type": "Website",
+      "url": "https://www.indiabix.com/logical-reasoning/letter-and-symbol-series/",
+      "description": "Practice alphabet sequences and symbol pattern questions."
+    },
+    {
+      "title": "GeeksforGeeks - Logical Reasoning",
+      "type": "Website",
+      "url": "https://www.geeksforgeeks.org/aptitude/logical-reasoning/",
+      "description": "Logical reasoning tutorials and placement practice."
+    },
+    {
+      "title": "Khan Academy - Logic and Reasoning",
+      "type": "Website",
+      "url": "https://www.khanacademy.org/math",
+      "description": "Mathematics learning resources supporting structured problem-solving."
+    }
+  ]
+}

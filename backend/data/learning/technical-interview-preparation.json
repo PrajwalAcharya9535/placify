@@ -1,0 +1,254 @@
+
+{
+  "topicTitle": "Technical Interview Preparation",
+  "lessons": [
+    {
+      "title": "Technical Interview Fundamentals and Preparation Strategy",
+      "description": "Understand technical interview rounds, evaluation criteria, preparation strategies and structured technical answers.",
+      "content": "A technical interview evaluates a candidate's understanding of programming, computer science, problem-solving and practical software development.\n\nFor fresher software development roles, common topics include programming fundamentals, object-oriented programming, data structures, algorithms, databases, operating systems, computer networks and projects.\n\nCommon technical interview formats:\n1. Conceptual Interview: Questions about programming and computer science fundamentals.\n2. Coding Interview: Problems requiring algorithms and implementation.\n3. Database Interview: SQL queries, joins, normalization and database concepts.\n4. Project Interview: Questions about architecture, implementation and technical decisions.\n5. Debugging Interview: Identifying and correcting errors in code.\n6. Practical Interview: Completing small development tasks.\n\nTypical evaluation criteria:\nTechnical Accuracy: Are explanations correct?\nProblem-Solving: Can the candidate develop a logical solution?\nCode Quality: Is the implementation readable and maintainable?\nCommunication: Can the candidate explain decisions?\nTesting: Does the candidate consider edge cases?\nLearning Ability: Can the candidate respond constructively to unfamiliar problems?\n\nRecommended preparation areas:\nProgramming: Java, Python or another relevant language.\nOOP: Encapsulation, inheritance, polymorphism and abstraction.\nDSA: Arrays, strings, linked lists, stacks, queues, trees and sorting.\nDBMS: Keys, normalization, transactions and SQL.\nOS: Processes, threads, scheduling and memory management.\nNetworking: TCP/IP, HTTP, DNS and network devices.\nDevelopment: APIs, authentication, databases and testing.\n\nA useful technical answer structure:\n1. State the definition or solution.\n2. Explain the reasoning.\n3. Provide a practical example.\n4. Mention important limitations when relevant.\n\nExample:\nQuestion: What is encapsulation?\n\nAnswer: Encapsulation groups data and related behavior inside a class while controlling access to internal state. In Java, private fields and public methods are commonly used to implement encapsulation. For example, a BankAccount class can restrict direct changes to its balance and provide controlled deposit and withdrawal methods.\n\nPreparation strategy:\nReview concepts daily.\nPractice writing code without relying entirely on autocomplete.\nSolve progressively harder problems.\nRevise SQL queries.\nExplain your projects aloud.\nPractice mock interviews.\n\nInterview tip: Understanding a concept and explaining it with an example is more useful than memorizing a definition without understanding it."
+    },
+    {
+      "title": "Core Programming and Object-Oriented Interview Questions",
+      "description": "Prepare common programming, Java, OOP, exception handling, collections and multithreading interview questions.",
+      "content": "Programming interviews often begin with fundamental concepts before moving to practical scenarios.\n\nQuestion 1: What is the difference between a compiler and an interpreter?\n\nAnswer: A compiler translates source code into another representation, often before execution. An interpreter executes or evaluates instructions through an interpreter implementation. Modern language runtimes may combine compilation, interpretation and just-in-time compilation.\n\nQuestion 2: What are the four major OOP principles?\n\nAnswer:\nEncapsulation: Grouping data and behavior with controlled access.\nInheritance: Deriving a class from another class to reuse or extend behavior.\nPolymorphism: Using a common interface with different implementations.\nAbstraction: Exposing essential behavior while hiding unnecessary implementation details.\n\nQuestion 3: Method overloading vs overriding?\n\nOverloading: Multiple methods share a name but have different parameter lists.\nOverriding: A subclass provides an implementation of an inherited method with a compatible signature.\n\nQuestion 4: What is exception handling in Java?\n\nAnswer: Exception handling manages exceptional conditions using mechanisms such as try, catch, finally, throw and throws.\n\nExample:\ntry {\n    int result = 10 / 0;\n} catch (ArithmeticException e) {\n    System.out.println(\"Cannot divide by zero\");\n}\n\nQuestion 5: Checked vs unchecked exceptions?\n\nChecked exceptions are subject to Java's compile-time checking rules. Unchecked exceptions include RuntimeException and its subclasses.\n\nQuestion 6: ArrayList vs LinkedList?\n\nArrayList uses a resizable array and supports efficient indexed access.\nLinkedList uses linked nodes and supports efficient insertion or removal at known node positions, although locating positions can require traversal.\n\nQuestion 7: HashMap vs HashSet?\n\nHashMap stores key-value mappings.\nHashSet stores unique elements and is commonly implemented using a hash-based structure.\n\nQuestion 8: What is multithreading?\n\nAnswer: Multithreading allows multiple threads to execute within a process, supporting concurrency and potentially parallel execution on multiple cores.\n\nQuestion 9: What is synchronization?\n\nAnswer: Synchronization coordinates concurrent access to shared resources to prevent incorrect behavior caused by race conditions.\n\nQuestion 10: What is the difference between == and equals() in Java?\n\nFor reference types, == compares reference identity. The equals() method evaluates equality according to its implementation. For primitive values, == compares values.\n\nExample:\nString a = new String(\"Java\");\nString b = new String(\"Java\");\n\nSystem.out.println(a == b); // false\nSystem.out.println(a.equals(b)); // true\n\nAdditional interview topics:\nString immutability.\nAccess modifiers.\nConstructors.\nInterfaces and abstract classes.\nGenerics.\nCollections iteration.\nThread lifecycle.\nGarbage collection.\n\nInterview tip: Prepare both conceptual explanations and small working code examples."
+    },
+    {
+      "title": "Data Structures, Algorithms and Coding Interview Techniques",
+      "description": "Learn how to approach coding problems, analyze complexity and explain solutions during technical interviews.",
+      "content": "Coding interviews assess logical reasoning, algorithm selection, implementation and testing.\n\nCommon data structures:\nArray: Stores elements with indexed access.\nString: Represents a sequence of characters.\nLinked List: Stores nodes connected through references.\nStack: Follows Last In, First Out behavior.\nQueue: Follows First In, First Out behavior.\nHash Table: Supports key-based access using hashing.\nTree: Represents hierarchical relationships.\nGraph: Represents vertices and connections.\n\nCommon algorithm techniques:\nTwo Pointers.\nSliding Window.\nHashing.\nBinary Search.\nRecursion.\nBacktracking.\nBreadth-First Search.\nDepth-First Search.\nDynamic Programming.\n\nBig O notation describes how resource usage grows with input size.\n\nCommon time complexities:\nO(1): Constant.\nO(log n): Logarithmic.\nO(n): Linear.\nO(n log n): Linearithmic.\nO(n^2): Quadratic.\n\nCoding interview workflow:\n1. Understand the problem.\n2. Clarify input constraints.\n3. Discuss a simple approach.\n4. Identify possible improvements.\n5. Explain time and space complexity.\n6. Implement the solution.\n7. Test normal and edge cases.\n\nExample problem: Find two numbers in an array whose sum equals a target.\n\nJava solution:\nimport java.util.HashMap;\nimport java.util.Map;\n\npublic class TwoSum {\n    public static int[] findPair(int[] nums, int target) {\n        Map<Integer, Integer> map = new HashMap<>();\n\n        for (int i = 0; i < nums.length; i++) {\n            int complement = target - nums[i];\n\n            if (map.containsKey(complement)) {\n                return new int[] {map.get(complement), i};\n            }\n\n            map.put(nums[i], i);\n        }\n\n        return new int[] {-1, -1};\n    }\n}\n\nAverage expected time complexity: O(n), assuming efficient hash-map operations.\nAuxiliary space complexity: O(n).\n\nImportant edge cases:\nEmpty input.\nSingle-element input.\nDuplicate values.\nNegative numbers.\nLarge inputs.\nNo valid solution.\n\nExample interview explanation:\nI will use a hash map to store previously visited values and their indices. For each element, I calculate the complement needed to reach the target. If the complement is already present, I return the two indices. Otherwise, I store the current value and continue.\n\nImportant coding topics:\nArray reversal.\nPalindrome checking.\nAnagram grouping.\nDuplicate detection.\nBinary search.\nLinked-list reversal.\nBalanced parentheses.\nTree traversal.\n\nInterview tip: Explain the reasoning before writing code and test the implementation using examples."
+    },
+    {
+      "title": "DBMS, SQL, Operating Systems and Networking Interviews",
+      "description": "Revise frequently asked database, SQL, operating system and computer networking questions.",
+      "content": "Technical interviews frequently combine programming questions with computer science fundamentals.\n\nDBMS Question 1: What is a primary key?\n\nAnswer: A primary key identifies each row uniquely and cannot contain NULL values.\n\nDBMS Question 2: What is a foreign key?\n\nAnswer: A foreign key enforces a relationship between values in one table and a referenced candidate key, subject to the database system's constraints.\n\nDBMS Question 3: What is normalization?\n\nAnswer: Normalization organizes relational data to reduce unwanted redundancy and prevent certain update anomalies.\n\nDBMS Question 4: What are ACID properties?\n\nAtomicity: A transaction's operations succeed as a unit or are rolled back.\nConsistency: Transactions preserve defined database constraints.\nIsolation: Concurrent transactions follow the configured isolation guarantees.\nDurability: Committed changes survive failures according to the database's durability guarantees.\n\nSQL Question 1: INNER JOIN vs LEFT JOIN?\n\nINNER JOIN returns rows satisfying the join condition.\nLEFT JOIN retains rows from the left table and includes matching right-table data, using NULLs where no match exists.\n\nSQL example:\nSELECT e.name, d.department_name\nFROM employees e\nLEFT JOIN departments d\nON e.department_id = d.id;\n\nSQL Question 2: WHERE vs HAVING?\n\nWHERE filters rows before grouping.\nHAVING filters groups after aggregation.\n\nSQL example:\nSELECT department_id, COUNT(*) AS employee_count\nFROM employees\nGROUP BY department_id\nHAVING COUNT(*) > 5;\n\nOS Question 1: Process vs thread?\n\nA process has its own execution environment and resources. Threads within the same process share many resources while maintaining independent execution states.\n\nOS Question 2: What is deadlock?\n\nDeadlock occurs when processes or threads cannot proceed because of unresolved waiting dependencies.\n\nOS Question 3: What is virtual memory?\n\nVirtual memory provides processes with virtual address spaces mapped to physical memory and potentially secondary storage.\n\nNetworking Question 1: TCP vs UDP?\n\nTCP provides reliable, ordered byte-stream communication.\nUDP provides connectionless datagram communication without built-in reliability guarantees.\n\nNetworking Question 2: HTTP vs HTTPS?\n\nHTTPS uses TLS to protect HTTP communication.\n\nNetworking Question 3: What is DNS?\n\nDNS resolves domain names to records such as IP addresses.\n\nNetworking Question 4: Switch vs router?\n\nA conventional Layer 2 switch forwards Ethernet frames using MAC address information. A router forwards IP packets between networks.\n\nInterview preparation technique:\nFor each concept, prepare a definition, comparison, example and practical use case.\n\nInterview tip: Avoid memorizing only differences. Understand why a technology is used and what problems it solves."
+    },
+    {
+      "title": "Project-Based Technical Interviews and Mock Interview Strategy",
+      "description": "Prepare project architecture explanations, debugging scenarios, API questions and complete technical mock interviews.",
+      "content": "Project-based technical interviews evaluate whether candidates understand the software they claim to have developed.\n\nInterviewers may ask about project objectives, architecture, database design, API development, authentication, testing, deployment and technical challenges.\n\nProject explanation framework:\n1. Project title.\n2. Problem statement.\n3. Main users.\n4. Core features.\n5. Technology stack.\n6. System architecture.\n7. Personal contribution.\n8. Challenges and solutions.\n9. Testing approach.\n10. Future improvements.\n\nExample project explanation:\nI developed a web application using React, Node.js, Express and MongoDB. The frontend communicates with backend REST APIs. The backend validates requests, applies business logic and interacts with MongoDB. Authentication protects restricted routes, and the application includes error handling for unsuccessful requests.\n\nUse this explanation only when it accurately represents the candidate's actual project.\n\nCommon project questions:\nWhy did you select this technology stack?\nHow does the frontend communicate with the backend?\nHow is user authentication implemented?\nHow are passwords protected?\nHow do you validate API requests?\nHow is data stored and retrieved?\nHow do you handle server errors?\nWhat testing did you perform?\nHow would you improve performance?\nWhat would you change in the next version?\n\nExample authentication answer:\nThe user submits credentials to the backend over a protected connection. The server verifies the credentials using the configured authentication mechanism. After successful authentication, the application establishes a session or issues an appropriate authentication token. Protected endpoints verify the user's authentication and authorization before allowing access.\n\nSecurity concepts to understand:\nPassword hashing.\nAuthentication vs authorization.\nInput validation.\nSecure token handling.\nHTTPS.\nAccess control.\nRate limiting.\n\nDebugging interview workflow:\n1. Reproduce the problem.\n2. Inspect the error message.\n3. Identify the affected component.\n4. Review relevant logs.\n5. Test possible causes.\n6. Implement a correction.\n7. Verify successful and failure scenarios.\n\nExample debugging scenario:\nThe frontend receives a 400 response from an API.\n\nPossible causes include missing required fields, invalid input values or incorrect request formatting. The candidate should inspect the request payload, API validation rules and server response before modifying code.\n\nMock technical interview structure:\nIntroduction: 2 minutes.\nProgramming concepts: 5 minutes.\nCoding problem: 15 minutes.\nDatabase or SQL: 5 minutes.\nProject explanation: 8 minutes.\n\nTotal: Approximately 35 minutes.\n\nSelf-evaluation criteria:\nTechnical correctness.\nProblem-solving approach.\nCode quality.\nComplexity analysis.\nTesting and edge cases.\nProject understanding.\nCommunication clarity.\n\nInterview tip: Describe your actual contribution honestly. Interviewers may ask detailed follow-up questions to assess practical understanding."
+    }
+  ],
+  "videos": [
+    {
+      "title": "Technical Interview Preparation Overview",
+      "youtubeUrl": "https://www.youtube.com/watch?v=R1vskiVDwl4",
+      "description": "Supplementary communication resource for explaining technical answers. Verify topic relevance and playback before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Programming and Object-Oriented Interview Preparation",
+      "youtubeUrl": "https://www.youtube.com/watch?v=eIrMbAQSU34",
+      "description": "Supplementary Java programming tutorial. Verify specific interview-topic coverage before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Data Structures and Algorithms Interview Preparation",
+      "youtubeUrl": "https://www.youtube.com/watch?v=8hly31xKli0",
+      "description": "Supplementary algorithms course reference. Verify playback and topic coverage before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL and Database Interview Preparation",
+      "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+      "description": "Supplementary SQL course reference for database interview preparation. Verify playback before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Project Explanation and Technical Communication",
+      "youtubeUrl": "https://www.youtube.com/watch?v=i5mYphUoOCs",
+      "description": "Supplementary presentation skills resource for explaining technical projects. Verify relevance before publishing.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "What is the primary objective of a technical interview?",
+      "options": [
+        "To evaluate only speaking speed",
+        "To assess technical understanding and problem-solving ability",
+        "To test only personal interests",
+        "To measure typing speed exclusively"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Technical interviews assess technical knowledge, problem-solving, implementation and related communication skills.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which OOP concept allows a subclass to provide its own implementation of an inherited method?",
+      "options": [
+        "Method Overriding",
+        "Method Overloading",
+        "Encapsulation",
+        "Compilation"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Method overriding allows a subclass to provide a compatible implementation of an inherited method.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which Java collection stores key-value mappings?",
+      "options": [
+        "ArrayList",
+        "HashSet",
+        "HashMap",
+        "LinkedList"
+      ],
+      "correctAnswer": 2,
+      "explanation": "HashMap stores mappings between keys and values.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the expected average time complexity of the Two Sum algorithm using a hash map?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n^2)"
+      ],
+      "correctAnswer": 2,
+      "explanation": "The algorithm scans the array once and uses expected constant-time hash-map operations, resulting in expected O(n) time.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which data structure follows Last In, First Out behavior?",
+      "options": [
+        "Queue",
+        "Stack",
+        "Binary Search Tree",
+        "Graph"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A stack follows Last In, First Out behavior.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which SQL clause filters grouped results after aggregation?",
+      "options": [
+        "WHERE",
+        "HAVING",
+        "ORDER BY",
+        "LIMIT"
+      ],
+      "correctAnswer": 1,
+      "explanation": "HAVING filters groups based on conditions, including aggregate expressions.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which ACID property concerns the persistence of committed transactions?",
+      "options": [
+        "Atomicity",
+        "Consistency",
+        "Isolation",
+        "Durability"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Durability means committed changes survive failures according to the database's durability guarantees.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which protocol provides reliable, ordered byte-stream communication?",
+      "options": [
+        "UDP",
+        "TCP",
+        "ARP",
+        "ICMP"
+      ],
+      "correctAnswer": 1,
+      "explanation": "TCP provides reliable and ordered byte-stream communication.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "During a coding interview, which action should normally come before implementation?",
+      "options": [
+        "Writing code without reading the problem",
+        "Clarifying requirements and explaining the proposed approach",
+        "Ignoring input constraints",
+        "Skipping all edge cases"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Understanding requirements and planning the approach helps avoid incorrect solutions.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "A frontend API request returns HTTP 400. What is the best initial debugging approach?",
+      "options": [
+        "Immediately replace the database",
+        "Assume the server is permanently unavailable",
+        "Inspect the request payload, validation rules and response details",
+        "Delete the frontend application"
+      ],
+      "correctAnswer": 2,
+      "explanation": "HTTP 400 indicates a bad request, so inspecting request formatting and validation is an appropriate starting point.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Core Java Technical Interview Questions",
+      "description": "Prepare structured answers for important Java and object-oriented programming concepts.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "Prepare interview answers for: (1) What is OOP? (2) Explain encapsulation with an example. (3) Overloading vs overriding. (4) ArrayList vs LinkedList. (5) Checked vs unchecked exceptions. (6) HashMap vs HashSet. (7) What is multithreading? (8) What is synchronization? Include definitions and practical examples."
+    },
+    {
+      "title": "Array Coding Interview Challenge",
+      "description": "Implement and explain an efficient array-based algorithm.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Given an integer array and a target value, return the indices of two different elements whose sum equals the target. Implement the solution in Java. Explain the brute-force approach, an optimized hash-map approach, time complexity, space complexity and edge cases. Return [-1, -1] when no valid pair exists."
+    },
+    {
+      "title": "SQL Technical Interview Challenge",
+      "description": "Practice joins, grouping, aggregation and filtering.",
+      "type": "SQL",
+      "difficulty": "Medium",
+      "instructions": "Assume employees(id, name, department_id, salary) and departments(id, department_name). Write SQL queries to: (1) display employees with department names, (2) find the highest salary in each department, (3) count employees in each department, (4) find employees earning above the overall average salary, and (5) display departments having more than five employees. Explain each query."
+    },
+    {
+      "title": "Backend API Debugging Scenario",
+      "description": "Analyze an API validation failure and propose a systematic debugging process.",
+      "type": "Debugging",
+      "difficulty": "Hard",
+      "instructions": "A React frontend sends a POST request to an Express API, but the backend returns HTTP 400. The API expects name, email and password fields. Describe how to inspect the request payload, Content-Type header, Express JSON middleware, validation rules and response details. Explain how you would correct the issue and test valid and invalid requests."
+    },
+    {
+      "title": "Complete Technical Mock Interview",
+      "description": "Simulate a technical interview covering programming, coding, SQL and project architecture.",
+      "type": "Written",
+      "difficulty": "Hard",
+      "instructions": "Prepare a 35-minute mock technical interview covering self-introduction, five Java questions, one coding problem, three SQL questions, two operating system questions, two networking questions and a detailed project explanation. Document your answers, identify incorrect explanations and prepare an improvement plan based on technical accuracy, reasoning, testing and communication."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Oracle Java Documentation",
+      "type": "Documentation",
+      "url": "https://docs.oracle.com/en/java/",
+      "description": "Official Java documentation for programming fundamentals, collections, exceptions and concurrency."
+    },
+    {
+      "title": "LeetCode",
+      "type": "Website",
+      "url": "https://leetcode.com/",
+      "description": "Coding interview practice covering data structures, algorithms and problem-solving."
+    },
+    {
+      "title": "GeeksforGeeks - Technical Interview Preparation",
+      "type": "Website",
+      "url": "https://www.geeksforgeeks.org/technical-interview-preparation/",
+      "description": "Technical interview preparation material covering programming and computer science concepts."
+    },
+    {
+      "title": "SQLBolt",
+      "type": "Website",
+      "url": "https://sqlbolt.com/",
+      "description": "Interactive SQL lessons and exercises for database interview preparation."
+    },
+    {
+      "title": "MDN Web Docs",
+      "type": "Documentation",
+      "url": "https://developer.mozilla.org/en-US/",
+      "description": "Web development documentation covering HTTP, JavaScript, APIs and frontend concepts."
+    }
+  ]
+}

@@ -1,0 +1,249 @@
+
+{
+  "topicTitle": "JavaScript Fundamentals",
+  "lessons": [
+    {
+      "title": "Introduction to JavaScript, Variables and Data Types",
+      "description": "Understand JavaScript execution, variables, primitive data types, operators and type conversion.",
+      "content": "JavaScript is a high-level programming language used to create interactive websites, browser applications and server-side applications using runtimes such as Node.js.\n\nJavaScript code can run inside a browser using the browser's JavaScript engine. Node.js allows JavaScript to run outside the browser.\n\nVariables store values. Modern JavaScript uses let and const. A let variable can be reassigned. A const binding cannot be reassigned, although the contents of an object or array referenced by const may still be modified. Older JavaScript uses var, which has function scope and different hoisting behavior.\n\nJavaScript has seven primitive types: string, number, bigint, boolean, undefined, null and symbol. Objects are non-primitive values. Arrays and functions are also objects.\n\nThe typeof operator identifies most value types, although typeof null returns 'object' because of historical language behavior.\n\nJavaScript operators include arithmetic (+, -, *, /, %, **), comparison (>, <, >=, <=), equality (===, !==, ==, !=), logical (&&, ||, !) and assignment operators.\n\nPrefer strict equality (===) because it does not perform the same type coercion as loose equality (==).\n\nJavaScript can convert values using Number(), String() and Boolean(). Automatic coercion also occurs in certain expressions, so understanding data types is important.\n\nTemplate literals use backticks and allow expressions with ${expression}.\n\nGood practices include meaningful variable names, using const by default, using let when reassignment is necessary and avoiding undeclared variables.",
+      "examples": [
+        {
+          "title": "Variables, Types and Operators",
+          "language": "javascript",
+          "explanation": "Demonstrates variable declarations, template literals, strict equality and explicit conversion.",
+          "code": "const studentName = 'Rahul';\nlet age = 22;\nconst isEligible = age >= 18;\n\nconsole.log(`Student: ${studentName}`);\nconsole.log(`Age: ${age}`);\nconsole.log(`Eligible: ${isEligible}`);\n\nconsole.log(typeof studentName);\nconsole.log(typeof age);\nconsole.log(5 === '5');\nconsole.log(Number('25') + 5);\n\nage = 23;\nconsole.log(age);"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Conditional Statements, Loops and Control Flow",
+      "description": "Learn decision-making, iteration, truthy and falsy values and control-flow statements.",
+      "content": "Control flow determines which statements execute and how often they execute.\n\nAn if statement executes code when a condition is truthy. The else if and else branches support additional conditions and fallback behavior.\n\nJavaScript values are converted to booleans in conditions. Falsy values include false, 0, -0, 0n, an empty string, null, undefined and NaN. Most other values, including empty arrays and empty objects, are truthy.\n\nA switch statement compares an expression with case values using strict matching. Use break when you do not want execution to fall through into subsequent cases.\n\nA for loop is useful when the number of iterations is known. A while loop continues while its condition is truthy. A do...while loop executes its body at least once before checking the condition.\n\nThe for...of loop iterates values from an iterable such as an array or string. The for...in loop iterates enumerable property keys and is generally not the preferred choice for array values.\n\nThe break statement exits a loop. The continue statement skips the remaining statements in the current iteration.\n\nLogical AND (&&) and OR (||) use short-circuit evaluation. The nullish coalescing operator (??) provides a fallback only when a value is null or undefined.\n\nWhen writing loops, ensure the termination condition can eventually become false. Otherwise an infinite loop may occur.\n\nPractice control flow by solving eligibility checks, grading systems, multiplication tables, number classification and array traversal problems.",
+      "examples": [
+        {
+          "title": "Grade Classification and Number Traversal",
+          "language": "javascript",
+          "explanation": "Uses conditional statements and a loop to solve two common programming tasks.",
+          "code": "const marks = 82;\n\nif (marks >= 90) {\n  console.log('Grade A+');\n} else if (marks >= 75) {\n  console.log('Grade A');\n} else if (marks >= 50) {\n  console.log('Pass');\n} else {\n  console.log('Fail');\n}\n\nfor (let number = 1; number <= 10; number++) {\n  if (number % 2 === 0) {\n    console.log(`${number} is even`);\n  }\n}\n\nconst username = null;\nconsole.log(username ?? 'Guest');"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Functions, Scope, Closures and Modern JavaScript",
+      "description": "Understand function declarations, expressions, arrow functions, parameters, scope and closures.",
+      "content": "Functions organize reusable logic into named or anonymous blocks of code.\n\nA function declaration uses the function keyword and a function name. A function expression stores a function value in a variable. Arrow functions provide a concise syntax and use lexical this rather than creating their own this binding.\n\nFunctions may receive parameters and return values. Default parameters provide values when arguments are missing or undefined. Rest parameters collect remaining arguments into an array.\n\nJavaScript functions are first-class values: they can be stored in variables, passed to other functions and returned from functions.\n\nA callback is a function passed to another function for later execution. Array methods such as map(), filter() and forEach() commonly accept callbacks.\n\nScope determines where variables are accessible. Variables declared with let and const have block scope. Variables declared with var have function scope or global scope depending on where they are declared.\n\nA closure occurs when a function retains access to variables from its surrounding lexical environment even after the outer function has returned.\n\nFunction declarations are hoisted and can generally be called before their declaration. Variables declared with let and const are also part of lexical initialization rules but cannot be accessed before initialization due to the temporal dead zone.\n\nModern JavaScript includes destructuring, template literals, optional chaining (?.), nullish coalescing (??), spread syntax (...) and rest parameters.\n\nArrow functions are convenient for callbacks, but they are not interchangeable with regular functions when a method needs its own dynamic this behavior.\n\nPractice by creating reusable calculation functions, callback-based transformations and closures that maintain private state.",
+      "examples": [
+        {
+          "title": "Arrow Functions and Closures",
+          "language": "javascript",
+          "explanation": "Demonstrates reusable functions, default parameters and a counter implemented using a closure.",
+          "code": "function greet(name = 'Student') {\n  return `Hello, ${name}`;\n}\n\nconst square = number => number * number;\n\nfunction createCounter() {\n  let count = 0;\n\n  return function () {\n    count += 1;\n    return count;\n  };\n}\n\nconst counter = createCounter();\n\nconsole.log(greet('Rahul'));\nconsole.log(square(6));\nconsole.log(counter());\nconsole.log(counter());\n\nconst student = { name: 'Asha', course: 'MCA' };\nconst { name, course } = student;\nconsole.log(name, course);"
+        }
+      ],
+      "estimatedMinutes": 22
+    },
+    {
+      "title": "Arrays, Objects and Common JavaScript Methods",
+      "description": "Work with arrays, objects, iteration, destructuring and data transformation methods.",
+      "content": "Arrays store ordered collections of values. JavaScript arrays can contain values of different types and are indexed from zero.\n\nCommon array operations include push() to add an item at the end, pop() to remove the last item, shift() to remove the first item and unshift() to add an item at the beginning.\n\nArray methods include includes(), indexOf(), find(), some(), every(), slice(), map(), filter(), reduce() and forEach().\n\nmap() creates a new array by transforming each element. filter() creates a new array containing elements that pass a test. reduce() combines array elements into an accumulated result. forEach() performs an action for each element and returns undefined.\n\nObjects store properties as key-value pairs. Properties can be accessed using dot notation or bracket notation. Bracket notation is useful when the property name is stored in a variable.\n\nObject.keys(), Object.values() and Object.entries() help inspect object properties.\n\nDestructuring extracts array elements or object properties into variables. Spread syntax can create shallow copies of arrays and objects.\n\nA shallow copy does not recursively duplicate nested objects. Mutating a nested object may therefore affect both the original and copied structures.\n\nJavaScript objects and arrays are compared by reference, not by structural equality, when using ===.\n\nSorting numeric arrays requires care because Array.prototype.sort() compares values as strings by default when no comparator is supplied.\n\nThese concepts are frequently used in React applications, REST API response processing, dashboard statistics and technical interviews.",
+      "examples": [
+        {
+          "title": "Transforming Student Data",
+          "language": "javascript",
+          "explanation": "Uses map, filter, reduce and object destructuring to process a collection of students.",
+          "code": "const students = [\n  { name: 'Rahul', marks: 85 },\n  { name: 'Asha', marks: 92 },\n  { name: 'Kiran', marks: 43 }\n];\n\nconst names = students.map(student => student.name);\nconst passed = students.filter(student => student.marks >= 50);\nconst total = students.reduce((sum, student) => sum + student.marks, 0);\nconst average = total / students.length;\n\nconsole.log(names);\nconsole.log(passed);\nconsole.log(average);\n\nconst { name, marks } = students[0];\nconsole.log(`${name}: ${marks}`);\n\nconst sortedMarks = [10, 100, 5].sort((a, b) => a - b);\nconsole.log(sortedMarks);"
+        }
+      ],
+      "estimatedMinutes": 22
+    },
+    {
+      "title": "DOM Manipulation, Events and Asynchronous JavaScript",
+      "description": "Learn browser DOM operations, event handling, promises, async/await and API requests.",
+      "content": "The Document Object Model (DOM) represents an HTML document as a tree of nodes that JavaScript can inspect and modify.\n\nThe document.querySelector() method selects the first element matching a CSS selector. document.querySelectorAll() selects all matching elements.\n\nThe textContent property updates text safely without parsing it as HTML. The innerHTML property parses HTML and should not be used with untrusted user input because it can introduce cross-site scripting vulnerabilities.\n\nThe addEventListener() method registers a callback for an event such as click, input, submit or keydown.\n\nAn event object provides information about the event. preventDefault() prevents an event's default browser behavior when the event is cancelable.\n\nJavaScript also supports asynchronous operations. A Promise represents the eventual completion or failure of an asynchronous operation.\n\nA Promise can be pending, fulfilled or rejected. Promise handlers include then(), catch() and finally().\n\nAn async function returns a Promise. The await keyword pauses execution within the async function until the awaited Promise settles, without blocking the JavaScript event loop.\n\nThe Fetch API makes HTTP requests. fetch() rejects on certain network failures but does not automatically reject for HTTP error statuses such as 404 or 500. Check response.ok when appropriate.\n\nUse try...catch to handle errors when working with async/await. Parse JSON responses with response.json() when the server returns JSON.\n\nDOM events and API requests are essential for building interactive applications, including placement dashboards, student profiles and learning platforms.",
+      "examples": [
+        {
+          "title": "DOM Events and Fetch API",
+          "language": "javascript",
+          "explanation": "Shows a browser click handler and a separate asynchronous API request with error handling.",
+          "code": "// Browser HTML example:\n// <button id=\"loadButton\">Load Users</button>\n\nconst button = document.querySelector('#loadButton');\n\nif (button) {\n  button.addEventListener('click', () => {\n    console.log('Load button clicked');\n  });\n}\n\nasync function loadUsers() {\n  try {\n    const response = await fetch('https://jsonplaceholder.typicode.com/users');\n\n    if (!response.ok) {\n      throw new Error(`HTTP error: ${response.status}`);\n    }\n\n    const users = await response.json();\n    console.log(users.map(user => user.name));\n  } catch (error) {\n    console.error('Unable to load users:', error.message);\n  }\n}\n\n// Call loadUsers() in a browser or supported runtime."
+        }
+      ],
+      "estimatedMinutes": 25
+    }
+  ],
+  "videos": [
+    {
+      "title": "JavaScript Course for Beginners - freeCodeCamp",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Zi-Q0t4gMC8",
+      "description": "Beginner course covering variables, data types, operators, conditions, loops, objects, arrays and functions.",
+      "durationMinutes": 212
+    },
+    {
+      "title": "JavaScript Arrow Functions Explained",
+      "youtubeUrl": "https://www.youtube.com/watch?v=6sQDTgOqh-I",
+      "description": "Learn arrow function syntax, implicit returns and practical differences from traditional functions.",
+      "durationMinutes": 16
+    },
+    {
+      "title": "JavaScript Array Methods - Map, Filter and Reduce",
+      "youtubeUrl": "https://www.youtube.com/watch?v=PojpwEbOQJg",
+      "description": "Practical introduction to JavaScript array transformations and higher-order methods.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "JavaScript DOM Manipulation - Full Course for Beginners",
+      "youtubeUrl": "https://www.youtube.com/watch?v=5fb2aPlgoys",
+      "description": "Learn DOM selection, manipulation, event listeners and interactive browser projects.",
+      "durationMinutes": 160
+    },
+    {
+      "title": "Asynchronous JavaScript - Promises, Async Await and Fetch",
+      "youtubeUrl": "https://www.youtube.com/watch?v=OFpqvaJ3QYg",
+      "description": "Understand callbacks, promises, async/await and Fetch API through practical examples.",
+      "durationMinutes": 91
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Which keyword declares a block-scoped variable that can be reassigned?",
+      "options": ["const", "let", "static", "final"],
+      "correctAnswer": 1,
+      "explanation": "let creates a block-scoped binding that can be reassigned.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which operator checks equality without performing type coercion?",
+      "options": ["==", "=", "===", "!="],
+      "correctAnswer": 2,
+      "explanation": "Strict equality (===) compares values without the type conversion used by loose equality.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the output of typeof 'Placify'?",
+      "options": ["string", "object", "text", "character"],
+      "correctAnswer": 0,
+      "explanation": "A value enclosed in quotation marks is a string primitive.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which loop is designed to iterate over values in an array?",
+      "options": ["switch", "if", "try", "for...of"],
+      "correctAnswer": 3,
+      "explanation": "for...of iterates over values supplied by an iterable such as an array.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What does an arrow function use for its this binding?",
+      "options": ["A new this binding for every call", "The this binding from its surrounding lexical scope", "The global object in all cases", "The first function argument"],
+      "correctAnswer": 1,
+      "explanation": "Arrow functions capture this lexically rather than creating their own dynamic this binding.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which array method creates a new array containing only elements that satisfy a condition?",
+      "options": ["push()", "pop()", "filter()", "join()"],
+      "correctAnswer": 2,
+      "explanation": "filter() returns a new array of elements for which its callback returns a truthy value.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the output of [10, 20, 30].reduce((sum, n) => sum + n, 0)?",
+      "options": ["60", "30", "[10,20,30]", "0"],
+      "correctAnswer": 0,
+      "explanation": "reduce() starts at zero and adds 10, 20 and 30 to produce 60.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which method registers a click event handler on a DOM element?",
+      "options": ["querySelectorAll()", "JSON.parse()", "Object.keys()", "addEventListener()"],
+      "correctAnswer": 3,
+      "explanation": "addEventListener('click', callback) registers a callback for click events.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What does a closure allow an inner function to do?",
+      "options": ["Execute only once", "Access variables from its surrounding lexical environment", "Automatically create a new browser tab", "Convert all variables into global variables"],
+      "correctAnswer": 1,
+      "explanation": "A closure retains access to variables from its lexical environment even after the enclosing function has returned.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "How does fetch() normally behave when the server responds with HTTP 404?",
+      "options": ["It always throws a SyntaxError", "It automatically retries the request", "It normally resolves with a Response whose ok property is false", "It automatically redirects to the home page"],
+      "correctAnswer": 2,
+      "explanation": "fetch() generally resolves for HTTP error responses. Applications should inspect response.ok or response.status.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Student Eligibility Checker",
+      "description": "Use variables, conditions and logical operators to check placement eligibility.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Write a JavaScript function checkEligibility(age, percentage, hasBacklogs). Return 'Eligible' when age is at least 18, percentage is at least 60 and hasBacklogs is false. Otherwise return 'Not Eligible'. Test at least four combinations, including boundary values."
+    },
+    {
+      "title": "Even Numbers and Sum Calculator",
+      "description": "Practice loops, conditions and numeric calculations.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Write a JavaScript function that accepts a positive integer n. Print all even numbers from 1 to n and return their sum. Handle n = 1, n = 2 and n = 10. Use a loop and the remainder operator."
+    },
+    {
+      "title": "Student Marks Analysis",
+      "description": "Analyze an array of student objects using map, filter and reduce.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Create an array of at least five students, each with name, marks and course. Use map() to extract names, filter() to find students with marks >= 60, reduce() to calculate average marks and sort() with a numeric comparator to order students by marks descending. Do not modify the original array when sorting."
+    },
+    {
+      "title": "Debug JavaScript Scope and Equality",
+      "description": "Identify incorrect variable declarations, comparison logic and array sorting.",
+      "type": "Debugging",
+      "difficulty": "Medium",
+      "instructions": "Debug the following JavaScript: const score = 50; score = 60; if (score == '60') console.log('Pass'); const numbers = [100, 5, 20]; numbers.sort(); Identify the reassignment error, explain the risks of loose equality and fix numeric sorting. Provide corrected code and explain each change."
+    },
+    {
+      "title": "Interactive Student Search Application",
+      "description": "Combine DOM events, array filtering and asynchronous API requests.",
+      "type": "Coding",
+      "difficulty": "Hard",
+      "instructions": "Build a browser page containing a search input, search button, loading message and result list. Use fetch() to load users from https://jsonplaceholder.typicode.com/users. Check response.ok and handle network errors. Store the fetched users in an array. When the user enters a name, filter the array case-insensitively and display matching names using safe DOM methods such as textContent and createElement. Display a helpful message when no users match."
+    }
+  ],
+  "resources": [
+    {
+      "title": "MDN - JavaScript Guide",
+      "type": "Documentation",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide",
+      "description": "Comprehensive JavaScript guide covering language fundamentals, control flow, functions, objects and advanced topics."
+    },
+    {
+      "title": "MDN - JavaScript Reference",
+      "type": "Documentation",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference",
+      "description": "Reference documentation for JavaScript operators, statements, objects and built-in methods."
+    },
+    {
+      "title": "JavaScript.info - The JavaScript Language",
+      "type": "Website",
+      "url": "https://javascript.info/",
+      "description": "Structured JavaScript lessons with examples and exercises from beginner to advanced concepts."
+    },
+    {
+      "title": "MDN - Array",
+      "type": "Documentation",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array",
+      "description": "Official-style reference for array operations, iteration and transformation methods."
+    },
+    {
+      "title": "MDN - Using the Fetch API",
+      "type": "Documentation",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch",
+      "description": "Documentation for HTTP requests, responses, JSON processing and Fetch API error handling."
+    }
+  ]
+}

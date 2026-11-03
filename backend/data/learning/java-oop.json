@@ -1,0 +1,249 @@
+
+{
+  "topicTitle": "Object-Oriented Programming with Java",
+  "lessons": [
+    {
+      "title": "Classes, Objects and Constructors",
+      "description": "Understand the building blocks of object-oriented programming.",
+      "content": "Object-Oriented Programming (OOP) organizes software around objects containing data and behavior.\n\nA class is a blueprint defining fields and methods. An object is an instance of a class created using the new keyword.\n\nA constructor initializes an object. It has the same name as the class and does not declare a return type.\n\nThe this keyword refers to the current object. Instance members belong to individual objects, while static members belong to the class.\n\nFor example, a Student class can define name, rollNumber and displayDetails(). Each Student object stores its own values.\n\nReal-world application: Employee, BankAccount, Product and Student entities can be modeled as classes.",
+      "examples": [
+        {
+          "title": "Student Object",
+          "language": "java",
+          "explanation": "Creates a class with a constructor and an instance method.",
+          "code": "class Student {\n    String name;\n    int rollNumber;\n\n    Student(String name, int rollNumber) {\n        this.name = name;\n        this.rollNumber = rollNumber;\n    }\n\n    void display() {\n        System.out.println(name + \" - \" + rollNumber);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Student student = new Student(\"Rahul\", 101);\n        student.display();\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Encapsulation and Access Modifiers",
+      "description": "Protect object data using private fields and controlled access.",
+      "content": "Encapsulation combines data and methods inside a class while controlling access to internal state.\n\nPrivate fields cannot be accessed directly from unrelated classes. Public methods provide controlled access and allow validation.\n\nJava access modifiers include public, protected, private and package-private (no explicit modifier).\n\nGetters retrieve values, while setters may validate and update them.\n\nEncapsulation improves maintainability, protects invariants and reduces unintended modification.\n\nFor example, a bank account should not allow its balance to be changed directly. Deposit and withdrawal methods should enforce business rules.",
+      "examples": [
+        {
+          "title": "Bank Account Encapsulation",
+          "language": "java",
+          "explanation": "Protects the balance and permits validated deposits.",
+          "code": "class BankAccount {\n    private double balance;\n\n    public double getBalance() {\n        return balance;\n    }\n\n    public void deposit(double amount) {\n        if (amount > 0) {\n            balance += amount;\n        }\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Inheritance and Method Overriding",
+      "description": "Reuse behavior through inheritance and specialize subclasses.",
+      "content": "Inheritance allows one class to extend another using the extends keyword.\n\nThe superclass defines shared behavior. The subclass inherits accessible members and may introduce new functionality.\n\nMethod overriding occurs when a subclass provides its own implementation of an inherited instance method with a compatible signature.\n\nThe @Override annotation helps the compiler detect overriding mistakes.\n\nThe super keyword can access superclass members and invoke superclass constructors.\n\nJava supports single inheritance of classes and multiple interface implementation. Constructors are not inherited.\n\nUse inheritance when there is a genuine is-a relationship. For example, a Car is a Vehicle.",
+      "examples": [
+        {
+          "title": "Vehicle Inheritance",
+          "language": "java",
+          "explanation": "Overrides an inherited method.",
+          "code": "class Vehicle {\n    void start() {\n        System.out.println(\"Vehicle starting\");\n    }\n}\n\nclass Car extends Vehicle {\n    @Override\n    void start() {\n        System.out.println(\"Car starting\");\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Vehicle vehicle = new Car();\n        vehicle.start();\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Polymorphism and Method Overloading",
+      "description": "Understand compile-time and runtime polymorphism.",
+      "content": "Polymorphism means one interface or operation can have different implementations.\n\nMethod overloading uses the same method name with different parameter lists. The compiler selects the applicable overload using compile-time information.\n\nMethod overriding supports runtime polymorphism. When an overridden instance method is called through a superclass reference, Java selects the implementation based on the actual object's type.\n\nOverloading cannot be achieved by changing only the return type.\n\nStatic methods are hidden rather than overridden, and private methods are not overridden.\n\nPolymorphism makes systems extensible because different objects can be processed through a shared abstraction.",
+      "examples": [
+        {
+          "title": "Method Overloading",
+          "language": "java",
+          "explanation": "Uses different parameter lists with the same method name.",
+          "code": "class Calculator {\n    int add(int a, int b) {\n        return a + b;\n    }\n\n    double add(double a, double b) {\n        return a + b;\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        Calculator calculator = new Calculator();\n        System.out.println(calculator.add(5, 7));\n        System.out.println(calculator.add(2.5, 3.5));\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Abstraction, Interfaces and OOP Design",
+      "description": "Understand abstract classes, interfaces and practical design principles.",
+      "content": "Abstraction exposes essential behavior while hiding implementation details.\n\nAn abstract class cannot be instantiated directly. It may contain abstract methods, concrete methods, fields and constructors.\n\nAn interface defines a contract that implementing classes must satisfy. Interfaces can also contain default and static methods.\n\nA class uses implements to implement interfaces and can implement multiple interfaces.\n\nAbstraction and polymorphism work together to reduce coupling between components.\n\nPrefer composition when a has-a relationship is more appropriate than inheritance.\n\nReal-world application: A PaymentMethod interface can be implemented by CardPayment and UpiPayment, allowing checkout code to use a common payment contract.",
+      "examples": [
+        {
+          "title": "Payment Interface",
+          "language": "java",
+          "explanation": "Defines a common contract for payment implementations.",
+          "code": "interface PaymentMethod {\n    void pay(double amount);\n}\n\nclass UpiPayment implements PaymentMethod {\n    @Override\n    public void pay(double amount) {\n        System.out.println(\"UPI payment: \" + amount);\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) {\n        PaymentMethod payment = new UpiPayment();\n        payment.pay(500);\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    }
+  ],
+  "videos": [
+    {
+      "title": "Java Object-Oriented Programming - YouTube Search",
+      "youtubeUrl": "https://www.youtube.com/watch?v=6T_HgnjoYwM",
+      "description": "Video reference for Java classes, objects and OOP fundamentals.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java OOP Tutorial - Bro Code",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ubwU7V3I6i0",
+      "description": "Java OOP concepts, including classes and object-oriented programming techniques.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java Inheritance Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Zs342ePFvRI",
+      "description": "Inheritance, subclasses and method overriding in Java.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java Polymorphism Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=jhDUxynEQRI",
+      "description": "Introduction to polymorphism and runtime method dispatch.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java Interfaces Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=GhslBwrRsnw",
+      "description": "Interfaces, implementation and abstraction in Java.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "What is an object in Java?",
+      "options": ["A Java package", "An instance of a class", "A compiler directive", "A primitive data type"],
+      "correctAnswer": 1,
+      "explanation": "An object is an instance of a class containing state and behavior.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which keyword creates a new object instance?",
+      "options": ["class", "extends", "new", "static"],
+      "correctAnswer": 2,
+      "explanation": "The new keyword creates an object and invokes its constructor.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which OOP principle protects internal state using controlled access?",
+      "options": ["Inheritance", "Encapsulation", "Overloading", "Compilation"],
+      "correctAnswer": 1,
+      "explanation": "Encapsulation hides internal state and exposes controlled operations.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which keyword allows one Java class to inherit from another?",
+      "options": ["implements", "import", "extends", "instanceof"],
+      "correctAnswer": 2,
+      "explanation": "The extends keyword declares class inheritance.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which statement about Java constructors is correct?",
+      "options": ["They must return void", "They are inherited automatically", "They have the same name as the class", "They must be static"],
+      "correctAnswer": 2,
+      "explanation": "A constructor has the same name as its class and does not declare a return type.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is method overriding?",
+      "options": ["Declaring a variable twice", "Providing a subclass implementation of an inherited instance method", "Using the same method name with different parameters in one class", "Changing only a method's return type"],
+      "correctAnswer": 1,
+      "explanation": "Overriding allows a subclass to provide a compatible implementation of an inherited instance method.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is required for method overloading?",
+      "options": ["Different method names", "Different parameter lists", "Different return types only", "Different packages only"],
+      "correctAnswer": 1,
+      "explanation": "Overloaded methods share a name but must have different parameter lists.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which Java type cannot be instantiated directly?",
+      "options": ["Concrete class", "String", "Abstract class", "ArrayList"],
+      "correctAnswer": 2,
+      "explanation": "An abstract class cannot be instantiated directly; a concrete subclass can be instantiated.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is printed when Vehicle v = new Car(); v.start(); calls a method overridden in Car?",
+      "options": ["Always the Vehicle implementation", "The Car implementation", "Both implementations automatically", "A compilation error"],
+      "correctAnswer": 1,
+      "explanation": "Runtime polymorphism dispatches overridden instance methods according to the actual object's class.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "Which statement about Java interfaces is correct?",
+      "options": ["A class can implement multiple interfaces", "An interface must have a constructor", "Interfaces cannot declare methods", "A class can extend multiple concrete classes"],
+      "correctAnswer": 0,
+      "explanation": "Java permits a class to implement multiple interfaces but not extend multiple classes.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Create an Employee Class",
+      "description": "Practice classes, objects and constructors.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Create an Employee class with name, age, department and salary. Initialize the fields using a constructor. Create two Employee objects and display their information."
+    },
+    {
+      "title": "Build an Encapsulated Bank Account",
+      "description": "Protect internal state using private fields.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Create a BankAccount class with a private balance. Implement deposit(), withdraw() and getBalance(). Reject non-positive deposits and withdrawals, and prevent withdrawals greater than the available balance."
+    },
+    {
+      "title": "Implement Inheritance and Overriding",
+      "description": "Practice inheritance and runtime polymorphism.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Create a Vehicle superclass with a start() method. Create Car and Bike subclasses that override start(). Store both objects in a Vehicle array and call start() on each object."
+    },
+    {
+      "title": "Design a Payment Interface",
+      "description": "Practice abstraction and interface implementation.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Create a PaymentMethod interface with pay(double amount). Implement UpiPayment and CardPayment. Create a method that accepts PaymentMethod and processes a positive payment amount."
+    },
+    {
+      "title": "Debug an Overriding Mistake",
+      "description": "Identify a method signature mismatch.",
+      "type": "Debugging",
+      "difficulty": "Hard",
+      "instructions": "A superclass defines void display(int value), but its subclass declares @Override void display(double value). Explain why the @Override annotation causes a compilation error. Correct the subclass so it overrides the superclass method."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Oracle Java Tutorials - Object-Oriented Programming",
+      "type": "Documentation",
+      "url": "https://docs.oracle.com/javase/tutorial/java/concepts/",
+      "description": "Official tutorial covering objects, classes, inheritance and interfaces."
+    },
+    {
+      "title": "Dev.java - Classes and Objects",
+      "type": "Documentation",
+      "url": "https://dev.java/learn/classes-objects/",
+      "description": "Java learning materials on classes, objects and object-oriented programming."
+    },
+    {
+      "title": "Java OOP - W3Schools",
+      "type": "Website",
+      "url": "https://www.w3schools.com/java/java_oop.asp",
+      "description": "Beginner-friendly examples of Java classes and OOP concepts."
+    },
+    {
+      "title": "Object-Oriented Programming in Java - GeeksforGeeks",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/java/object-oriented-programming-oops-concept-in-java/",
+      "description": "Explanation of Java OOP principles with examples."
+    },
+    {
+      "title": "Java Object-Oriented Programming - Programiz",
+      "type": "Website",
+      "url": "https://www.programiz.com/java-programming/object-oriented-programming",
+      "description": "Practical introduction to Java object-oriented programming."
+    }
+  ]
+}

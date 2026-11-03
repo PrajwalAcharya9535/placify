@@ -1,3 +1,4 @@
+
 const Notification = require(
   "../models/Notification"
 );
@@ -47,6 +48,10 @@ const createNotification = async ({
       );
     }
 
+    // ----------------------------------------
+    // SAVE NOTIFICATION
+    // ----------------------------------------
+
     const notification =
       await Notification.create({
         user,
@@ -75,6 +80,27 @@ const createNotification = async ({
 
         metadata,
       });
+
+    // ----------------------------------------
+    // REAL-TIME SOCKET NOTIFICATION
+    // ----------------------------------------
+
+    try {
+      const io =
+        global.placifySocketIO;
+
+      if (io) {
+        io.to(`user:${String(user)}`).emit(
+          "notification:new",
+          notification
+        );
+      }
+    } catch (socketError) {
+      console.error(
+        "Notification socket emit error:",
+        socketError
+      );
+    }
 
     return notification;
   } catch (error) {

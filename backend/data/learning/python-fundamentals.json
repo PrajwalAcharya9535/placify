@@ -1,0 +1,298 @@
+{
+  "topicTitle": "Python Fundamentals",
+  "lessons": [
+    {
+      "title": "Python Introduction, Syntax and Data Types",
+      "description": "Learn Python syntax, variables, primitive values, input and type conversion.",
+      "content": "Python is a high-level, general-purpose programming language used in automation, web development, data analysis and AI. Python uses indentation to define code blocks rather than braces. Comments start with #. Variables are names bound to objects and do not require type declarations. Common built-in types include int, float, bool, str and NoneType. Use type() to inspect a value. A string can be created using single or double quotes. f-strings insert expressions into text. Python arithmetic operators include +, -, *, /, //, %, and **. / produces floating-point division; // performs floor division. Comparison operators include ==, !=, <, >, <= and >=. Logical operators are and, or and not. input() reads text and returns a string, so convert input using int() or float() when needed. Handle invalid conversions with try/except. Avoid naming variables after built-in functions such as list or str.",
+      "examples": [
+        {
+          "title": "Python Introduction, Syntax and Data Types Example",
+          "language": "python",
+          "explanation": "Run this example with Python 3 and observe the output.",
+          "code": "name = 'Asha'\nage = 22\npercentage = 82.5\nis_eligible = age >= 18\nprint(f'{name}: {percentage}%')\nprint(type(age))\nprint(7 / 2, 7 // 2, 7 % 2)\nprint(int('25') + 5)"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Conditions, Loops and Functions",
+      "description": "Control program execution and build reusable functions.",
+      "content": "Use if, elif and else to branch based on conditions. Indentation determines which statements belong to a block. Python treats values such as 0, None, empty strings and empty collections as false in boolean contexts. for loops iterate over sequences and other iterables; range(start, stop, step) generates a sequence of integers where stop is excluded. while loops repeat while a condition is true. break exits a loop and continue skips to the next iteration. Functions are declared using def, can accept parameters and return results using return. Default arguments provide fallback values. Prefer immutable defaults such as None instead of mutable lists to avoid state leaking across calls. Local variables exist inside their function scope. Use descriptive function names and test boundary cases.",
+      "examples": [
+        {
+          "title": "Conditions, Loops and Functions Example",
+          "language": "python",
+          "explanation": "Run this example with Python 3 and observe the output.",
+          "code": "def classify_marks(marks):\n    if marks >= 75:\n        return 'Distinction'\n    elif marks >= 50:\n        return 'Pass'\n    return 'Fail'\n\nfor number in range(1, 6):\n    if number % 2 == 0:\n        print(number, 'even')\n\nprint(classify_marks(81))"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Lists, Tuples, Sets and Dictionaries",
+      "description": "Store, access and transform collections of data.",
+      "content": "Python has several core collection types. Lists are ordered, mutable sequences; use append(), extend(), pop() and slicing to work with them. Tuples are ordered, immutable sequences and support unpacking. Sets contain unique hashable elements and support union, intersection and difference. Dictionaries map hashable keys to values and preserve insertion order in modern Python. Access dictionary values with brackets when a key must exist, or get() when a missing key is acceptable. Iterate over dictionary items using items(). List comprehensions create new lists concisely, for example [x*x for x in numbers if x > 0]. Use sorted() to return a new sorted list; list.sort() modifies an existing list. Be aware that assigning one list variable to another does not copy it. For shallow copies, use list.copy() or slicing. Choose collections according to ordering, uniqueness, mutability and lookup requirements.",
+      "examples": [
+        {
+          "title": "Lists, Tuples, Sets and Dictionaries Example",
+          "language": "python",
+          "explanation": "Run this example with Python 3 and observe the output.",
+          "code": "students = [{'name': 'Asha', 'marks': 86}, {'name': 'Rahul', 'marks': 47}]\npassed = [s['name'] for s in students if s['marks'] >= 50]\nprint(passed)\n\nskills = {'Python', 'SQL', 'Python'}\nprint(skills)\n\nprofile = {'name': 'Asha', 'course': 'MCA'}\nprint(profile.get('city', 'Not provided'))\n\nmarks = [80, 65, 90]\nprint(sorted(marks, reverse=True))"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Modules, Files and Exception Handling",
+      "description": "Organize programs and handle expected errors safely.",
+      "content": "A Python module is a file containing reusable definitions and statements. Import standard-library modules with import module or from module import name. The if __name__ == '__main__' guard allows a script to run code only when executed directly. Packages organize related modules. The standard library provides useful modules such as math, pathlib, json, datetime and statistics. File operations use open() or pathlib.Path; use with to close file handles automatically. Specify encodings such as encoding='utf-8' for text files. json.dumps() converts supported Python values to JSON text, while json.loads() parses JSON text. Exceptions signal errors. try/except catches expected exceptions; else runs if no exception occurs; finally runs during cleanup. Catch specific exceptions such as ValueError and FileNotFoundError instead of swallowing all errors. raise can signal a meaningful error. Do not use eval() on untrusted data.",
+      "examples": [
+        {
+          "title": "Modules, Files and Exception Handling Example",
+          "language": "python",
+          "explanation": "Run this example with Python 3 and observe the output.",
+          "code": "from pathlib import Path\nimport json\n\npath = Path('student.json')\nstudent = {'name': 'Asha', 'score': 85}\npath.write_text(json.dumps(student), encoding='utf-8')\n\ntry:\n    loaded = json.loads(path.read_text(encoding='utf-8'))\n    print(loaded['name'])\nexcept (OSError, json.JSONDecodeError, KeyError) as error:\n    print(f'Unable to load student: {error}')"
+        }
+      ],
+      "estimatedMinutes": 25
+    },
+    {
+      "title": "Object-Oriented Python and Practical Problem Solving",
+      "description": "Understand classes, objects, methods and common Python programming patterns.",
+      "content": "Object-oriented programming organizes data and behavior in classes. A class is a blueprint; an object is an instance. Define a class with class and initialize instance attributes in __init__(self, ...). Instance methods receive self as their first parameter. Encapsulation in Python relies largely on conventions: names beginning with an underscore indicate non-public implementation details. Inheritance allows a subclass to reuse or customize a parent class. super() calls inherited behavior. Polymorphism lets objects provide compatible methods with different implementations. Python also supports properties through @property, dataclasses for data-focused classes and type hints for readability and tooling. Type hints are not automatically enforced at runtime. Solve programming problems by understanding input, output and constraints; writing a small function; testing normal and edge cases; and estimating time complexity. For interviews, practice string processing, counting frequencies with dictionaries, sorting and searching.",
+      "examples": [
+        {
+          "title": "Object-Oriented Python and Practical Problem Solving Example",
+          "language": "python",
+          "explanation": "Run this example with Python 3 and observe the output.",
+          "code": "class Student:\n    def __init__(self, name, marks):\n        self.name = name\n        self.marks = marks\n\n    def is_eligible(self):\n        return self.marks >= 60\n\nstudent = Student('Asha', 82)\nprint(student.name)\nprint(student.is_eligible())\n\ndef character_counts(text):\n    counts = {}\n    for char in text:\n        counts[char] = counts.get(char, 0) + 1\n    return counts\n\nprint(character_counts('python'))"
+        }
+      ],
+      "estimatedMinutes": 25
+    }
+  ],
+  "videos": [
+    {
+      "title": "Python for Beginners — Full Course",
+      "youtubeUrl": "https://www.youtube.com/watch?v=rfscVS0vtbw",
+      "description": "Introductory Python course covering syntax, variables, conditions, loops and functions.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Python Tutorial for Beginners",
+      "youtubeUrl": "https://www.youtube.com/watch?v=_uQrJ0TkZlc",
+      "description": "Python programming fundamentals with practical examples and exercises.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Learn Python — Full Course for Beginners",
+      "youtubeUrl": "https://www.youtube.com/watch?v=8DvywoWv6fI",
+      "description": "Comprehensive Python introduction including functions and collections.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Python Object Oriented Programming Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ZDa-Z5JzLYM",
+      "description": "Introduction to Python classes, instances and methods.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Python Exceptions Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=NIWwJbo-9_8",
+      "description": "Practical overview of exception handling with try and except.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Which symbol begins a single-line comment in Python?",
+      "options": [
+        "//",
+        "#",
+        "--",
+        "/*"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Python comments begin with #.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which type is an ordered, mutable collection?",
+      "options": [
+        "tuple",
+        "set",
+        "list",
+        "str"
+      ],
+      "correctAnswer": 2,
+      "explanation": "A list is an ordered mutable sequence.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the result of 7 // 2 in Python?",
+      "options": [
+        "3",
+        "3.5",
+        "4",
+        "1"
+      ],
+      "correctAnswer": 0,
+      "explanation": "// performs floor division.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which keyword defines a function?",
+      "options": [
+        "function",
+        "fun",
+        "lambda",
+        "def"
+      ],
+      "correctAnswer": 3,
+      "explanation": "The def keyword declares a function.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What values does range(1, 4) generate?",
+      "options": [
+        "1, 2, 3, 4",
+        "1, 2, 3",
+        "0, 1, 2, 3",
+        "2, 3, 4"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The stop value is excluded.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which dictionary method returns a fallback for a missing key?",
+      "options": [
+        "append()",
+        "popitem()",
+        "get()",
+        "add()"
+      ],
+      "correctAnswer": 2,
+      "explanation": "dict.get(key, default) returns the default when the key is absent.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What does the with statement help ensure when working with files?",
+      "options": [
+        "A file is properly closed after use",
+        "A file always exists",
+        "All file content is encrypted",
+        "No exceptions can occur"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Context managers manage resource cleanup.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which clause handles a specific exception in Python?",
+      "options": [
+        "catch",
+        "finally",
+        "throw",
+        "except"
+      ],
+      "correctAnswer": 3,
+      "explanation": "except catches exceptions that match its handler.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is a potential problem with a mutable list as a default function argument?",
+      "options": [
+        "It becomes a tuple",
+        "The same list can be shared between calls",
+        "The function cannot return a value",
+        "Python automatically copies the list"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Default argument objects are created once when the function is defined.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "What does __init__ commonly do in a Python class?",
+      "options": [
+        "Delete an object",
+        "Import a module",
+        "Initialize instance state",
+        "Create a package"
+      ],
+      "correctAnswer": 2,
+      "explanation": "__init__ initializes an instance after it is created.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Placement Eligibility Checker",
+      "description": "Check age, marks and backlog conditions using Python.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Write check_eligibility(age, percentage, has_backlogs). Return \"Eligible\" if age >= 18, percentage >= 60 and has_backlogs is False; otherwise return \"Not Eligible\". Test boundary values."
+    },
+    {
+      "title": "Even Number Sum",
+      "description": "Practice for loops and arithmetic.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Write sum_even(n) to return the sum of all even integers from 1 through n. Reject negative input with ValueError. Test n = 0, 1, 2 and 10."
+    },
+    {
+      "title": "Student Score Analysis",
+      "description": "Process lists and dictionaries.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Given a list of student dictionaries with name and marks, return the names of passing students (marks >= 50), the average marks and a new list sorted by marks descending. Do not mutate the input."
+    },
+    {
+      "title": "Debug Python Collection and Scope Errors",
+      "description": "Identify common Python mistakes.",
+      "type": "Debugging",
+      "difficulty": "Medium",
+      "instructions": "Explain and correct this code: def add_item(item, items=[]): items.append(item); return items. Then explain why calling add_item twice shares state. Also correct: scores = [10, 20]; print(scores[2])."
+    },
+    {
+      "title": "Student Record Manager",
+      "description": "Combine classes, file handling and exceptions.",
+      "type": "Coding",
+      "difficulty": "Hard",
+      "instructions": "Create a Student class with name and marks and a method is_eligible(). Build functions to save a list of students to JSON and load them again using pathlib. Validate marks are between 0 and 100, handle missing or invalid JSON files and demonstrate at least three test cases."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Python Official Tutorial",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/tutorial/",
+      "description": "Official Python introduction with language fundamentals and examples."
+    },
+    {
+      "title": "Python Built-in Types",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/library/stdtypes.html",
+      "description": "Reference for numbers, strings, lists, tuples, sets and dictionaries."
+    },
+    {
+      "title": "Python Control Flow Tools",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/tutorial/controlflow.html",
+      "description": "Official guide to conditions, loops and functions."
+    },
+    {
+      "title": "Python Errors and Exceptions",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/tutorial/errors.html",
+      "description": "Official explanation of exceptions and error handling."
+    },
+    {
+      "title": "Python Classes",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/tutorial/classes.html",
+      "description": "Official tutorial for classes, objects and inheritance."
+    }
+  ]
+}

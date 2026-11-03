@@ -1,8 +1,21 @@
+
 const mongoose = require("mongoose");
+
+const STAGES = [
+  "Interested",
+  "Applied",
+  "Assessment",
+  "Shortlisted",
+  "Technical",
+  "HR",
+  "Selected",
+  "Rejected",
+  "Offer",
+  "Placed",
+];
 
 const placementApplicationSchema = new mongoose.Schema(
   {
-    // Student who is tracking this application
     student: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
@@ -10,45 +23,36 @@ const placementApplicationSchema = new mongoose.Schema(
       index: true,
     },
 
-    // Placement opportunity
+    // Regular placement opportunity
     opportunity: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "PlacementOpportunity",
-      required: true,
-      index: true,
+      default: undefined,
     },
 
-    // Current stage of the real placement process
+    // Telegram placement opportunity
+    telegramAnnouncement: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "TelegramAnnouncement",
+      default: undefined,
+    },
+
     currentStage: {
       type: String,
-      enum: [
-        "Interested",
-        "Applied",
-        "Assessment",
-        "Shortlisted",
-        "Technical",
-        "HR",
-        "Selected",
-        "Rejected",
-        "Offer",
-        "Placed",
-      ],
+      enum: STAGES,
       default: "Interested",
     },
 
-    // Date student actually applied
     appliedAt: {
       type: Date,
       default: null,
     },
 
-    // Upcoming assessment/interview date
     nextRoundDate: {
       type: Date,
       default: null,
     },
 
-    // Student notes
     notes: {
       type: String,
       trim: true,
@@ -56,23 +60,11 @@ const placementApplicationSchema = new mongoose.Schema(
       default: "",
     },
 
-    // Complete stage history
     stageHistory: [
       {
         stage: {
           type: String,
-          enum: [
-            "Interested",
-            "Applied",
-            "Assessment",
-            "Shortlisted",
-            "Technical",
-            "HR",
-            "Selected",
-            "Rejected",
-            "Offer",
-            "Placed",
-          ],
+          enum: STAGES,
           required: true,
         },
 
@@ -90,7 +82,6 @@ const placementApplicationSchema = new mongoose.Schema(
       },
     ],
 
-    // Offer details
     offerDetails: {
       package: {
         type: Number,
@@ -110,7 +101,6 @@ const placementApplicationSchema = new mongoose.Schema(
       },
     },
 
-    // Overall tracker state
     isActive: {
       type: Boolean,
       default: true,
@@ -121,7 +111,34 @@ const placementApplicationSchema = new mongoose.Schema(
   }
 );
 
-// One student should track an opportunity only once
+// ========================================
+// VALIDATE APPLICATION SOURCE
+// ========================================
+
+// FIX: Mongoose validation middleware
+// no longer uses the next() callback.
+
+placementApplicationSchema.pre(
+  "validate",
+  function () {
+    const hasOpportunity =
+      Boolean(this.opportunity);
+
+    const hasTelegram =
+      Boolean(this.telegramAnnouncement);
+
+    if (hasOpportunity === hasTelegram) {
+      throw new Error(
+        "Exactly one application source is required"
+      );
+    }
+  }
+);
+
+// ========================================
+// PREVENT DUPLICATE REGULAR APPLICATIONS
+// ========================================
+
 placementApplicationSchema.index(
   {
     student: 1,
@@ -129,15 +146,42 @@ placementApplicationSchema.index(
   },
   {
     unique: true,
+    partialFilterExpression: {
+      opportunity: { $type: "objectId" },
+    },
   }
 );
 
-// Useful for tracker/dashboard queries
+// ========================================
+// PREVENT DUPLICATE TELEGRAM APPLICATIONS
+// ========================================
+
+placementApplicationSchema.index(
+  {
+    student: 1,
+    telegramAnnouncement: 1,
+  },
+  {
+    unique: true,
+    partialFilterExpression: {
+      telegramAnnouncement: { $type: "objectId" },
+    },
+  }
+);
+
+// ========================================
+// DASHBOARD AND TRACKER QUERIES
+// ========================================
+
 placementApplicationSchema.index({
   student: 1,
   currentStage: 1,
   updatedAt: -1,
 });
+
+// ========================================
+// EXPORT MODEL
+// ========================================
 
 module.exports = mongoose.model(
   "PlacementApplication",

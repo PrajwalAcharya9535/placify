@@ -1,4 +1,11 @@
-import React, { useMemo, useState } from "react";
+
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import axios from "axios";
 import "./MockMcqWorkspace.css";
 
@@ -10,81 +17,132 @@ const MockMcqWorkspace = ({
   roundData = null,
   onRoundCompleted,
 }) => {
-  // ==============================
-  // LOCAL QUESTION STATE
-  // ==============================
+  // ==========================================
+  // QUESTION STATE
+  // ==========================================
 
-  const [questionList, setQuestionList] =
-    useState(questions);
+  const [questionList, setQuestionList] = useState(questions);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [selectedAnswers, setSelectedAnswers] = useState({});
 
-  const [currentQuestionIndex, setCurrentQuestionIndex] =
-    useState(0);
+  const [submittingAnswer, setSubmittingAnswer] = useState(false);
+  const [answerError, setAnswerError] = useState("");
+  const [answerResult, setAnswerResult] = useState(null);
 
-  const [selectedAnswers, setSelectedAnswers] =
-    useState({});
+  const [completingRound, setCompletingRound] = useState(false);
+  const [roundError, setRoundError] = useState("");
 
-  const [submittingAnswer, setSubmittingAnswer] =
-    useState(false);
+  // ==========================================
+  // TIMER AND REQUEST SAFETY
+  // ==========================================
 
-  const [answerError, setAnswerError] =
-    useState("");
+  const expiresAt = roundData?.expiresAt || null;
 
-  const [answerResult, setAnswerResult] =
-    useState(null);
+  const [remainingSeconds, setRemainingSeconds] = useState(null);
 
-  const [completingRound, setCompletingRound] =
-    useState(false);
+  const completingRoundRef = useRef(false);
+  const submittingAnswerRef = useRef(false);
+  const autoSubmitAttemptedRef = useRef(false);
+  const mountedRef = useRef(true);
 
-  const [roundError, setRoundError] =
-    useState("");
+  useEffect(() => {
+    mountedRef.current = true;
 
-  // ==============================
-  // CURRENT QUESTION
-  // ==============================
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    setQuestionList(questions);
+    setCurrentQuestionIndex(0);
+    setSelectedAnswers({});
+    setAnswerError("");
+    setAnswerResult(null);
+    setRoundError("");
+    autoSubmitAttemptedRef.current = false;
+  }, [questions]);
+
+  useEffect(() => {
+    if (!expiresAt) {
+      setRemainingSeconds(null);
+      return;
+    }
+
+    const deadline = new Date(expiresAt).getTime();
+
+    if (!Number.isFinite(deadline)) {
+      setRemainingSeconds(null);
+      return;
+    }
+
+    const updateCountdown = () => {
+      const seconds = Math.max(
+        0,
+        Math.ceil((deadline - Date.now()) / 1000)
+      );
+
+      setRemainingSeconds(seconds);
+    };
+
+    updateCountdown();
+
+    const interval = setInterval(updateCountdown, 1000);
+
+    return () => clearInterval(interval);
+  }, [expiresAt]);
+
+  const timeExpired = remainingSeconds === 0;
+
+  const formatTime = (seconds) => {
+    if (seconds === null) return "--:--";
+
+    const minutes = Math.floor(seconds / 60);
+    const remaining = seconds % 60;
+
+    return `${String(minutes).padStart(2, "0")}:${String(
+      remaining
+    ).padStart(2, "0")}`;
+  };
+
+  // ==========================================
+  // QUESTION INFORMATION
+  // ==========================================
 
   const currentQuestion =
     questionList[currentQuestionIndex] || null;
 
   const answeredCount = useMemo(
-    () =>
-      questionList.filter(
-        (question) => question.answered
-      ).length,
+    () => questionList.filter((question) => question.answered).length,
     [questionList]
   );
 
   const totalQuestions = questionList.length;
 
   const allQuestionsAnswered =
-    totalQuestions > 0 &&
-    answeredCount === totalQuestions;
+    totalQuestions > 0 && answeredCount === totalQuestions;
 
   const progressPercentage =
     totalQuestions > 0
-      ? Math.round(
-          (answeredCount / totalQuestions) * 100
-        )
+      ? Math.round((answeredCount / totalQuestions) * 100)
       : 0;
 
   const currentSelectedAnswer = currentQuestion
-    ? selectedAnswers[
-        currentQuestion.mockQuestionAttemptId
-      ] || ""
+    ? selectedAnswers[currentQuestion.mockQuestionAttemptId] || ""
     : "";
 
-  // ==============================
-  // SELECT OPTION LOCALLY
-  // ==============================
+  const controlsDisabled =
+    submittingAnswer || completingRound || timeExpired;
+
+  // ==========================================
+  // SELECT OPTION
+  // ==========================================
 
   const handleOptionSelect = (option) => {
-    if (!currentQuestion) {
-      return;
-    }
-
     if (
+      !currentQuestion ||
       currentQuestion.answered ||
-      submittingAnswer ||
-      completingRound
+      controlsDisabled
     ) {
       return;
     }
@@ -99,25 +157,39 @@ const MockMcqWorkspace = ({
     }));
   };
 
-  // ==============================
+  // ==========================================
   // SUBMIT CURRENT ANSWER
-  // ==============================
+  // ==========================================
 
   const handleSubmitAnswer = async () => {
-    if (!currentQuestion) {
-      return;
-    }
-
-    if (currentQuestion.answered) {
+    if (
+      !currentQuestion ||
+      currentQuestion.answered ||
+      submittingAnswerRef.current ||
+      completingRoundRef.current ||
+      timeExpired
+    ) {
       return;
     }
 
     if (!currentSelectedAnswer) {
+      setAnswerError("Please select an option before submitting.");
+      return;
+    }
+
+    const token = localStorage.getItem("placifyToken");
+
+    if (!token) {
       setAnswerError(
-        "Please select an option before submitting."
+        "Your login session is unavailable. Please log in again."
       );
       return;
     }
+
+    const questionId = currentQuestion.mockQuestionAttemptId;
+    const submittedAnswer = currentSelectedAnswer;
+
+    submittingAnswerRef.current = true;
 
     try {
       setSubmittingAnswer(true);
@@ -125,21 +197,9 @@ const MockMcqWorkspace = ({
       setAnswerResult(null);
       setRoundError("");
 
-      const token =
-        localStorage.getItem("placifyToken");
-
-      if (!token) {
-        setAnswerError(
-          "Your login session is unavailable. Please log in again."
-        );
-        return;
-      }
-
       const response = await axios.post(
-        `${API_BASE_URL}/mock-question-attempts/${currentQuestion.mockQuestionAttemptId}/answer`,
-        {
-          answer: currentSelectedAnswer,
-        },
+        `${API_BASE_URL}/mock-question-attempts/${questionId}/answer`,
+        { answer: submittedAnswer },
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -147,75 +207,73 @@ const MockMcqWorkspace = ({
         }
       );
 
+      if (!mountedRef.current) return;
+
       const result = response.data.result;
 
       setQuestionList((previousQuestions) =>
         previousQuestions.map((question) =>
-          question.mockQuestionAttemptId ===
-          currentQuestion.mockQuestionAttemptId
+          question.mockQuestionAttemptId === questionId
             ? {
                 ...question,
                 answered: true,
-                submittedAnswer:
-                  currentSelectedAnswer,
+                submittedAnswer,
               }
             : question
         )
       );
 
       setAnswerResult({
-        questionAttemptId:
-          result?.mockQuestionAttemptId || null,
-
-        isCorrect:
-          result?.isCorrect ?? false,
-
-        marksAwarded:
-          result?.marksAwarded ?? 0,
-
+        questionAttemptId: result?.mockQuestionAttemptId || null,
+        isCorrect: result?.isCorrect ?? false,
+        marksAwarded: result?.marksAwarded ?? 0,
         totalMarks:
-          result?.totalMarks ??
-          currentQuestion.marks ??
-          0,
+          result?.totalMarks ?? currentQuestion.marks ?? 0,
       });
     } catch (err) {
-      setAnswerError(
-        err.response?.data?.message ||
-          "Failed to submit the answer."
-      );
+      if (mountedRef.current) {
+        setAnswerError(
+          err.response?.data?.message ||
+            "Failed to submit the answer."
+        );
+      }
     } finally {
-      setSubmittingAnswer(false);
+      submittingAnswerRef.current = false;
+
+      if (mountedRef.current) {
+        setSubmittingAnswer(false);
+      }
     }
   };
 
-  // ==============================
-  // COMPLETE CURRENT ROUND
-  // ==============================
+  // ==========================================
+  // COMPLETE ROUND
+  // ==========================================
 
-  const handleCompleteRound = async () => {
+  const handleCompleteRound = useCallback(async () => {
     if (
       !attemptId ||
-      completingRound ||
-      submittingAnswer ||
-      !allQuestionsAnswered
+      completingRoundRef.current ||
+      submittingAnswerRef.current
     ) {
-      return;
+      return false;
     }
+
+    const token = localStorage.getItem("placifyToken");
+
+    if (!token) {
+      setRoundError(
+        "Your login session is unavailable. Please log in again."
+      );
+      return false;
+    }
+
+    completingRoundRef.current = true;
 
     try {
       setCompletingRound(true);
       setRoundError("");
       setAnswerError("");
-
-      const token =
-        localStorage.getItem("placifyToken");
-
-      if (!token) {
-        setRoundError(
-          "Your login session is unavailable. Please log in again."
-        );
-        return;
-      }
 
       const response = await axios.post(
         `${API_BASE_URL}/mock-attempts/${attemptId}/round/complete`,
@@ -230,58 +288,70 @@ const MockMcqWorkspace = ({
       const updatedMockAttempt =
         response.data.mockAttempt || null;
 
-      const nextRound =
-        response.data.nextRound || null;
+      const nextRound = response.data.nextRound || null;
 
-      // ==============================
-      // NEXT ROUND AVAILABLE
-      // ==============================
-
-      if (nextRound) {
-        if (onRoundCompleted) {
-          onRoundCompleted(
-            updatedMockAttempt,
-            nextRound
-          );
-        }
-
-        return;
+      if (onRoundCompleted) {
+        onRoundCompleted(
+          updatedMockAttempt,
+          nextRound,
+          response.data
+        );
       }
 
-      // ==============================
-      // FINAL ROUND COMPLETED
-      // ==============================
-
-      if (updatedMockAttempt) {
-        if (onRoundCompleted) {
-          onRoundCompleted(
-            updatedMockAttempt,
-            null
-          );
-        }
-      }
-
-      setRoundError(
-        "Mock placement assessment completed."
-      );
+      return true;
     } catch (err) {
-      setRoundError(
-        err.response?.data?.message ||
-          "Failed to complete the current round."
-      );
-    } finally {
-      setCompletingRound(false);
-    }
-  };
+      if (mountedRef.current) {
+        setRoundError(
+          err.response?.data?.error ||
+            err.response?.data?.message ||
+            "Failed to complete the current round."
+        );
+      }
 
-  // ==============================
-  // NAVIGATION
-  // ==============================
+      return false;
+    } finally {
+      completingRoundRef.current = false;
+
+      if (mountedRef.current) {
+        setCompletingRound(false);
+      }
+    }
+  }, [attemptId, onRoundCompleted]);
+
+  // ==========================================
+  // AUTOMATIC SUBMISSION WHEN TIME EXPIRES
+  // ==========================================
+
+  useEffect(() => {
+    if (
+      !timeExpired ||
+      !expiresAt ||
+      submittingAnswer ||
+      completingRound ||
+      autoSubmitAttemptedRef.current
+    ) {
+      return;
+    }
+
+    autoSubmitAttemptedRef.current = true;
+    handleCompleteRound();
+  }, [
+    timeExpired,
+    expiresAt,
+    submittingAnswer,
+    completingRound,
+    handleCompleteRound,
+  ]);
+
+  // ==========================================
+  // QUESTION NAVIGATION
+  // ==========================================
 
   const handleQuestionChange = (index) => {
     if (
-      submittingAnswer ||
-      completingRound
+      controlsDisabled ||
+      index < 0 ||
+      index >= totalQuestions
     ) {
       return;
     }
@@ -293,68 +363,58 @@ const MockMcqWorkspace = ({
   };
 
   const handlePrevious = () => {
-    if (
-      submittingAnswer ||
-      completingRound
-    ) {
-      return;
-    }
-
-    setCurrentQuestionIndex((previousIndex) =>
-      Math.max(previousIndex - 1, 0)
+    handleQuestionChange(
+      Math.max(currentQuestionIndex - 1, 0)
     );
-
-    setAnswerError("");
-    setAnswerResult(null);
-    setRoundError("");
   };
 
   const handleNext = () => {
-    if (
-      submittingAnswer ||
-      completingRound
-    ) {
-      return;
-    }
-
-    setCurrentQuestionIndex((previousIndex) =>
-      Math.min(
-        previousIndex + 1,
-        totalQuestions - 1
-      )
+    handleQuestionChange(
+      Math.min(currentQuestionIndex + 1, totalQuestions - 1)
     );
-
-    setAnswerError("");
-    setAnswerResult(null);
-    setRoundError("");
   };
 
-  // ==============================
-  // EMPTY
-  // ==============================
+  // ==========================================
+  // EMPTY WORKSPACE
+  // ==========================================
 
   if (!currentQuestion) {
     return (
       <section className="mock-mcq-empty">
         <h2>No questions available</h2>
-
         <p>
-          Questions for this assessment round could not be
-          loaded.
+          Questions for this assessment round could not be loaded.
         </p>
+
+        <button
+          type="button"
+          className="mock-mcq-nav-button primary"
+          onClick={handleCompleteRound}
+          disabled={completingRound}
+        >
+          {completingRound
+            ? "Submitting..."
+            : "Continue to Next Round →"}
+        </button>
+
+        {roundError && (
+          <div className="mock-mcq-submit-message error">
+            {roundError}
+          </div>
+        )}
       </section>
     );
   }
 
-  // ==============================
-  // PAGE
-  // ==============================
+  // ==========================================
+  // ASSESSMENT WORKSPACE
+  // ==========================================
 
   return (
     <section className="mock-mcq-workspace">
-      {/* ==============================
-          LEFT QUESTION NAVIGATION
-      ============================== */}
+      {/* ======================================
+          LEFT QUESTION NAVIGATOR
+      ====================================== */}
 
       <aside className="mock-mcq-sidebar">
         <div className="mock-mcq-sidebar-header">
@@ -364,8 +424,7 @@ const MockMcqWorkspace = ({
             </span>
 
             <h2>
-              {roundData?.roundName ||
-                "Assessment Round"}
+              {roundData?.roundName || "Assessment Round"}
             </h2>
           </div>
 
@@ -385,9 +444,7 @@ const MockMcqWorkspace = ({
           </div>
 
           <div className="mock-mcq-progress-info">
-            <span>
-              {progressPercentage}% completed
-            </span>
+            <span>{progressPercentage}% completed</span>
 
             <span>
               {totalQuestions - answeredCount} remaining
@@ -400,8 +457,7 @@ const MockMcqWorkspace = ({
             const isCurrent =
               index === currentQuestionIndex;
 
-            const isAnswered =
-              question.answered;
+            const isAnswered = question.answered;
 
             const hasSelection =
               !isAnswered &&
@@ -425,10 +481,7 @@ const MockMcqWorkspace = ({
                 onClick={() =>
                   handleQuestionChange(index)
                 }
-                disabled={
-                  submittingAnswer ||
-                  completingRound
-                }
+                disabled={controlsDisabled}
               >
                 {index + 1}
               </button>
@@ -454,9 +507,9 @@ const MockMcqWorkspace = ({
         </div>
       </aside>
 
-      {/* ==============================
+      {/* ======================================
           MAIN QUESTION AREA
-      ============================== */}
+      ====================================== */}
 
       <div className="mock-mcq-main">
         <div className="mock-mcq-question-topbar">
@@ -467,27 +520,54 @@ const MockMcqWorkspace = ({
             </span>
 
             <strong>
-              {currentQuestion.marks}{" "}
+
+{Number(currentQuestion.marks || 0).toFixed(2)}{" "}
+
               {currentQuestion.marks === 1
                 ? "Mark"
                 : "Marks"}
             </strong>
           </div>
 
-          <div className="mock-mcq-question-tags">
-            <span>
-              {currentQuestion.category}
-            </span>
+          {/* LIVE COUNTDOWN */}
 
-            <span>
-              {currentQuestion.difficulty}
-            </span>
+          <div
+            role="timer"
+            aria-label="Remaining assessment time"
+            style={{
+              padding: "9px 16px",
+              borderRadius: "9px",
+              background:
+                remainingSeconds !== null &&
+                remainingSeconds <= 30
+                  ? "#fee2e2"
+                  : "#eaf2ff",
+              color:
+                remainingSeconds !== null &&
+                remainingSeconds <= 30
+                  ? "#b91c1c"
+                  : "#1d4ed8",
+              fontSize: "18px",
+              fontWeight: 700,
+              fontVariantNumeric: "tabular-nums",
+            }}
+          >
+            {timeExpired
+              ? "Time Up"
+              : `Time Left: ${formatTime(
+                  remainingSeconds
+                )}`}
+          </div>
+
+          <div className="mock-mcq-question-tags">
+            <span>{currentQuestion.category}</span>
+            <span>{currentQuestion.difficulty}</span>
           </div>
         </div>
 
-        {/* ==============================
+        {/* ======================================
             QUESTION CONTENT
-        ============================== */}
+        ====================================== */}
 
         <div className="mock-mcq-question-content">
           <div className="mock-mcq-question-heading">
@@ -495,18 +575,14 @@ const MockMcqWorkspace = ({
               QUESTION {currentQuestionIndex + 1}
             </span>
 
-            <h3>
-              {currentQuestion.questionText}
-            </h3>
+            <h3>{currentQuestion.questionText}</h3>
           </div>
 
           <div className="mock-mcq-options">
-            {currentQuestion.options.map(
+            {(currentQuestion.options || []).map(
               (option, optionIndex) => {
                 const optionLetter =
-                  String.fromCharCode(
-                    65 + optionIndex
-                  );
+                  String.fromCharCode(65 + optionIndex);
 
                 const isSubmitted =
                   currentQuestion.answered &&
@@ -524,14 +600,11 @@ const MockMcqWorkspace = ({
                     className={`mock-mcq-option ${
                       isSelected ? "selected" : ""
                     } ${
-                      isSubmitted
-                        ? "submitted"
-                        : ""
+                      isSubmitted ? "submitted" : ""
                     }`}
                     disabled={
                       currentQuestion.answered ||
-                      submittingAnswer ||
-                      completingRound
+                      controlsDisabled
                     }
                     onClick={() =>
                       handleOptionSelect(option)
@@ -545,8 +618,7 @@ const MockMcqWorkspace = ({
                       {option}
                     </span>
 
-                    {(isSelected ||
-                      isSubmitted) && (
+                    {(isSelected || isSubmitted) && (
                       <span className="mock-mcq-option-check">
                         ✓
                       </span>
@@ -557,9 +629,9 @@ const MockMcqWorkspace = ({
             )}
           </div>
 
-          {/* ==============================
+          {/* ======================================
               ANSWER FEEDBACK
-          ============================== */}
+          ====================================== */}
 
           {answerError && (
             <div className="mock-mcq-submit-message error">
@@ -582,8 +654,7 @@ const MockMcqWorkspace = ({
               </strong>
 
               <span>
-                Marks:{" "}
-                {answerResult.marksAwarded}/
+                Marks: {answerResult.marksAwarded}/
                 {answerResult.totalMarks}
               </span>
             </div>
@@ -594,11 +665,17 @@ const MockMcqWorkspace = ({
               {roundError}
             </div>
           )}
+
+          {timeExpired && completingRound && (
+            <div className="mock-mcq-submit-message warning">
+              Time expired. Submitting your saved answers...
+            </div>
+          )}
         </div>
 
-        {/* ==============================
+        {/* ======================================
             QUESTION FOOTER
-        ============================== */}
+        ====================================== */}
 
         <div className="mock-mcq-footer">
           <button
@@ -607,8 +684,7 @@ const MockMcqWorkspace = ({
             onClick={handlePrevious}
             disabled={
               currentQuestionIndex === 0 ||
-              submittingAnswer ||
-              completingRound
+              controlsDisabled
             }
           >
             ← Previous
@@ -623,20 +699,19 @@ const MockMcqWorkspace = ({
               <span className="answered">
                 ✓ Answer submitted
               </span>
-            ) : currentSelectedAnswer ? (
+            ) : currentSelectedAnswer && !timeExpired ? (
               <button
                 type="button"
                 className="mock-mcq-submit-answer-button"
                 onClick={handleSubmitAnswer}
-                disabled={
-                  submittingAnswer ||
-                  completingRound
-                }
+                disabled={controlsDisabled}
               >
                 {submittingAnswer
                   ? "Submitting..."
                   : "Submit Answer"}
               </button>
+            ) : timeExpired ? (
+              <span>Assessment time has expired.</span>
             ) : (
               <span>
                 Select an option to answer this question.
@@ -644,39 +719,37 @@ const MockMcqWorkspace = ({
             )}
           </div>
 
-          {/* ==============================
-              NEXT / COMPLETE ROUND
-          ============================== */}
+          {/* ======================================
+              NEXT / SUBMIT ROUND
+          ====================================== */}
 
-          {allQuestionsAnswered ? (
-            <button
-              type="button"
-              className="mock-mcq-nav-button primary"
-              onClick={handleCompleteRound}
-              disabled={
-                completingRound ||
-                submittingAnswer
-              }
-            >
-              {completingRound
-                ? "Completing..."
-                : "Complete Round →"}
-            </button>
-          ) : (
-            <button
-              type="button"
-              className="mock-mcq-nav-button primary"
-              onClick={handleNext}
-              disabled={
-                currentQuestionIndex ===
-                  totalQuestions - 1 ||
-                submittingAnswer ||
-                completingRound
-              }
-            >
-              Next →
-            </button>
-          )}
+          <button
+            type="button"
+            className="mock-mcq-nav-button secondary"
+            onClick={handleNext}
+            disabled={
+              currentQuestionIndex ===
+                totalQuestions - 1 ||
+              controlsDisabled
+            }
+          >
+            Next →
+          </button>
+
+          <button
+            type="button"
+            className="mock-mcq-nav-button primary"
+            onClick={handleCompleteRound}
+            disabled={
+              completingRound || submittingAnswer
+            }
+          >
+            {completingRound
+              ? "Submitting Round..."
+              : timeExpired
+              ? "Retry Round Submission →"
+              : "Submit Round →"}
+          </button>
         </div>
       </div>
     </section>

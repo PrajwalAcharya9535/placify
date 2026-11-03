@@ -1,0 +1,298 @@
+{
+  "topicTitle": "Linked Lists",
+  "lessons": [
+    {
+      "title": "Linked List Fundamentals and Traversal",
+      "description": "Understand nodes, references, head pointers and traversal.",
+      "content": "A singly linked list consists of nodes, each containing a value and a reference to the next node. The head points to the first node; an empty list has head = None. Unlike an array, a linked list does not support constant-time access by index: reaching position i requires following i links, so lookup is O(n). Traversal is O(n) time and O(1) extra space. A node can be prepended in O(1) time by pointing it to the old head and updating head. In Python, a class is used to represent nodes. Be careful with empty lists, single-node lists, and accidental cycles.",
+      "examples": [
+        {
+          "title": "Linked List Fundamentals and Traversal Example",
+          "language": "python",
+          "explanation": "Run this example in Python 3 and trace each reference update.",
+          "code": "class Node:\n    def __init__(self, value, next=None):\n        self.value = value\n        self.next = next\n\ndef to_list(head):\n    result = []\n    current = head\n    while current is not None:\n        result.append(current.value)\n        current = current.next\n    return result\n\nhead = Node(10, Node(20, Node(30)))\nprint(to_list(head))"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Insertion, Deletion and Search",
+      "description": "Practice changing links safely.",
+      "content": "To insert at the beginning, create a node whose next reference points to the existing head. To insert after a known node, set new.next to current.next before changing current.next; reversing these operations can lose part of the list. To delete the head, return head.next. To delete a node after a known predecessor, change predecessor.next to predecessor.next.next. Searching for a value requires O(n) time in the worst case. If a predecessor is not already known, deletion by value also requires a search. Always decide whether functions mutate the list or return a new head, and test deletion from an empty list and the final remaining node.",
+      "examples": [
+        {
+          "title": "Insertion, Deletion and Search Example",
+          "language": "python",
+          "explanation": "Run this example in Python 3 and trace each reference update.",
+          "code": "class Node:\n    def __init__(self, value, next=None):\n        self.value, self.next = value, next\n\ndef prepend(head, value):\n    return Node(value, head)\n\ndef delete_first(head, target):\n    dummy = Node(None, head)\n    previous = dummy\n    while previous.next is not None:\n        if previous.next.value == target:\n            previous.next = previous.next.next\n            break\n        previous = previous.next\n    return dummy.next\n\nhead = prepend(None, 20)\nhead = prepend(head, 10)\nhead = delete_first(head, 10)\nprint(head.value)"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Reverse a Singly Linked List",
+      "description": "Learn the iterative three-pointer reversal pattern.",
+      "content": "Reversing a singly linked list means making every next reference point backward. The iterative solution uses three variables: previous, current and next_node. Save current.next before redirecting it, then advance the pointers. When current becomes None, previous is the new head. The algorithm takes O(n) time and O(1) extra space. A recursive reversal is possible, but it uses O(n) call-stack space. Test empty lists, one node and multiple nodes. Do not confuse changing node links with merely reversing a list of copied values.",
+      "examples": [
+        {
+          "title": "Reverse a Singly Linked List Example",
+          "language": "python",
+          "explanation": "Run this example in Python 3 and trace each reference update.",
+          "code": "class Node:\n    def __init__(self, value, next=None):\n        self.value, self.next = value, next\n\ndef reverse(head):\n    previous = None\n    current = head\n    while current is not None:\n        next_node = current.next\n        current.next = previous\n        previous = current\n        current = next_node\n    return previous\n\nhead = Node(1, Node(2, Node(3)))\nhead = reverse(head)\nwhile head:\n    print(head.value)\n    head = head.next"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Fast and Slow Pointers",
+      "description": "Find middle nodes and detect cycles efficiently.",
+      "content": "The fast-and-slow pointer technique advances one pointer by one node and another by two nodes. To find the middle, stop when fast reaches the end; slow then points to the middle (for even lengths, this common version chooses the second middle). Floyd’s cycle detection checks whether fast and slow ever meet. If they meet, a cycle exists; if fast reaches None, the list is acyclic. Both algorithms take O(n) time and O(1) extra space. Always guard access to fast.next by checking fast is not None first. A cyclic list must not be traversed with an unrestricted while-current loop.",
+      "examples": [
+        {
+          "title": "Fast and Slow Pointers Example",
+          "language": "python",
+          "explanation": "Run this example in Python 3 and trace each reference update.",
+          "code": "class Node:\n    def __init__(self, value, next=None):\n        self.value, self.next = value, next\n\ndef middle(head):\n    slow = fast = head\n    while fast is not None and fast.next is not None:\n        slow = slow.next\n        fast = fast.next.next\n    return slow\n\ndef has_cycle(head):\n    slow = fast = head\n    while fast is not None and fast.next is not None:\n        slow = slow.next\n        fast = fast.next.next\n        if slow is fast:\n            return True\n    return False\n\nhead = Node(4, Node(5, Node(6)))\nprint(middle(head).value, has_cycle(head))"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Doubly Linked Lists and Interview Patterns",
+      "description": "Compare singly and doubly linked lists and combine pointer techniques.",
+      "content": "A doubly linked list stores both previous and next references, allowing traversal in either direction. Given a node, deletion can be O(1) because its predecessor is directly available, but the two neighboring links must both be repaired. Doubly linked lists use more memory per node than singly linked lists. Common interview patterns include dummy/sentinel nodes for easier edge-case handling, merging two sorted lists by relinking nodes, and using fast/slow pointers to locate the midpoint. Explain which operations need a head or tail reference, and distinguish O(1) link updates from O(n) searches.",
+      "examples": [
+        {
+          "title": "Doubly Linked Lists and Interview Patterns Example",
+          "language": "python",
+          "explanation": "Run this example in Python 3 and trace each reference update.",
+          "code": "class Node:\n    def __init__(self, value):\n        self.value = value\n        self.prev = None\n        self.next = None\n\ndef append(tail, value):\n    node = Node(value)\n    if tail is not None:\n        tail.next = node\n        node.prev = tail\n    return node\n\nfirst = Node(1)\nlast = append(first, 2)\nprint(first.next.value, last.prev.value)"
+        }
+      ],
+      "estimatedMinutes": 20
+    }
+  ],
+  "videos": [
+    {
+      "title": "Linked Lists Explained - CS Dojo",
+      "youtubeUrl": "https://www.youtube.com/watch?v=njTh_OwMljA",
+      "description": "Conceptual introduction to linked-list nodes and pointers.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Linked List Data Structure - freeCodeCamp",
+      "youtubeUrl": "https://www.youtube.com/watch?v=R9PTBwOzceo",
+      "description": "Walkthrough of linked list fundamentals and operations.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Reverse Linked List - NeetCode",
+      "youtubeUrl": "https://www.youtube.com/watch?v=G0_I-ZF0S38",
+      "description": "Iterative linked list reversal and pointer changes.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Linked List Cycle - NeetCode",
+      "youtubeUrl": "https://www.youtube.com/watch?v=gBTe7lFR3vc",
+      "description": "Fast and slow pointer cycle detection.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Merge Two Sorted Lists - NeetCode",
+      "youtubeUrl": "https://www.youtube.com/watch?v=XIdigk956u0",
+      "description": "Interview technique for merging linked lists.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "What does the head of a singly linked list reference?",
+      "options": [
+        "The final node",
+        "The first node",
+        "The list length",
+        "A random node"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The head references the first node, or None for an empty list.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the worst-case time to access the kth node of a singly linked list?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Nodes must be followed sequentially.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the time complexity of prepending a node when the head is known?",
+      "options": [
+        "O(n)",
+        "O(1)",
+        "O(log n)",
+        "O(n²)"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Only a constant number of references change.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which reference should be saved before reversing current.next?",
+      "options": [
+        "head.value",
+        "current.next",
+        "previous.value",
+        "tail.prev"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Save the next node before overwriting the link.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the extra space complexity of iterative linked-list reversal?",
+      "options": [
+        "O(n)",
+        "O(log n)",
+        "O(1)",
+        "O(n²)"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Only a fixed number of references are stored.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the usual stopping condition for fast/slow middle finding?",
+      "options": [
+        "slow is None",
+        "fast is None or fast.next is None",
+        "head.value == 0",
+        "fast == head"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The fast pointer stops when it reaches the end.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What indicates a cycle in Floyd’s algorithm?",
+      "options": [
+        "The head is null",
+        "Two node values match",
+        "Fast and slow reference the same node",
+        "The list has duplicates"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Meeting at the same node indicates a cycle.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which link exists in a doubly linked node but not a typical singly linked node?",
+      "options": [
+        "value",
+        "next",
+        "prev",
+        "head"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Doubly linked nodes also reference their predecessors.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Why use a dummy node during deletion?",
+      "options": [
+        "It sorts nodes",
+        "It simplifies head-edge cases",
+        "It guarantees O(1) searching",
+        "It removes all duplicates"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A sentinel gives a consistent predecessor even for the head.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the worst-case time to search for a value in an unsorted linked list?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n²)"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Potentially every node must be checked.",
+      "difficulty": "Medium"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Build and Traverse a Singly Linked List",
+      "description": "Implement a linked list and print its values.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Create a Node class and a function to_list(head) returning node values in order. Test an empty list, a single node, and three nodes. Explain O(n) time."
+    },
+    {
+      "title": "Insert and Delete by Value",
+      "description": "Handle link updates and edge cases.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Implement prepend(head, value) and delete_first(head, value). Return the new head. Test deleting the first, middle, last and missing values without losing other nodes."
+    },
+    {
+      "title": "Reverse Linked List In Place",
+      "description": "Apply three-pointer iteration.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Implement reverse_list(head) using O(1) auxiliary space. Test [], [1], and [1,2,3,4]. Do not build a separate list of nodes."
+    },
+    {
+      "title": "Find Middle Node",
+      "description": "Apply fast and slow pointers.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Implement middle_node(head) returning the second middle for even-length lists. Test lists of length 0 through 6. Explain O(n) time and O(1) space."
+    },
+    {
+      "title": "Detect a Linked List Cycle",
+      "description": "Use Floyd’s cycle detection.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Implement has_cycle(head) using O(1) auxiliary space. Create one cyclic and one acyclic test list. Compare node identity, not node values."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Python Data Model",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/reference/datamodel.html",
+      "description": "Official reference for Python objects and identity."
+    },
+    {
+      "title": "Linked List - Wikipedia",
+      "type": "Article",
+      "url": "https://en.wikipedia.org/wiki/Linked_list",
+      "description": "Overview of singly and doubly linked lists."
+    },
+    {
+      "title": "Linked List Data Structure - GeeksforGeeks",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/data-structures/linked-list/",
+      "description": "Examples and common linked-list operations."
+    },
+    {
+      "title": "Linked List - VisuAlgo",
+      "type": "Website",
+      "url": "https://visualgo.net/en/list",
+      "description": "Interactive visualization of list operations."
+    },
+    {
+      "title": "Linked List Problems - LeetCode",
+      "type": "Website",
+      "url": "https://leetcode.com/tag/linked-list/",
+      "description": "Practice interview questions involving linked lists."
+    }
+  ]
+}

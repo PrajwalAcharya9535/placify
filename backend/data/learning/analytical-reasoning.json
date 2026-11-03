@@ -1,0 +1,214 @@
+
+{
+  "topicTitle": "Analytical Reasoning",
+  "lessons": [
+    {
+      "title": "Introduction to Analytical Reasoning",
+      "description": "Learn how to analyze constraints, organize information and draw valid conclusions.",
+      "content": "Analytical reasoning tests the ability to organize information, identify relationships and solve problems using logical constraints.\n\nCommon topics include seating arrangements, ordering and ranking, scheduling, grouping, puzzles and logical deductions.\n\nUnlike simple pattern-recognition questions, analytical reasoning problems often require combining several clues.\n\nExample:\nThree students A, B and C stand in a row.\nA stands before B.\nB stands before C.\n\nThe only possible order is A, B, C.\n\nA constraint is a condition that must be satisfied. A valid solution must satisfy every constraint simultaneously.\n\nTypes of constraints:\n1. Direct: A sits immediately left of B.\n2. Relative: A sits somewhere before B.\n3. Negative: C does not sit at either end.\n4. Conditional: If A attends, B must attend.\n5. Numerical: Exactly two people are selected.\n\nProblem-solving method:\n1. Read all clues.\n2. Identify people, objects and positions.\n3. Draw a table, diagram or sequence.\n4. Place the most restrictive clues first.\n5. Combine related constraints.\n6. Eliminate impossible arrangements.\n7. Verify the final solution against every clue.\n\nImportant distinction: 'Immediately before' means adjacent positions, whereas 'before' does not necessarily mean adjacent.\n\nPlacement tip: Do not rely only on mental calculations for complex puzzles. Write down confirmed positions and remaining possibilities."
+    },
+    {
+      "title": "Linear and Circular Seating Arrangements",
+      "description": "Solve seating puzzles involving positions, directions and neighboring relationships.",
+      "content": "Seating arrangement questions ask you to determine positions using a collection of clues.\n\nLinear arrangements involve people sitting in a row.\n\nExample:\nFive students A, B, C, D and E sit in a row facing north.\nD sits at the extreme left.\nE sits at the extreme right.\nB sits in the middle.\nA sits immediately left of B.\nC sits immediately right of B.\n\nArrangement: D, A, B, C, E.\n\nWhen everyone faces north, left and right are interpreted from each seated person's perspective. When people face south, those directions reverse relative to a standard north-facing diagram.\n\nCircular arrangements involve people sitting around a circle.\n\nExample:\nFour people A, B, C and D sit around a circular table facing the center.\nA sits opposite C.\nB sits opposite D.\n\nOne possible clockwise order is A, B, C, D.\n\nCircular arrangements can be rotated without changing relative positions. Fix one person at a reference position to avoid counting equivalent rotations repeatedly.\n\nFor center-facing participants, left and right follow the participant's orientation. For outward-facing participants, these directions reverse.\n\nUseful techniques:\n1. Draw numbered seats.\n2. Fix an anchor person in circular arrangements.\n3. Place opposite or extreme-position clues first.\n4. Use arrows to represent facing directions.\n5. Record multiple possibilities when necessary.\n6. Check every condition before selecting an answer.\n\nPlacement tip: An arrangement can have multiple valid solutions. Never assume uniqueness unless the clues establish it."
+    },
+    {
+      "title": "Ordering, Ranking and Comparison Problems",
+      "description": "Understand positions, relative ranks and comparisons between people or objects.",
+      "content": "Ordering and ranking problems involve arranging people or objects according to height, age, marks, position or another measurable property.\n\nExample:\nA is taller than B.\nB is taller than C.\nC is taller than D.\n\nThe descending order is A > B > C > D.\n\nRanking formula:\nTotal number of people = Rank from top + Rank from bottom - 1.\n\nExample: A student ranks 12th from the top and 19th from the bottom.\nTotal students = 12 + 19 - 1 = 30.\n\nIf a student ranks r from the top among N people, rank from the bottom = N - r + 1.\n\nExample: In a class of 40 students, Riya ranks 8th from the top.\nRank from bottom = 40 - 8 + 1 = 33.\n\nComparison chains:\nIf P > Q, Q > R and R > S, then P > S.\n\nHowever, if P > Q and R > S, the relationship between P and R cannot be determined without additional information.\n\nFor positions between two people in the same row:\nNumber between = Difference between their positions - 1.\n\nExample: A is 5th and B is 12th from the same end.\nPeople between = 12 - 5 - 1 = 6.\n\nPlacement tip: Convert verbal comparisons into symbols such as >, < and = to simplify the reasoning."
+    },
+    {
+      "title": "Scheduling and Grouping Puzzles",
+      "description": "Solve assignment problems involving time slots, teams, categories and conditional rules.",
+      "content": "Scheduling puzzles involve assigning people, tasks or events to available time slots while satisfying constraints.\n\nExample:\nThree interviews A, B and C must be scheduled on Monday, Tuesday and Wednesday.\nA occurs before B.\nC occurs after B.\n\nThe schedule is Monday A, Tuesday B, Wednesday C.\n\nGrouping puzzles involve assigning objects or people to teams or categories.\n\nExample:\nFour students A, B, C and D must be divided into two teams of two.\nA and B cannot be on the same team.\nC and D must be on different teams.\n\nOne valid grouping is Team 1: A and C; Team 2: B and D.\nAnother valid grouping is Team 1: A and D; Team 2: B and C.\n\nConditional constraints:\n'If A is selected, B must be selected' means A implies B.\nIt does not mean that selecting B requires selecting A.\n\n'Exactly one of A and B is selected' means one must be selected and the other must not be selected.\n\n'At least one' means one or more.\n'At most one' means zero or one.\n'Exactly two' means precisely two.\n\nA useful approach is to create a grid with rows representing people and columns representing dates, tasks or groups. Mark confirmed assignments and exclusions.\n\nProblem-solving steps:\n1. List all entities and slots.\n2. Record mandatory conditions.\n3. Place fixed assignments.\n4. Apply before-after and exclusion constraints.\n5. Eliminate impossible combinations.\n6. Check whether multiple valid schedules remain.\n\nPlacement tip: Conditional statements must be interpreted carefully. Confusing 'if' with 'if and only if' leads to incorrect conclusions."
+    },
+    {
+      "title": "Advanced Analytical Puzzles and Logical Deductions",
+      "description": "Combine multiple constraints, use case analysis and solve complex reasoning puzzles.",
+      "content": "Advanced analytical reasoning combines ordering, grouping, conditional logic and numerical constraints.\n\nExample:\nFive candidates A, B, C, D and E are interviewed in five consecutive slots.\nA is interviewed before C.\nB is immediately after A.\nD is interviewed last.\nE is interviewed before A.\n\nSince D is fifth, the remaining candidates occupy slots 1 to 4.\n\nA and B must occupy adjacent positions in that order.\nE must appear before A, and C must appear after A.\n\nA cannot be first because E must precede A.\nA cannot be third because B would occupy fourth and C would have no available slot before D in fifth.\nTherefore A must be second, B third, E first and C fourth.\n\nFinal order: E, A, B, C, D.\n\nCase analysis is useful when a clue allows several possibilities. Create separate cases and reject those violating a constraint.\n\nExample:\nIf A must be either first or third, analyze both cases independently. Do not combine assumptions from different cases.\n\nLogical deduction means identifying conclusions guaranteed by the constraints.\n\nA valid conclusion must hold in every arrangement satisfying the premises. A conclusion that holds in only one possible arrangement is not necessarily valid.\n\nAdvanced techniques:\n1. Identify the most restrictive clue.\n2. Create diagrams or tables.\n3. Split ambiguous situations into cases.\n4. Apply all direct and conditional rules.\n5. Eliminate contradictions.\n6. Determine whether the answer is unique.\n7. Verify all original clues.\n\nPlacement tip: Complex puzzles become manageable when each condition is represented explicitly and checked systematically."
+    }
+  ],
+  "videos": [
+    {
+      "title": "Analytical Reasoning Fundamentals",
+      "youtubeUrl": "https://www.youtube.com/watch?v=QzY57FaENXg",
+      "description": "Supplementary video reference; exact topic match has not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Seating Arrangement Reasoning",
+      "youtubeUrl": "https://www.youtube.com/watch?v=6sQDTgOqh-I",
+      "description": "Supplementary video reference; exact topic match has not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Ordering and Ranking Reasoning",
+      "youtubeUrl": "https://www.youtube.com/watch?v=GFQaEYEc8_8",
+      "description": "Supplementary video reference; exact topic match has not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Scheduling and Grouping Puzzles",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ztHopE5Wnpc",
+      "description": "Supplementary video reference; exact topic match has not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Advanced Analytical Reasoning Practice",
+      "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+      "description": "Supplementary video reference; exact topic match has not been verified.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "A is taller than B, and B is taller than C. Who is the tallest?",
+      "options": ["A", "B", "C", "Cannot be determined"],
+      "correctAnswer": 0,
+      "explanation": "A > B > C, so A is tallest.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "A student ranks 10th from the top and 15th from the bottom. How many students are in the class?",
+      "options": ["23", "24", "25", "26"],
+      "correctAnswer": 1,
+      "explanation": "Total = 10 + 15 - 1 = 24.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Five people sit in a row. If A is third from the left, what is A's position from the right?",
+      "options": ["Second", "Third", "Fourth", "Fifth"],
+      "correctAnswer": 1,
+      "explanation": "Position from right = 5 - 3 + 1 = 3.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "If P is before Q and Q is before R, which statement must be true?",
+      "options": ["R is before P", "P is before R", "Q is last", "R is first"],
+      "correctAnswer": 1,
+      "explanation": "The ordering is P before Q before R.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "In a class of 40 students, a student ranks 8th from the top. What is the rank from the bottom?",
+      "options": ["31st", "32nd", "33rd", "34th"],
+      "correctAnswer": 2,
+      "explanation": "Rank from bottom = 40 - 8 + 1 = 33.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "A sits 5th and B sits 12th from the same end of a row. How many people sit between them?",
+      "options": ["5", "6", "7", "8"],
+      "correctAnswer": 1,
+      "explanation": "People between = 12 - 5 - 1 = 6.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "If selecting A requires selecting B, which statement is necessarily true?",
+      "options": [
+        "Selecting B always requires selecting A",
+        "A and B must always both be selected",
+        "If A is selected, B is selected",
+        "Neither A nor B can be selected"
+      ],
+      "correctAnswer": 2,
+      "explanation": "The condition is A implies B. It does not establish the reverse implication.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Four people A, B, C and D sit around a circular table. A is opposite C and B is opposite D. Which clockwise arrangement is valid?",
+      "options": ["A, B, C, D", "A, C, B, D", "A, B, D, C", "A, D, B, C"],
+      "correctAnswer": 0,
+      "explanation": "In A, B, C, D, A is opposite C and B is opposite D.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Five candidates A, B, C, D and E are interviewed in order. A is before C, B is immediately after A, D is last and E is before A. Who is interviewed first?",
+      "options": ["A", "B", "C", "E"],
+      "correctAnswer": 3,
+      "explanation": "The unique order is E, A, B, C, D. Therefore E is first.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "Exactly one of A and B must be selected. If A is selected, C must also be selected. Which selection is valid?",
+      "options": [
+        "A and B only",
+        "A and C only",
+        "A only",
+        "Neither A nor B"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A and C satisfy the implication and include exactly one of A and B.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Linear Seating Arrangement",
+      "description": "Determine the positions of people in a row.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "Five students A, B, C, D and E sit in a row facing north. D sits at the extreme left, E at the extreme right, B in the middle, A immediately left of B and C immediately right of B. Determine the complete seating order."
+    },
+    {
+      "title": "Ranking and Position Calculation",
+      "description": "Calculate class size and relative positions.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "Ravi ranks 14th from the top and 17th from the bottom in a class. Find the total number of students. Then determine Ravi's rank from the bottom if five new students are added above him."
+    },
+    {
+      "title": "Scheduling Puzzle",
+      "description": "Assign events to days using ordering constraints.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Four interviews A, B, C and D are scheduled from Monday to Thursday, one per day. A occurs before B, C occurs immediately after B and D occurs before A. Determine the interview schedule."
+    },
+    {
+      "title": "Team Grouping Challenge",
+      "description": "Divide participants into teams while satisfying restrictions.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Six students A, B, C, D, E and F must be divided into two teams of three. A and B must be on different teams. C and D must be together. E and F must be on different teams. Find one valid grouping and verify all constraints."
+    },
+    {
+      "title": "Advanced Analytical Reasoning Puzzle",
+      "description": "Solve a multi-constraint interview scheduling problem.",
+      "type": "Written",
+      "difficulty": "Hard",
+      "instructions": "Six candidates A, B, C, D, E and F are interviewed in six consecutive slots. F is last. A is immediately before B. C is immediately after B. D is before A. E is before D. Determine the complete interview order and explain why it is unique."
+    }
+  ],
+  "resources": [
+    {
+      "title": "IndiaBIX - Logical Reasoning",
+      "type": "Website",
+      "url": "https://www.indiabix.com/logical-reasoning/questions-and-answers/",
+      "description": "Practice analytical and logical reasoning questions."
+    },
+    {
+      "title": "IndiaBIX - Seating Arrangement",
+      "type": "Website",
+      "url": "https://www.indiabix.com/verbal-reasoning/seating-arrangement/",
+      "description": "Seating arrangement practice problems and explanations."
+    },
+    {
+      "title": "IndiaBIX - Logical Sequence of Words",
+      "type": "Website",
+      "url": "https://www.indiabix.com/verbal-reasoning/logical-sequence-of-words/",
+      "description": "Practice ordering and logical sequencing."
+    },
+    {
+      "title": "GeeksforGeeks - Logical Reasoning",
+      "type": "Website",
+      "url": "https://www.geeksforgeeks.org/aptitude/logical-reasoning/",
+      "description": "Logical reasoning tutorials and practice questions."
+    },
+    {
+      "title": "GeeksforGeeks - Aptitude Preparation",
+      "type": "Website",
+      "url": "https://www.geeksforgeeks.org/aptitude/",
+      "description": "Additional aptitude and analytical reasoning learning resources."
+    }
+  ]
+}

@@ -1,12 +1,139 @@
+
+const mongoose = require("mongoose");
+
 const MockTest = require("../../models/MockTest");
 const MockAttempt = require("../../models/MockAttempt");
 const MockQuestionAttempt = require("../../models/MockQuestionAttempt");
 const CodingAttempt = require("../../models/CodingAttempt");
 const SqlAttempt = require("../../models/SqlAttempt");
 
-// ==============================
+// ==========================================
+// HELPERS
+// ==========================================
+
+const MCQ_TYPES = [
+  "Aptitude",
+  "Reasoning",
+  "Verbal",
+  "Technical",
+];
+
+const SUPPORTED_TYPES = [
+  ...MCQ_TYPES,
+  "Coding",
+  "SQL",
+];
+
+const isValidId = (id) =>
+  mongoose.Types.ObjectId.isValid(id);
+
+// Development/testing mode: unlimited mock attempts.
+// Restore the original maxAttempts check for production.
+const isUnlimited = (mockTest) =>
+  process.env.NODE_ENV !== "production" ||
+  mockTest.maxAttempts == null;
+
+const getAttemptInfo = (mockTest, attemptsUsed, activeAttempt) => {
+  const unlimited = isUnlimited(mockTest);
+
+  const attemptsRemaining = unlimited
+    ? null
+    : Math.max(mockTest.maxAttempts - attemptsUsed, 0);
+
+ return {
+  maxAttempts: unlimited ? null : mockTest.maxAttempts,
+  unlimitedAttempts: unlimited,
+    attemptsUsed,
+    attemptsRemaining,
+    canAttempt:
+      !activeAttempt &&
+      (unlimited || attemptsRemaining > 0),
+    hasActiveAttempt: Boolean(activeAttempt),
+    activeAttempt: activeAttempt || null,
+    currentRound: activeAttempt
+      ? activeAttempt.roundResults[
+          activeAttempt.currentRoundIndex
+        ] || null
+      : null,
+  };
+};
+
+const getRoundDuration = (round, mode) => {
+  if (
+    mode === "Demo" &&
+    round.demoDurationMinutes != null
+  ) {
+    return round.demoDurationMinutes;
+  }
+
+  return round.durationMinutes;
+};
+
+const getRoundQuestionCount = (round, mode) => {
+  if (
+    mode === "Demo" &&
+    round.demoNumberOfQuestions != null
+  ) {
+    return round.demoNumberOfQuestions;
+  }
+
+  return round.numberOfQuestions;
+};
+
+const calculatePercentage = (score, total) => {
+  if (!total || total <= 0) return 0;
+
+  return Math.min(
+    100,
+    Math.max(0, Math.round((score / total) * 100))
+  );
+};
+
+const createRoundResult = (round, mode) => ({
+  roundName: round.roundName,
+  roundType: round.roundType,
+  sectionKey: round.sectionKey || "",
+  order: round.order,
+
+  score: 0,
+  totalMarks: round.totalMarks,
+  percentage: 0,
+  passed: false,
+
+  status: "Not Started",
+
+  durationMinutes: getRoundDuration(round, mode),
+  numberOfQuestions: getRoundQuestionCount(round, mode),
+
+  attemptedQuestions: 0,
+  correctAnswers: 0,
+
+  startedAt: null,
+  expiresAt: null,
+  completedAt: null,
+  timeSpentSeconds: 0,
+  feedback: "",
+});
+
+const activateRound = (round, now) => {
+  round.status = "In Progress";
+  round.startedAt = now;
+
+  round.expiresAt = new Date(
+    now.getTime() + round.durationMinutes * 60 * 1000
+  );
+};
+
+const isExpired = (round) =>
+  Boolean(
+    round.expiresAt &&
+    Date.now() >= new Date(round.expiresAt).getTime()
+  );
+
+// ==========================================
 // GET AVAILABLE MOCK TESTS
-// ==============================
+// ==========================================
+
 const getAvailableMockTests = async (req, res) => {
   try {
     const now = new Date();
@@ -28,29 +155,35 @@ const getAvailableMockTests = async (req, res) => {
         },
       ],
     }).sort({
+      companyName: 1,
       createdAt: -1,
     });
 
-    res.status(200).json({
-      message:
-        "Available mock placement tests fetched successfully",
+    return res.status(200).json({
+      message: "Available mock placement tests fetched successfully",
       totalMockTests: mockTests.length,
       mockTests,
     });
   } catch (error) {
-    res.status(500).json({
-      message:
-        "Failed to fetch available mock placement tests",
+    return res.status(500).json({
+      message: "Failed to fetch available mock placement tests",
       error: error.message,
     });
   }
 };
 
-// ==============================
+// ==========================================
 // GET MOCK TEST DETAILS
-// ==============================
+// ==========================================
+
 const getMockTestDetails = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({
+        message: "Invalid mock test ID",
+      });
+    }
+
     const mockTest = await MockTest.findOne({
       _id: req.params.id,
       isActive: true,
@@ -58,91 +191,60 @@ const getMockTestDetails = async (req, res) => {
 
     if (!mockTest) {
       return res.status(404).json({
-        message:
-          "Mock placement test not found",
+        message: "Mock placement test not found",
       });
     }
 
-    // ==============================
-    // COUNT ALL ATTEMPTS
-    // ==============================
-    const attemptsUsed =
-      await MockAttempt.countDocuments({
+    const [attemptsUsed, activeAttempt] = await Promise.all([
+      MockAttempt.countDocuments({
         user: req.user.id,
         mockTest: mockTest._id,
-      });
+      }),
 
-    const attemptsRemaining = Math.max(
-      mockTest.maxAttempts - attemptsUsed,
-      0
-    );
-
-    // ==============================
-    // FIND ACTIVE ATTEMPT
-    // ==============================
-    const activeAttempt =
-      await MockAttempt.findOne({
+      MockAttempt.findOne({
         user: req.user.id,
         mockTest: mockTest._id,
         status: "In Progress",
-      });
+      }),
+    ]);
 
-    // ==============================
-    // CURRENT ACTIVE ROUND
-    // ==============================
-    let currentRound = null;
-
-    if (activeAttempt) {
-      currentRound =
-        activeAttempt.roundResults[
-          activeAttempt.currentRoundIndex
-        ] || null;
-    }
-
-    // ==============================
-    // RESPONSE
-    // ==============================
-    res.status(200).json({
-      message:
-        "Mock placement test details fetched successfully",
-
+    return res.status(200).json({
+      message: "Mock placement test details fetched successfully",
       mockTest,
-
-      attemptInfo: {
-        maxAttempts:
-          mockTest.maxAttempts,
-
+      attemptInfo: getAttemptInfo(
+        mockTest,
         attemptsUsed,
-
-        attemptsRemaining,
-
-        canAttempt:
-          !activeAttempt &&
-          attemptsRemaining > 0,
-
-        hasActiveAttempt:
-          Boolean(activeAttempt),
-
-        activeAttempt:
-          activeAttempt || null,
-
-        currentRound,
-      },
+        activeAttempt
+      ),
     });
   } catch (error) {
-    res.status(500).json({
-      message:
-        "Failed to fetch mock placement test details",
+    return res.status(500).json({
+      message: "Failed to fetch mock placement test details",
       error: error.message,
     });
   }
 };
 
-// ==============================
+// ==========================================
 // START MOCK ATTEMPT
-// ==============================
+// ==========================================
+
 const startMockAttempt = async (req, res) => {
   try {
+    if (!isValidId(req.params.id)) {
+      return res.status(400).json({
+        message: "Invalid mock test ID",
+      });
+    }
+
+    const mode = req.body?.practiceMode || "Full";
+
+    if (!["Full", "Demo"].includes(mode)) {
+      return res.status(400).json({
+        message: "Practice mode must be Full or Demo",
+      });
+    }
+
     const mockTest = await MockTest.findOne({
       _id: req.params.id,
       isActive: true,
@@ -150,696 +252,498 @@ const startMockAttempt = async (req, res) => {
 
     if (!mockTest) {
       return res.status(404).json({
-        message:
-          "Mock placement test not found",
+        message: "Mock placement test not found",
+      });
+    }
+
+    if (
+      mode === "Full" &&
+      mockTest.allowFullSimulation === false
+    ) {
+      return res.status(400).json({
+        message: "Full simulation is unavailable",
+      });
+    }
+
+    if (
+      mode === "Demo" &&
+      mockTest.allowDemoMode === false
+    ) {
+      return res.status(400).json({
+        message: "Demo mode is unavailable",
       });
     }
 
     const now = new Date();
 
-    // ==============================
-    // CHECK MOCK AVAILABILITY
-    // ==============================
-    if (
-      mockTest.startDate &&
-      now < mockTest.startDate
-    ) {
+    if (mockTest.startDate && now < mockTest.startDate) {
       return res.status(400).json({
-        message:
-          "This mock placement test has not started yet",
+        message: "This mock test has not started yet",
       });
     }
 
-    if (
-      mockTest.endDate &&
-      now > mockTest.endDate
-    ) {
+    if (mockTest.endDate && now > mockTest.endDate) {
       return res.status(400).json({
-        message:
-          "This mock placement test has ended",
+        message: "This mock test has ended",
       });
     }
 
-    // ==============================
-    // PREVENT DUPLICATE ACTIVE ATTEMPT
-    // ==============================
-    const activeAttempt =
-      await MockAttempt.findOne({
-        user: req.user.id,
-        mockTest: mockTest._id,
-        status: "In Progress",
-      });
+    const activeAttempt = await MockAttempt.findOne({
+      user: req.user.id,
+      mockTest: mockTest._id,
+      status: "In Progress",
+    });
 
     if (activeAttempt) {
-      return res.status(400).json({
-        message:
-          "You already have an active attempt for this mock test",
+      return res.status(409).json({
+        message: "Resume your existing mock attempt",
         attempt: activeAttempt,
       });
     }
 
-    // ==============================
-    // CHECK MAX ATTEMPTS
-    // ==============================
-    const attemptsUsed =
-      await MockAttempt.countDocuments({
-        user: req.user.id,
-        mockTest: mockTest._id,
-      });
+    const attemptsUsed = await MockAttempt.countDocuments({
+      user: req.user.id,
+      mockTest: mockTest._id,
+    });
 
     if (
-      attemptsUsed >=
-      mockTest.maxAttempts
+      !isUnlimited(mockTest) &&
+      attemptsUsed >= mockTest.maxAttempts
     ) {
       return res.status(400).json({
-        message:
-          "Maximum mock placement attempts reached",
+        message: "Maximum mock placement attempts reached",
       });
     }
 
-    // ==============================
-    // PREPARE ROUND RESULTS
-    // ==============================
-    const orderedRounds = [
-      ...mockTest.rounds,
-    ].sort(
-      (a, b) =>
-        a.order - b.order
+    const orderedRounds = [...mockTest.rounds].sort(
+      (a, b) => a.order - b.order
     );
 
-    const roundResults =
-      orderedRounds.map(
-        (round) => ({
-          roundName:
-            round.roundName,
-
-          roundType:
-            round.roundType,
-
-          order:
-            round.order,
-
-          score: 0,
-
-          totalMarks:
-            round.totalMarks,
-
-          percentage: 0,
-
-          passed: false,
-
-          startedAt: null,
-
-          completedAt: null,
-        })
-      );
-
-    if (
-      roundResults.length === 0
-    ) {
+    if (!orderedRounds.length) {
       return res.status(400).json({
-        message:
-          "This mock placement test has no configured rounds",
+        message: "No assessment rounds configured",
       });
     }
 
-    // Start first round
-    roundResults[0].startedAt =
-      now;
+    // Interview and Communication evaluation
+    // will be integrated with existing services next.
+    const unsupportedRound = orderedRounds.find(
+      (round) => !SUPPORTED_TYPES.includes(round.roundType)
+    );
 
-    // ==============================
-    // CREATE ATTEMPT
-    // ==============================
-    const mockAttempt =
-      await MockAttempt.create({
-        user:
-          req.user.id,
-
-        mockTest:
-          mockTest._id,
-
-        status:
-          "In Progress",
-
-        currentRoundIndex: 0,
-
-        roundResults,
-
-        totalScore: 0,
-
-        totalMarks:
-          mockTest.totalMarks,
-
-        overallPercentage: 0,
-
-        result:
-          "Pending",
-
-        proctoringViolations: [],
-
-        violationCount: 0,
-
-        startedAt:
-          now,
-
-        completedAt: null,
-
-        submittedAt: null,
+    if (unsupportedRound) {
+      return res.status(400).json({
+        message:
+          `${unsupportedRound.roundType} assessment integration ` +
+          "is not available yet",
       });
+    }
 
-    res.status(201).json({
-      message:
-        "Mock placement attempt started successfully",
+    const invalidRound = orderedRounds.find(
+      (round) =>
+        !Number.isFinite(getRoundDuration(round, mode)) ||
+        getRoundDuration(round, mode) < 1 ||
+        !Number.isInteger(getRoundQuestionCount(round, mode)) ||
+        getRoundQuestionCount(round, mode) < 0
+    );
 
+    if (invalidRound) {
+      return res.status(400).json({
+        message: `Invalid duration or question count in ${invalidRound.roundName}`,
+      });
+    }
+
+    const roundResults = orderedRounds.map((round) =>
+      createRoundResult(round, mode)
+    );
+
+    activateRound(roundResults[0], now);
+
+    const totalMarks = roundResults.reduce(
+      (sum, round) => sum + round.totalMarks,
+      0
+    );
+
+    const mockAttempt = await MockAttempt.create({
+      user: req.user.id,
+      mockTest: mockTest._id,
+
+      practiceMode: mode,
+      status: "In Progress",
+      currentRoundIndex: 0,
+      roundResults,
+
+      totalScore: 0,
+      totalMarks,
+      overallPercentage: 0,
+      result: "Pending",
+
+      proctoringEnabled:
+        Boolean(mockTest.proctoringEnabled) &&
+        req.body?.proctoringEnabled === true,
+
+      proctoringViolations: [],
+      violationCount: 0,
+
+      startedAt: now,
+      completedAt: null,
+      submittedAt: null,
+    });
+
+    return res.status(201).json({
+      message: "Mock placement attempt started successfully",
       mockAttempt,
-
-      currentRound:
-        mockAttempt.roundResults[0],
+      currentRound: mockAttempt.roundResults[0],
     });
   } catch (error) {
-    res.status(500).json({
-      message:
-        "Failed to start mock placement attempt",
+    return res.status(500).json({
+      message: "Failed to start mock placement attempt",
       error: error.message,
     });
   }
 };
 
-// ==============================
+// ==========================================
+// EVALUATE CURRENT ROUND
+// ==========================================
+
+const evaluateRound = async (
+  mockAttempt,
+  mockTest,
+  currentRound,
+  configuredRound
+) => {
+  const roundType = currentRound.roundType;
+
+  let score = 0;
+  let attemptedQuestions = 0;
+  let correctAnswers = 0;
+
+  if (MCQ_TYPES.includes(roundType)) {
+    const questions = await MockQuestionAttempt.find({
+      user: mockAttempt.user,
+      mockAttempt: mockAttempt._id,
+      roundName: currentRound.roundName,
+    });
+
+
+    // ======================================
+    // SAFE QUESTION COUNT VALIDATION
+    // ======================================
+    // During a timed assessment, the student
+    // may leave questions unanswered.
+    //
+    // If the timer expires before assignment
+    // finishes, allow the round to close using
+    // the questions already saved.
+    //
+    // Never award marks for missing questions.
+
+    const expectedQuestionCount =
+      Number(currentRound.numberOfQuestions || 0);
+
+    const assignedQuestionCount = questions.length;
+
+    if (assignedQuestionCount > expectedQuestionCount) {
+      const error = new Error(
+        "More questions were assigned than configured"
+      );
+
+      error.statusCode = 400;
+      throw error;
+    }
+
+    if (
+      assignedQuestionCount < expectedQuestionCount &&
+      !isExpired(currentRound)
+    ) {
+      const error = new Error(
+        "Question assignment is still incomplete. Please retry."
+      );
+
+      error.statusCode = 409;
+      throw error;
+    }
+
+
+    attemptedQuestions = questions.filter(
+      (question) => question.answered
+    ).length;
+
+    score = questions.reduce(
+      (sum, question) =>
+        sum + Number(question.marksAwarded || 0),
+      0
+    );
+
+    correctAnswers = questions.filter(
+      (question) =>
+        question.answered &&
+        question.isCorrect === true
+    ).length;
+  } else if (roundType === "Coding") {
+    const codingAttempt = await CodingAttempt.findOne({
+      user: mockAttempt.user,
+      mockAttempt: mockAttempt._id,
+      mockTest: mockTest._id,
+      mockRoundName: currentRound.roundName,
+      isMockAttempt: true,
+    }).sort({
+      scorePercentage: -1,
+      submittedAt: -1,
+    });
+
+    if (codingAttempt) {
+      attemptedQuestions = 1;
+
+      score =
+        (Number(codingAttempt.scorePercentage || 0) / 100) *
+        currentRound.totalMarks;
+    }
+  } else if (roundType === "SQL") {
+    const sqlAttempt = await SqlAttempt.findOne({
+      user: mockAttempt.user,
+      mockAttempt: mockAttempt._id,
+      mockTest: mockTest._id,
+      mockRoundName: currentRound.roundName,
+      isMockAttempt: true,
+    }).sort({
+      scorePercentage: -1,
+      submittedAt: -1,
+    });
+
+    if (sqlAttempt) {
+      attemptedQuestions = 1;
+
+      score =
+        (Number(sqlAttempt.scorePercentage || 0) / 100) *
+        currentRound.totalMarks;
+    }
+  } else {
+    const error = new Error(
+      `Evaluation for ${roundType} is not integrated yet`
+    );
+    error.statusCode = 400;
+    throw error;
+  }
+
+  score = Math.round(score * 100) / 100;
+
+  if (
+    !Number.isFinite(score) ||
+    score < 0 ||
+    score > currentRound.totalMarks
+  ) {
+    const error = new Error("Invalid assessment score");
+    error.statusCode = 400;
+    throw error;
+  }
+
+  return {
+    score,
+    attemptedQuestions,
+    correctAnswers,
+    percentage: calculatePercentage(
+      score,
+      currentRound.totalMarks
+    ),
+    passed:
+      calculatePercentage(
+        score,
+        currentRound.totalMarks
+      ) >= configuredRound.passingPercentage,
+  };
+};
+
+// ==========================================
 // COMPLETE CURRENT MOCK ROUND
-// ==============================
+// ==========================================
+
 const completeMockRound = async (req, res) => {
   try {
-    // ==============================
-    // ACTIVE MOCK ATTEMPT
-    // ==============================
-    const mockAttempt =
-      await MockAttempt.findOne({
-        _id:
-          req.params.attemptId,
-
-        user:
-          req.user.id,
-
-        status:
-          "In Progress",
+    if (!isValidId(req.params.attemptId)) {
+      return res.status(400).json({
+        message: "Invalid mock attempt ID",
       });
+    }
+
+    const mockAttempt = await MockAttempt.findOne({
+      _id: req.params.attemptId,
+      user: req.user.id,
+      status: "In Progress",
+    });
 
     if (!mockAttempt) {
       return res.status(404).json({
-        message:
-          "Active mock placement attempt not found",
+        message: "Active mock placement attempt not found",
       });
     }
 
-    // ==============================
-    // MOCK TEST
-    // ==============================
-    const mockTest =
-      await MockTest.findById(
-        mockAttempt.mockTest
-      );
+    const mockTest = await MockTest.findById(
+      mockAttempt.mockTest
+    );
 
     if (!mockTest) {
       return res.status(404).json({
-        message:
-          "Mock placement test not found",
+        message: "Mock placement test not found",
       });
     }
 
-    // ==============================
-    // CURRENT ROUND
-    // ==============================
     const currentRoundIndex =
       mockAttempt.currentRoundIndex;
 
-    const currentRoundResult =
-      mockAttempt.roundResults[
-        currentRoundIndex
-      ];
+    const currentRound =
+      mockAttempt.roundResults[currentRoundIndex];
 
-    if (!currentRoundResult) {
+    if (!currentRound) {
       return res.status(400).json({
-        message:
-          "Current mock round not found",
+        message: "Current mock round not found",
       });
     }
 
-    if (
-      currentRoundResult.completedAt
-    ) {
-      return res.status(400).json({
-        message:
-          "Current round is already completed",
+    if (currentRound.completedAt) {
+      return res.status(409).json({
+        message: "This round is already completed",
       });
     }
 
-    // ==============================
-    // ROUND CONFIGURATION
-    // ==============================
-    const matchingRound =
-      mockTest.rounds.find(
-        (round) =>
-          round.order ===
-          currentRoundResult.order
-      );
+    const configuredRound = mockTest.rounds.find(
+      (round) => round.order === currentRound.order
+    );
 
-    if (!matchingRound) {
+    if (!configuredRound) {
       return res.status(400).json({
-        message:
-          "Mock round configuration not found",
+        message: "Mock round configuration not found",
       });
     }
-
-    const mcqRoundTypes = [
-      "Aptitude",
-      "Reasoning",
-      "Verbal",
-      "Technical",
-    ];
-
-    let numericScore = 0;
-
-    // ==============================
-    // SERVER-SIDE MCQ SCORING
-    // ==============================
-    if (
-      mcqRoundTypes.includes(
-        currentRoundResult.roundType
-      )
-    ) {
-      const questionAttempts =
-        await MockQuestionAttempt.find({
-          user:
-            req.user.id,
-
-          mockAttempt:
-            mockAttempt._id,
-
-          roundName:
-            currentRoundResult.roundName,
-        });
-
-      if (
-        questionAttempts.length === 0
-      ) {
-        return res.status(400).json({
-          message:
-            "No questions have been assigned for this round",
-        });
-      }
-
-      if (
-        questionAttempts.length !==
-        matchingRound.numberOfQuestions
-      ) {
-        return res.status(400).json({
-          message:
-            "Assigned question count does not match the mock round configuration",
-
-          required:
-            matchingRound.numberOfQuestions,
-
-          assigned:
-            questionAttempts.length,
-        });
-      }
-
-      const unansweredQuestions =
-        questionAttempts.filter(
-          (attempt) =>
-            !attempt.answered
-        );
-
-      if (
-        unansweredQuestions.length > 0
-      ) {
-        return res.status(400).json({
-          message:
-            "Answer all questions before completing this mock round",
-
-          totalQuestions:
-            questionAttempts.length,
-
-          answeredQuestions:
-            questionAttempts.length -
-            unansweredQuestions.length,
-
-          unansweredQuestions:
-            unansweredQuestions.length,
-        });
-      }
-
-      // Calculate MCQ marks
-      numericScore =
-        questionAttempts.reduce(
-          (total, attempt) =>
-            total +
-            Number(
-              attempt.marksAwarded ||
-                0
-            ),
-          0
-        );
-    }
-
-    // ==============================
-    // SERVER-SIDE CODING SCORING
-    // ==============================
-    else if (
-      currentRoundResult.roundType ===
-      "Coding"
-    ) {
-      /*
-        Find best Judge0-backed
-        CodingAttempt from this
-        specific mock round.
-
-        Highest score wins.
-
-        If same score:
-        latest submission wins.
-      */
-
-      const codingAttempt =
-        await CodingAttempt.findOne({
-          user:
-            req.user.id,
-
-          mockAttempt:
-            mockAttempt._id,
-
-          mockTest:
-            mockTest._id,
-
-          mockRoundName:
-            currentRoundResult.roundName,
-
-          isMockAttempt: true,
-        }).sort({
-          scorePercentage: -1,
-          submittedAt: -1,
-        });
-
-      if (!codingAttempt) {
-        return res.status(400).json({
-          message:
-            "Submit your coding solution before completing the Coding round",
-        });
-      }
-
-      /*
-        Scale CodingAttempt percentage
-        to current Mock Round marks.
-
-        Example:
-
-        Coding Attempt = 100%
-        Mock round = 20 marks
-
-        100% → 20/20
-      */
-
-      numericScore =
-        Math.round(
-          (Number(
-            codingAttempt.scorePercentage ||
-              0
-          ) /
-            100) *
-            currentRoundResult.totalMarks *
-            100
-        ) / 100;
-    }
-
-    // ==============================
-    // SERVER-SIDE SQL SCORING
-    // ==============================
-    else if (
-      currentRoundResult.roundType ===
-      "SQL"
-    ) {
-      /*
-        Find best AlaSQL-backed
-        SqlAttempt from this
-        specific mock round.
-
-        Highest score wins.
-
-        If same score:
-        latest submission wins.
-      */
-
-      const sqlAttempt =
-        await SqlAttempt.findOne({
-          user:
-            req.user.id,
-
-          mockAttempt:
-            mockAttempt._id,
-
-          mockTest:
-            mockTest._id,
-
-          mockRoundName:
-            currentRoundResult.roundName,
-
-          isMockAttempt: true,
-        }).sort({
-          scorePercentage: -1,
-          submittedAt: -1,
-        });
-
-      if (!sqlAttempt) {
-        return res.status(400).json({
-          message:
-            "Submit your SQL solution before completing the SQL round",
-        });
-      }
-
-      /*
-        Scale SQL attempt percentage
-        to current Mock Round marks.
-
-        Example:
-
-        SQL Attempt = 100%
-        SQL round = 20 marks
-
-        100% → 20/20
-      */
-
-      numericScore =
-        Math.round(
-          (Number(
-            sqlAttempt.scorePercentage ||
-              0
-          ) /
-            100) *
-            currentRoundResult.totalMarks *
-            100
-        ) / 100;
-    }
-
-    // ==============================
-    // UNSUPPORTED ROUND
-    // ==============================
-    else {
-      return res.status(400).json({
-        message:
-          "Unsupported mock round type",
-      });
-    }
-
-    // ==============================
-    // SCORE VALIDATION
-    // ==============================
-    if (
-      numericScore < 0 ||
-      numericScore >
-        currentRoundResult.totalMarks
-    ) {
-      return res.status(400).json({
-        message: `Score must be between 0 and ${currentRoundResult.totalMarks}`,
-      });
-    }
-
-    // ==============================
-    // CALCULATE ROUND PERCENTAGE
-    // ==============================
-    const percentage =
-      currentRoundResult.totalMarks >
-      0
-        ? Math.round(
-            (numericScore /
-              currentRoundResult.totalMarks) *
-              100
-          )
-        : 0;
-
-    // ==============================
-    // ROUND PASS / FAIL
-    // ==============================
-    const passed =
-      percentage >=
-      matchingRound.passingPercentage;
 
     const now = new Date();
+    const expired = isExpired(currentRound);
 
-    // ==============================
-    // COMPLETE CURRENT ROUND
-    // ==============================
-    currentRoundResult.score =
-      numericScore;
+    // For practice, an expired round can still
+    // be evaluated using saved submissions.
+    const evaluation = await evaluateRound(
+      mockAttempt,
+      mockTest,
+      currentRound,
+      configuredRound
+    );
 
-    currentRoundResult.percentage =
-      percentage;
+    currentRound.score = evaluation.score;
+    currentRound.percentage = evaluation.percentage;
+    currentRound.passed = evaluation.passed;
 
-    currentRoundResult.passed =
-      passed;
+    currentRound.attemptedQuestions =
+      evaluation.attemptedQuestions;
 
-    currentRoundResult.completedAt =
-      now;
+    currentRound.correctAnswers =
+      evaluation.correctAnswers;
 
-    // ==============================
-    // UPDATE TOTAL SCORE
-    // ==============================
+    currentRound.status = expired
+      ? "Auto Submitted"
+      : "Completed";
+
+    currentRound.completedAt = now;
+
+    if (currentRound.startedAt) {
+      const effectiveEnd = expired && currentRound.expiresAt
+        ? new Date(currentRound.expiresAt)
+        : now;
+
+      currentRound.timeSpentSeconds = Math.max(
+        0,
+        Math.floor(
+          (effectiveEnd -
+            new Date(currentRound.startedAt)) / 1000
+        )
+      );
+    }
+
     mockAttempt.totalScore =
       mockAttempt.roundResults.reduce(
-        (total, round) =>
-          total +
-          Number(
-            round.score || 0
-          ),
+        (sum, round) => sum + Number(round.score || 0),
         0
       );
 
-    // ==============================
-    // OVERALL PERCENTAGE
-    // ==============================
-    mockAttempt.overallPercentage =
-      mockAttempt.totalMarks > 0
-        ? Math.round(
-            (mockAttempt.totalScore /
-              mockAttempt.totalMarks) *
-              100
-          )
-        : 0;
+    mockAttempt.overallPercentage = calculatePercentage(
+      mockAttempt.totalScore,
+      mockAttempt.totalMarks
+    );
 
-    const nextRoundIndex =
-      currentRoundIndex + 1;
+    const nextRoundIndex = currentRoundIndex + 1;
 
-    // ==============================
-    // MOVE TO NEXT ROUND
-    // ==============================
+    // ======================================
+    // NEXT ROUND
+    // ======================================
     if (
       nextRoundIndex <
       mockAttempt.roundResults.length
     ) {
-      mockAttempt.currentRoundIndex =
-        nextRoundIndex;
+      mockAttempt.currentRoundIndex = nextRoundIndex;
 
-      if (
-        !mockAttempt.roundResults[
-          nextRoundIndex
-        ].startedAt
-      ) {
-        mockAttempt.roundResults[
-          nextRoundIndex
-        ].startedAt = now;
+      const nextRound =
+        mockAttempt.roundResults[nextRoundIndex];
+
+      if (!nextRound.startedAt) {
+        activateRound(nextRound, now);
       }
 
       await mockAttempt.save();
 
       return res.status(200).json({
-        message:
-          "Mock round completed successfully",
-
-        completedRound:
-          currentRoundResult,
-
-        nextRound:
-          mockAttempt.roundResults[
-            nextRoundIndex
-          ],
-
+        message: "Mock round completed successfully",
+        completedRound: currentRound,
+        nextRound,
         mockAttempt,
       });
     }
 
-    // ==============================
-    // FINAL MOCK COMPLETION
-    // ==============================
-    mockAttempt.status =
-      "Completed";
+    // ======================================
+    // FINAL RESULT
+    // ======================================
+    mockAttempt.status = "Completed";
+    mockAttempt.completedAt = now;
+    mockAttempt.submittedAt = now;
 
-    mockAttempt.completedAt =
-      now;
-
-    mockAttempt.submittedAt =
-      now;
-
-    // ==============================
-    // CHECK ALL ROUNDS
-    // ==============================
     const allRoundsPassed =
       mockAttempt.roundResults.every(
-        (round) =>
-          round.passed
+        (round) => round.passed
       );
 
-    // ==============================
-    // CHECK OVERALL PASS
-    // ==============================
     const overallPassed =
       mockAttempt.overallPercentage >=
       mockTest.passingPercentage;
 
-    // ==============================
-    // FINAL RESULT
-    // ==============================
     mockAttempt.result =
-      allRoundsPassed &&
-      overallPassed
+      allRoundsPassed && overallPassed
         ? "Passed"
         : "Failed";
 
     await mockAttempt.save();
 
-    // ==============================
-    // FINAL RESPONSE
-    // ==============================
-    res.status(200).json({
-      message:
-        "Mock placement test completed successfully",
-
+    return res.status(200).json({
+      message: "Mock placement practice completed successfully",
       mockAttempt,
-
       result: {
-        totalScore:
-          mockAttempt.totalScore,
-
-        totalMarks:
-          mockAttempt.totalMarks,
-
+        totalScore: mockAttempt.totalScore,
+        totalMarks: mockAttempt.totalMarks,
         overallPercentage:
           mockAttempt.overallPercentage,
-
-        status:
-          mockAttempt.status,
-
-        result:
-          mockAttempt.result,
+        status: mockAttempt.status,
+        result: mockAttempt.result,
       },
     });
   } catch (error) {
-    res.status(500).json({
-      message:
-        "Failed to complete mock placement round",
+    return res.status(error.statusCode || 500).json({
+      message: "Failed to complete mock placement round",
       error: error.message,
     });
   }
 };
+
+// ==========================================
+// EXPORTS
+// ==========================================
 
 module.exports = {
   getAvailableMockTests,

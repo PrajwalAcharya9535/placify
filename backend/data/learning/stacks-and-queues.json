@@ -1,0 +1,298 @@
+{
+  "topicTitle": "Stacks and Queues",
+  "lessons": [
+    {
+      "title": "Stacks: LIFO and Core Operations",
+      "description": "Learn push, pop, peek and stack complexity.",
+      "content": "A stack is a Last-In, First-Out (LIFO) structure: the most recently added item is removed first. Typical operations are push, pop, peek and is_empty. In Python, a list works as a stack: append(x) pushes, pop() removes the top, and stack[-1] peeks. These operations are amortized O(1) at the end of a list. Popping an empty stack raises IndexError, so check first. Stacks are used in undo history, nested expression parsing, depth-first search, and function call management. A stack is an abstract data type: it describes allowed operations, not one required implementation. When tracing a stack, explicitly label which end is the top.",
+      "examples": [
+        {
+          "title": "Stacks: LIFO and Core Operations Example",
+          "language": "python",
+          "explanation": "Run this Python 3 example and trace each operation.",
+          "code": "stack = []\nfor item in [4, 7, 9]:\n    stack.append(item)\nprint('top:', stack[-1])\nwhile stack:\n    print('popped:', stack.pop())"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Queues: FIFO, Deque and Breadth-First Processing",
+      "description": "Implement a queue without costly front removals.",
+      "content": "A queue is First-In, First-Out (FIFO): the earliest inserted item leaves first. The main operations are enqueue, dequeue, front and is_empty. In Python, collections.deque is a suitable queue: append(x) enqueues at the right and popleft() dequeues from the left, both O(1). Avoid repeatedly calling list.pop(0), which costs O(n) because the remaining elements shift. Queues are useful for breadth-first search, job scheduling, and buffering requests. A deque supports insertion and removal at both ends; it can model either a stack or a queue. Handle empty queues explicitly. Queue capacity limits and concurrency require additional design in production systems.",
+      "examples": [
+        {
+          "title": "Queues: FIFO, Deque and Breadth-First Processing Example",
+          "language": "python",
+          "explanation": "Run this Python 3 example and trace each operation.",
+          "code": "from collections import deque\nqueue = deque(['A', 'B', 'C'])\nqueue.append('D')\nwhile queue:\n    print(queue.popleft())"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Balanced Parentheses and Expression Processing",
+      "description": "Use a stack to check properly nested delimiters.",
+      "content": "Nested parentheses, square brackets and braces must close in the reverse order in which they open. A stack naturally tracks unmatched opening symbols. Scan each character: push opening delimiters; for a closing delimiter, reject an empty stack or a mismatched top; at the end, accept only if the stack is empty. This algorithm takes O(n) time and O(n) worst-case auxiliary space. For example, ({[]}) is valid but ([)] is invalid even though counts match. This same nesting idea underlies parsers, HTML tag checking, and syntax validation. A stack also helps evaluate postfix expressions: push operands, and on an operator pop the right operand first, then the left operand.",
+      "examples": [
+        {
+          "title": "Balanced Parentheses and Expression Processing Example",
+          "language": "python",
+          "explanation": "Run this Python 3 example and trace each operation.",
+          "code": "def balanced(text):\n    pairs = {')': '(', ']': '[', '}': '{'}\n    opens = set(pairs.values())\n    stack = []\n    for ch in text:\n        if ch in opens:\n            stack.append(ch)\n        elif ch in pairs:\n            if not stack or stack.pop() != pairs[ch]:\n                return False\n    return not stack\n\nfor text in ['({[]})', '([)]', '(()']:\n    print(text, balanced(text))"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Monotonic Stacks and Next Greater Element",
+      "description": "Solve next-greater problems in linear time.",
+      "content": "A monotonic stack stores items in a consistent increasing or decreasing order. It is useful for next greater element, daily temperatures, stock span, and histogram problems. For next greater to the right, scan values left to right and store indices whose answer is not yet known. Whenever the current value exceeds the value at the top stored index, pop that index and record the current value as its answer. Each index is pushed once and popped at most once, giving O(n) time despite the nested while loop. Space is O(n). Distinguish strict greater (>) from greater-or-equal (>=): duplicates behave differently. The stack stores unresolved candidates, not necessarily all prior elements.",
+      "examples": [
+        {
+          "title": "Monotonic Stacks and Next Greater Element Example",
+          "language": "python",
+          "explanation": "Run this Python 3 example and trace each operation.",
+          "code": "def next_greater(values):\n    answer = [-1] * len(values)\n    pending = []\n    for i, value in enumerate(values):\n        while pending and values[pending[-1]] < value:\n            answer[pending.pop()] = value\n        pending.append(i)\n    return answer\n\nprint(next_greater([2, 1, 2, 4, 3]))  # [4, 2, 4, -1, -1]"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Queue Variants and Stack/Queue Interview Patterns",
+      "description": "Apply deque, circular-queue and BFS patterns.",
+      "content": "Queues can be implemented with linked nodes, circular arrays, or a deque. A circular array reuses freed slots by advancing front and rear indices modulo capacity; careful handling is required to distinguish full from empty. A priority queue differs from FIFO: it removes the item with highest priority, often using a heap. A deque supports sliding-window maximum using a decreasing sequence of candidate indices. Breadth-first search (BFS) uses a FIFO queue to visit nodes level by level; in an unweighted graph, BFS finds the shortest path measured in edges. Track visited nodes when they are enqueued to avoid duplicate work. In interview answers, state the data structure, invariant, edge cases and time/space complexity.",
+      "examples": [
+        {
+          "title": "Queue Variants and Stack/Queue Interview Patterns Example",
+          "language": "python",
+          "explanation": "Run this Python 3 example and trace each operation.",
+          "code": "from collections import deque\n\ndef bfs(graph, start):\n    visited = {start}\n    queue = deque([start])\n    order = []\n    while queue:\n        node = queue.popleft()\n        order.append(node)\n        for neighbor in graph.get(node, []):\n            if neighbor not in visited:\n                visited.add(neighbor)\n                queue.append(neighbor)\n    return order\n\nprint(bfs({'A':['B','C'], 'B':['D'], 'C':['D']}, 'A'))"
+        }
+      ],
+      "estimatedMinutes": 20
+    }
+  ],
+  "videos": [
+    {
+      "title": "Stack Data Structure - Introduction",
+      "youtubeUrl": "https://www.youtube.com/watch?v=F1F2imiOJfk",
+      "description": "Introduction to stack operations and LIFO behavior.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Queue Data Structure - Introduction",
+      "youtubeUrl": "https://www.youtube.com/watch?v=okr-XE8yTO8",
+      "description": "Learn queue operations and FIFO behavior.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Valid Parentheses - Stack Problem",
+      "youtubeUrl": "https://www.youtube.com/watch?v=WTzjTskDFMg",
+      "description": "Worked example of checking balanced delimiters with a stack.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Monotonic Stack - Next Greater Element",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Dq_ObZwTY_Q",
+      "description": "Learn the next greater element stack pattern.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Breadth First Search - Queue Application",
+      "youtubeUrl": "https://www.youtube.com/watch?v=oDqjPvD54Ss",
+      "description": "Introduction to BFS and its use of a queue.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Which principle describes a stack?",
+      "options": [
+        "FIFO",
+        "LIFO",
+        "Random access",
+        "Sorted order"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The last item pushed is the first popped.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What does pop() do on a nonempty Python list used as a stack?",
+      "options": [
+        "Removes first item",
+        "Removes last item",
+        "Sorts the list",
+        "Copies the list"
+      ],
+      "correctAnswer": 1,
+      "explanation": "list.pop() removes the last item.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the typical amortized cost of pushing to a Python list stack?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n²)"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Appending to the end is amortized constant time.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which structure is most appropriate for a FIFO queue in Python?",
+      "options": [
+        "set",
+        "tuple",
+        "collections.deque",
+        "dict"
+      ],
+      "correctAnswer": 2,
+      "explanation": "deque supports O(1) append and popleft.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Why is list.pop(0) not ideal for a large queue?",
+      "options": [
+        "It sorts elements",
+        "It shifts remaining elements",
+        "It cannot remove elements",
+        "It uses recursion"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Removing the first list element requires shifting others.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which input has correctly balanced delimiters?",
+      "options": [
+        "([)]",
+        "({[]})",
+        "(()",
+        "}{"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The nested delimiters close in reverse opening order.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What should a balanced-delimiter checker do when it sees a closing bracket with an empty stack?",
+      "options": [
+        "Accept",
+        "Ignore it",
+        "Reject",
+        "Push it"
+      ],
+      "correctAnswer": 2,
+      "explanation": "No opening bracket exists to match the closer.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the time complexity of next greater element using a monotonic stack?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n²)"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Each index is pushed and popped at most once.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which data structure is central to ordinary breadth-first search?",
+      "options": [
+        "Stack",
+        "Queue",
+        "Heap only",
+        "Hash map only"
+      ],
+      "correctAnswer": 1,
+      "explanation": "FIFO processing explores nodes by levels.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the maximum auxiliary space of a stack-based bracket checker on n characters?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n²)"
+      ],
+      "correctAnswer": 2,
+      "explanation": "All n characters may be opening delimiters.",
+      "difficulty": "Medium"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Implement a Stack",
+      "description": "Create a stack using a Python list.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Write push, pop, peek and is_empty functions or methods. Demonstrate handling an empty stack. Explain amortized O(1) push and O(1) pop."
+    },
+    {
+      "title": "Implement a Queue with deque",
+      "description": "Build FIFO enqueue and dequeue operations.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Use collections.deque. Process at least five values in arrival order and handle empty dequeue without crashing."
+    },
+    {
+      "title": "Valid Parentheses",
+      "description": "Check whether a string of (), [] and {} is properly nested.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Write is_valid(s) returning a boolean. Test empty string, nested pairs, mismatched pairs and unmatched closers. Aim for O(n) time."
+    },
+    {
+      "title": "Next Greater Element",
+      "description": "Find the next strictly greater value to the right for every array element.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Return -1 where no greater value exists. Use a monotonic stack in O(n) time; test duplicate values and descending arrays."
+    },
+    {
+      "title": "Shortest Path in an Unweighted Graph",
+      "description": "Use BFS to find shortest distance in edges.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Given adjacency lists, a start node and a target node, return the minimum number of edges or -1 if unreachable. Use deque and a visited set."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Python collections.deque Documentation",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/library/collections.html#collections.deque",
+      "description": "Official deque operations and performance characteristics."
+    },
+    {
+      "title": "Python List Documentation",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/tutorial/datastructures.html#using-lists-as-stacks",
+      "description": "Official tutorial for using lists as stacks."
+    },
+    {
+      "title": "Python Queues Tutorial",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/tutorial/datastructures.html#using-lists-as-queues",
+      "description": "Why deque is preferred to list for FIFO queues."
+    },
+    {
+      "title": "Stack Data Structure - GeeksforGeeks",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/dsa/stack-data-structure/",
+      "description": "Overview of stacks and their applications."
+    },
+    {
+      "title": "Queue Data Structure - GeeksforGeeks",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/dsa/queue-data-structure/",
+      "description": "Queue operations, variants and applications."
+    }
+  ]
+}

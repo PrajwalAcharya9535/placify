@@ -1,0 +1,204 @@
+
+{
+  "topicTitle": "Time and Work",
+  "lessons": [
+    {
+      "title": "Fundamentals of Time and Work",
+      "description": "Understand work rates, efficiency and the relationship between work and time.",
+      "content": "Time and Work is an important quantitative aptitude topic used in placement examinations.\n\nThe fundamental relationship is:\nWork = Rate × Time.\n\nIf a person completes a job in N days, the person's work rate is 1/N of the job per day.\n\nExample 1: A completes a job in 10 days.\nA's one-day work = 1/10.\nWork completed in 3 days = 3/10.\nRemaining work = 7/10.\n\nExample 2: B completes a job in 15 days.\nB's one-day work = 1/15.\n\nWhen A and B work together, their rates are added:\nCombined rate = 1/10 + 1/15 = 1/6.\nTherefore, they complete the job together in 6 days.\n\nImportant formulas:\n1. Work = Efficiency × Time.\n2. Time = Total Work / Work Rate.\n3. If A completes a job in a days and B in b days, their combined time is ab/(a+b), assuming constant independent work rates.\n4. If efficiency increases, the time required for a fixed job decreases.\n\nPlacement tip: Convert every person's completion time into a one-day work rate before combining workers."
+    },
+    {
+      "title": "Combined Work and Individual Efficiency",
+      "description": "Solve problems involving multiple workers and different efficiency levels.",
+      "content": "When two or more people work together, their individual work rates combine.\n\nExample: A completes a job in 12 days and B in 18 days.\nA's daily work = 1/12.\nB's daily work = 1/18.\nCombined work = 1/12 + 1/18 = 5/36.\nTime together = 36/5 = 7.2 days.\n\nEfficiency is the amount of work completed per unit time.\n\nFor the same amount of work, efficiency is inversely proportional to completion time.\n\nIf A is twice as efficient as B, A requires half as much time as B.\n\nExample: A is twice as efficient as B. Together they complete a job in 12 days.\nLet B's daily rate be x.\nA's daily rate = 2x.\nCombined rate = 3x = 1/12.\nTherefore x = 1/36.\nB alone takes 36 days.\nA alone takes 18 days.\n\nThree workers:\nIf A, B and C take a, b and c days individually, combined rate = 1/a + 1/b + 1/c.\n\nExample: A takes 6 days, B takes 12 days and C takes 12 days.\nCombined rate = 1/6 + 1/12 + 1/12 = 1/3.\nTogether they complete the work in 3 days.\n\nPlacement tip: Express efficiency ratios as daily work rates to avoid confusing efficiency with completion time."
+    },
+    {
+      "title": "Work and Wages",
+      "description": "Learn how payment is distributed according to work contribution.",
+      "content": "Work and wages problems involve dividing payment among workers based on their contribution.\n\nWhen workers receive payment proportional to the amount of work completed:\nWage Ratio = Work Contribution Ratio.\n\nWork Contribution = Efficiency × Time Worked.\n\nExample: A and B work for the same number of days. A is twice as efficient as B.\nTheir work ratio is 2:1.\nIf total wages are ₹9,000, A receives ₹6,000 and B receives ₹3,000.\n\nExample: A works for 6 days at 3 units per day, while B works for 9 days at 2 units per day.\nA's contribution = 6 × 3 = 18 units.\nB's contribution = 9 × 2 = 18 units.\nTheir contributions are equal.\nIf total wages are ₹8,000, each receives ₹4,000.\n\nFor three workers, calculate each person's work contribution and divide total wages in that ratio.\n\nExample: A, B and C contribute 20, 30 and 50 units of work.\nTheir ratio is 2:3:5.\nFor total wages of ₹10,000:\nA receives ₹2,000.\nB receives ₹3,000.\nC receives ₹5,000.\n\nImportant: Equal working hours do not imply equal wages if workers have different productivity and payment is based on contribution.\n\nPlacement tip: Calculate work contribution first, simplify the ratio and then distribute wages."
+    },
+    {
+      "title": "Pipes and Cisterns",
+      "description": "Solve tank-filling and emptying problems using positive and negative work rates.",
+      "content": "Pipes and cisterns problems use the same principles as Time and Work.\n\nAn inlet fills a tank and contributes a positive rate. An outlet empties a tank and contributes a negative rate.\n\nIf a pipe fills a tank in a hours, its filling rate is 1/a tank per hour.\nIf another pipe empties the tank in b hours, its emptying rate is -1/b tank per hour.\n\nNet rate = Total filling rates - Total emptying rates.\n\nExample: Pipe A fills a tank in 6 hours and Pipe B fills it in 12 hours.\nCombined rate = 1/6 + 1/12 = 1/4.\nThe tank fills in 4 hours.\n\nExample: An inlet fills a tank in 8 hours, while an outlet empties it in 12 hours.\nNet rate = 1/8 - 1/12 = 1/24.\nThe initially empty tank fills in 24 hours when both remain open.\n\nExample: Two inlet pipes fill a tank in 10 and 15 hours, while an outlet empties it in 30 hours.\nNet rate = 1/10 + 1/15 - 1/30 = 2/15.\nTime to fill = 15/2 = 7.5 hours.\n\nIf the net rate is zero, the tank level remains unchanged while all pipes operate. If the net rate is negative, an initially empty tank cannot be filled under those conditions.\n\nPlacement tip: Use positive signs for filling and negative signs for emptying."
+    },
+    {
+      "title": "Advanced Time and Work Problems",
+      "description": "Solve alternate-day work, partial completion and changing workforce problems.",
+      "content": "Advanced Time and Work questions combine work rates with schedules, worker changes and partial completion.\n\nAlternate-day work:\nExample: A completes a job in 10 days and B in 15 days. They work on alternate days, starting with A.\nA's rate = 1/10.\nB's rate = 1/15.\nWork completed in two days = 1/10 + 1/15 = 1/6.\nAfter 10 days, they complete 5/6 of the job.\nRemaining work = 1/6.\nOn day 11, A completes 1/10, leaving 1/15.\nB completes the remaining 1/15 on day 12.\nTotal time = 12 days.\n\nPartial work:\nIf A completes a job in 20 days, A completes 5/20 = 1/4 of the job in 5 days.\nRemaining work = 3/4.\n\nChanging workforce:\nExample: A completes a job in 12 days and B in 18 days. A works alone for 3 days, then B joins.\nA completes 3/12 = 1/4.\nRemaining work = 3/4.\nCombined daily rate = 1/12 + 1/18 = 5/36.\nTime for remaining work = (3/4)/(5/36) = 27/5 = 5.4 days.\nTotal time = 3 + 5.4 = 8.4 days.\n\nMen-days concept:\nFor workers of equal efficiency, total work is proportional to number of workers multiplied by working days and daily working hours.\n\nExample: If 6 workers complete a job in 10 days, 12 equally efficient workers complete it in 5 days under identical working-hour conditions.\n\nProblem-solving steps:\n1. Identify individual work rates.\n2. Split the schedule into phases.\n3. Calculate work completed in each phase.\n4. Subtract completed work from the total.\n5. Calculate the time required for the remaining work.\n\nPlacement tip: For alternating schedules, calculate work in one full repeating cycle before handling the remaining fraction."
+    }
+  ],
+  "videos": [
+    {
+      "title": "Time and Work - Aptitude Video Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=QzY57FaENXg",
+      "description": "Supplementary video reference; topic match has not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Combined Work and Efficiency - Video Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=6sQDTgOqh-I",
+      "description": "Supplementary video reference; topic match has not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Work and Wages - Video Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=GFQaEYEc8_8",
+      "description": "Supplementary video reference; topic match has not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Pipes and Cisterns - Video Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ztHopE5Wnpc",
+      "description": "Supplementary video reference; topic match has not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Advanced Time and Work Practice",
+      "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+      "description": "Supplementary video reference; topic match has not been verified.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "A completes a job in 10 days. What fraction of the job does A complete in one day?",
+      "options": ["1/5", "1/10", "1/15", "1/20"],
+      "correctAnswer": 1,
+      "explanation": "One-day work = 1/10.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "A completes a job in 10 days and B in 15 days. How long will they take together?",
+      "options": ["5 days", "6 days", "8 days", "12 days"],
+      "correctAnswer": 1,
+      "explanation": "Combined rate = 1/10 + 1/15 = 1/6. Time = 6 days.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "If A is twice as efficient as B, what is their efficiency ratio?",
+      "options": ["1:2", "2:1", "1:3", "3:2"],
+      "correctAnswer": 1,
+      "explanation": "Twice as efficient means A:B = 2:1.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "A pipe fills a tank in 6 hours and another fills it in 12 hours. How long will both take together?",
+      "options": ["3 hours", "4 hours", "6 hours", "9 hours"],
+      "correctAnswer": 1,
+      "explanation": "Combined rate = 1/6 + 1/12 = 1/4. Time = 4 hours.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "A completes a job in 20 days. How much work does A complete in 5 days?",
+      "options": ["1/2", "1/3", "1/4", "1/5"],
+      "correctAnswer": 2,
+      "explanation": "Work completed = 5/20 = 1/4.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "A completes a job in 12 days and B in 18 days. How long will they take together?",
+      "options": ["6 days", "7.2 days", "8 days", "9 days"],
+      "correctAnswer": 1,
+      "explanation": "Combined rate = 1/12 + 1/18 = 5/36. Time = 36/5 = 7.2 days.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "An inlet fills a tank in 8 hours and an outlet empties it in 12 hours. How long will the initially empty tank take to fill with both open?",
+      "options": ["12 hours", "16 hours", "20 hours", "24 hours"],
+      "correctAnswer": 3,
+      "explanation": "Net rate = 1/8 - 1/12 = 1/24. Time = 24 hours.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "A and B contribute work in the ratio 3:2. If total wages are ₹5,000, how much should A receive?",
+      "options": ["₹2,000", "₹2,500", "₹3,000", "₹3,500"],
+      "correctAnswer": 2,
+      "explanation": "A receives 3/5 × 5000 = ₹3,000.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Six equally efficient workers complete a job in 10 days. How many days will 12 such workers take?",
+      "options": ["4 days", "5 days", "6 days", "8 days"],
+      "correctAnswer": 1,
+      "explanation": "Workers × days is constant. 6 × 10 = 12 × 5.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "A completes a job in 12 days and B in 18 days. A works alone for 3 days, then B joins. What is the total completion time?",
+      "options": ["7.2 days", "8.4 days", "9 days", "10 days"],
+      "correctAnswer": 1,
+      "explanation": "A completes 1/4 in 3 days. Remaining work = 3/4. Combined rate = 5/36. Remaining time = 5.4 days. Total = 8.4 days.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Individual and Combined Work",
+      "description": "Calculate how long two workers take to complete a job together.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "A completes a job in 15 days and B in 20 days. Calculate their individual one-day work rates and the time required to complete the job together."
+    },
+    {
+      "title": "Efficiency Ratio Problem",
+      "description": "Find individual completion times using efficiency ratios.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "A is three times as efficient as B. Together they complete a job in 8 days. Find how many days A and B would each take individually."
+    },
+    {
+      "title": "Work and Wages Distribution",
+      "description": "Distribute wages based on the work contributed by each person.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "A works for 8 days at an efficiency of 3 units per day. B works for 6 days at an efficiency of 4 units per day. If total wages are ₹12,000, calculate each worker's share."
+    },
+    {
+      "title": "Pipes and Cisterns Challenge",
+      "description": "Find the net filling time when multiple pipes operate simultaneously.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Pipe A fills a tank in 10 hours, Pipe B fills it in 15 hours and Pipe C empties it in 30 hours. If all three pipes are opened together when the tank is empty, calculate the time required to fill it."
+    },
+    {
+      "title": "Changing Workforce Problem",
+      "description": "Solve a multi-stage time and work problem.",
+      "type": "Written",
+      "difficulty": "Hard",
+      "instructions": "A completes a job in 16 days and B in 24 days. A works alone for 4 days, then B joins. Calculate the additional time required to finish the remaining work and the total completion time."
+    }
+  ],
+  "resources": [
+    {
+      "title": "IndiaBIX - Time and Work",
+      "type": "Website",
+      "url": "https://www.indiabix.com/aptitude/time-and-work/",
+      "description": "Placement-oriented time and work questions with solutions."
+    },
+    {
+      "title": "IndiaBIX - Pipes and Cisterns",
+      "type": "Website",
+      "url": "https://www.indiabix.com/aptitude/pipes-and-cistern/",
+      "description": "Practice filling and emptying tank problems."
+    },
+    {
+      "title": "GeeksforGeeks - Quantitative Aptitude",
+      "type": "Website",
+      "url": "https://www.geeksforgeeks.org/aptitude/quantitative-aptitude/",
+      "description": "Quantitative aptitude concepts and practice exercises."
+    },
+    {
+      "title": "Khan Academy - Rates and Proportional Relationships",
+      "type": "Website",
+      "url": "https://www.khanacademy.org/math/7th-grade/xb5ed4f7b:proportional-relationships",
+      "description": "Learn proportional reasoning and rates used in work problems."
+    },
+    {
+      "title": "Math Is Fun - Ratios",
+      "type": "Article",
+      "url": "https://www.mathsisfun.com/numbers/ratio.html",
+      "description": "Understand ratios and proportional relationships."
+    }
+  ]
+}

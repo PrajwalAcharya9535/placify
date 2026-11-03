@@ -46,6 +46,13 @@ const io = new Server(server, {
 app.set("io", io);
 
 // ==============================
+// MAKE SOCKET.IO AVAILABLE
+// TO NOTIFICATION SERVICE
+// ==============================
+
+global.placifySocketIO = io;
+
+// ==============================
 // SOCKET.IO AUTHENTICATION
 // ==============================
 

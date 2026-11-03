@@ -82,11 +82,19 @@ const mockQuestionAttemptSchema =
     }
   );
 
-mockQuestionAttemptSchema.index({
-  mockAttempt: 1,
-  roundName: 1,
-  question: 1,
-});
+
+mockQuestionAttemptSchema.index(
+  {
+    mockAttempt: 1,
+    roundName: 1,
+    question: 1,
+  },
+  {
+    unique: true,
+    name: "unique_mock_round_question",
+  }
+);
+
 
 module.exports = mongoose.model(
   "MockQuestionAttempt",

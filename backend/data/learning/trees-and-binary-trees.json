@@ -1,0 +1,298 @@
+{
+  "topicTitle": "Trees and Binary Search Trees",
+  "lessons": [
+    {
+      "title": "Tree Fundamentals and Binary Tree Structure",
+      "description": "Learn nodes, roots, leaves, height and common binary tree types.",
+      "content": "A tree is a hierarchical data structure with nodes connected by edges. A nonempty tree has one root, and every other node has exactly one parent. A node can have children, and a node without children is a leaf. A subtree is a node together with all its descendants. A binary tree limits each node to at most two children, named left and right. An empty tree is represented by None.\n\nTerminology: the depth of a node is the number of edges from the root to that node; root depth is 0. The height of a node is the number of edges on its longest downward path to a leaf; a leaf has height 0. Some programming problems use height measured in nodes instead, so always check the definition. A full binary tree has nodes with either zero or two children. A perfect binary tree has every internal node with two children and all leaves at the same depth. A complete binary tree fills levels left to right, with only the final level possibly incomplete. A balanced tree keeps height reasonably small; balanced does not necessarily mean complete.\n\nFor n nodes, a tree contains n-1 edges when n is positive. Binary trees support recursive divide-and-conquer because each child is itself the root of a binary tree. Use node references for flexible shapes; array representations work especially well for complete trees and heaps.",
+      "examples": [
+        {
+          "title": "Tree Fundamentals and Binary Tree Structure - Python Example",
+          "language": "python",
+          "explanation": "Run in Python 3 and trace the tree references and output.",
+          "code": "class Node:\n    def __init__(self, value, left=None, right=None):\n        self.value = value\n        self.left = left\n        self.right = right\n\nroot = Node(10, Node(5), Node(20, Node(15), None))\nprint(root.value)        # 10\nprint(root.left.value)   # 5\nprint(root.right.left.value)  # 15"
+        }
+      ],
+      "estimatedMinutes": 25
+    },
+    {
+      "title": "Depth-First Tree Traversals",
+      "description": "Understand preorder, inorder and postorder traversal.",
+      "content": "Traversal visits nodes in a deliberate order. Depth-first traversal explores subtrees before moving across the tree. Preorder visits Root, Left, Right. Inorder visits Left, Root, Right. Postorder visits Left, Right, Root. For the tree with root 8, left child 3 and right child 10: preorder is [8,3,10], inorder is [3,8,10], and postorder is [3,10,8].\n\nRecursive traversal uses a base case: if node is None, return. Inorder is especially useful for a binary search tree because it produces sorted values when the BST ordering invariant holds. Preorder is useful when processing a parent before its children; postorder is useful when child results must be computed before the parent, such as calculating subtree height.\n\nEvery traversal visits each of n nodes once, so time is O(n). Recursive auxiliary space is O(h), where h is the height in nodes of the recursion path: O(log n) on a balanced tree, O(n) on a skewed tree. An explicit stack can replace recursion. Tree traversals must handle empty roots correctly.",
+      "examples": [
+        {
+          "title": "Depth-First Tree Traversals - Python Example",
+          "language": "python",
+          "explanation": "Run in Python 3 and trace the tree references and output.",
+          "code": "class Node:\n    def __init__(self, value, left=None, right=None):\n        self.value, self.left, self.right = value, left, right\n\ndef preorder(node):\n    return [] if node is None else [node.value] + preorder(node.left) + preorder(node.right)\n\ndef inorder(node):\n    return [] if node is None else inorder(node.left) + [node.value] + inorder(node.right)\n\ndef postorder(node):\n    return [] if node is None else postorder(node.left) + postorder(node.right) + [node.value]\n\nroot = Node(8, Node(3), Node(10))\nprint(preorder(root))\nprint(inorder(root))\nprint(postorder(root))"
+        }
+      ],
+      "estimatedMinutes": 25
+    },
+    {
+      "title": "Binary Search Trees: Search and Insertion",
+      "description": "Learn the BST invariant and height-dependent complexity.",
+      "content": "A binary search tree (BST) stores ordered keys. Under a common no-duplicates policy, every key in a node's left subtree is smaller than its key, and every key in its right subtree is larger. This property applies to all descendants, not only direct children. Other BST implementations define explicit duplicate policies.\n\nTo search for a key, compare it with the current node: return if equal, go left if smaller, and right if larger. To insert, follow the same path and attach a new node at an empty child reference. Both operations cost O(h) time and O(1) auxiliary space when implemented iteratively. If the tree is balanced, h = O(log n). If keys arrive in sorted order without rebalancing, the BST can become a chain with h = O(n).\n\nInorder traversal of a valid BST yields ascending keys. Deletion has three cases: removing a leaf, replacing a node with its sole child, or replacing a node with two children using an inorder successor/predecessor and removing that replacement from its original location. A regular BST does not rebalance itself; AVL and red-black trees do.",
+      "examples": [
+        {
+          "title": "Binary Search Trees: Search and Insertion - Python Example",
+          "language": "python",
+          "explanation": "Run in Python 3 and trace the tree references and output.",
+          "code": "class Node:\n    def __init__(self, key):\n        self.key, self.left, self.right = key, None, None\n\ndef insert(root, key):\n    if root is None:\n        return Node(key)\n    cur = root\n    while True:\n        if key == cur.key:\n            return root  # no duplicate keys\n        if key < cur.key:\n            if cur.left is None:\n                cur.left = Node(key)\n                return root\n            cur = cur.left\n        else:\n            if cur.right is None:\n                cur.right = Node(key)\n                return root\n            cur = cur.right\n\ndef contains(root, key):\n    while root is not None:\n        if key == root.key:\n            return True\n        root = root.left if key < root.key else root.right\n    return False\n\nroot = None\nfor key in [8, 3, 10, 1, 6]:\n    root = insert(root, key)\nprint(contains(root, 6), contains(root, 9))"
+        }
+      ],
+      "estimatedMinutes": 25
+    },
+    {
+      "title": "Tree Height, Depth and Diameter",
+      "description": "Calculate tree measurements efficiently using postorder recursion.",
+      "content": "Depth is measured from the root toward a node. Height is measured from a node down to its deepest descendant. A common coding convention defines tree height as the number of nodes along the longest root-to-leaf path: an empty tree has height 0 and a leaf has height 1. Another convention measures edges: a leaf has height 0. State your convention before coding.\n\nFor node-count height, height(node) = 1 + max(height(left), height(right)); the base case is height(None) = 0. The diameter of a binary tree is the length of the longest simple path between any two nodes. Interview problems commonly measure diameter in edges, so a single node has diameter 0. The longest path may pass through a node other than the root.\n\nA naive diameter algorithm recomputes subtree heights and may take O(n²) time in a skewed tree. A single postorder DFS computes child heights and updates the best diameter with left_height + right_height, giving O(n) time and O(h) recursion space. Test empty trees, single nodes, balanced trees and long chains.",
+      "examples": [
+        {
+          "title": "Tree Height, Depth and Diameter - Python Example",
+          "language": "python",
+          "explanation": "Run in Python 3 and trace the tree references and output.",
+          "code": "class Node:\n    def __init__(self, value, left=None, right=None):\n        self.value, self.left, self.right = value, left, right\n\ndef height_and_diameter(root):\n    diameter = 0\n    def height(node):\n        nonlocal diameter\n        if node is None:\n            return 0\n        left = height(node.left)\n        right = height(node.right)\n        diameter = max(diameter, left + right)  # edges\n        return 1 + max(left, right)  # nodes\n    tree_height = height(root)\n    return tree_height, diameter\n\nroot = Node(1, Node(2, Node(4), Node(5)), Node(3))\nprint(height_and_diameter(root))  # (3, 3)"
+        }
+      ],
+      "estimatedMinutes": 25
+    },
+    {
+      "title": "Level-Order Traversal and Interview Patterns",
+      "description": "Use BFS and DFS to solve common binary tree problems.",
+      "content": "Breadth-first search (BFS) processes a tree one level at a time. Start with the root in a queue. Remove a node from the front, record its value, then append its nonempty children. In Python, collections.deque provides O(1) append and popleft. Level-order traversal runs in O(n) time and O(w) extra space, where w is the maximum number of nodes held in the queue at once (bounded by O(n)).\n\nCommon interview patterns include: (1) invert a binary tree by swapping left and right children recursively; (2) compare two trees by checking both node values and corresponding children; (3) validate a BST by passing an allowable lower and upper bound to each subtree; (4) compute maximum depth with DFS; (5) find the lowest common ancestor using recursive results under clearly stated assumptions.\n\nA frequent BST mistake is comparing a node only with its parent. For validation, carry bounds from all ancestors: left subtree values must be below the current key, right subtree values above it. Handle None, duplicate policies and unbalanced trees explicitly. Choose BFS for level-based tasks and DFS when subtree information is needed.",
+      "examples": [
+        {
+          "title": "Level-Order Traversal and Interview Patterns - Python Example",
+          "language": "python",
+          "explanation": "Run in Python 3 and trace the tree references and output.",
+          "code": "from collections import deque\n\nclass Node:\n    def __init__(self, value, left=None, right=None):\n        self.value, self.left, self.right = value, left, right\n\ndef levels(root):\n    if root is None:\n        return []\n    queue = deque([root])\n    result = []\n    while queue:\n        level = []\n        for _ in range(len(queue)):\n            node = queue.popleft()\n            level.append(node.value)\n            if node.left is not None:\n                queue.append(node.left)\n            if node.right is not None:\n                queue.append(node.right)\n        result.append(level)\n    return result\n\nroot = Node(1, Node(2, Node(4)), Node(3))\nprint(levels(root))  # [[1], [2, 3], [4]]"
+        }
+      ],
+      "estimatedMinutes": 25
+    }
+  ],
+  "videos": [
+    {
+      "title": "Data Structures – Full Course Using C and C++ (Tree Chapters)",
+      "youtubeUrl": "https://www.youtube.com/watch?v=B31LgI4Y4DQ",
+      "description": "MyCodeSchool / freeCodeCamp course. Tree lessons start around 5:10:48; concepts transfer to Python.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Binary Tree Traversal: Preorder, Inorder, Postorder – mycodeschool",
+      "youtubeUrl": "https://www.youtube.com/watch?v=gm8DUJJhmY4",
+      "description": "Step-by-step explanation of depth-first traversals and complexity.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Traversal in Binary Tree (InOrder, PostOrder and PreOrder) – CodeWithHarry",
+      "youtubeUrl": "https://www.youtube.com/watch?v=UbwkQmCWcDM",
+      "description": "Alternative visual walkthrough of all three DFS traversal orders.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Binary Search Tree in Data Structure – Coder Army",
+      "youtubeUrl": "https://www.youtube.com/watch?v=pMHXL46exp4",
+      "description": "BST properties, search, insertion and deletion, taught using C++.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Binary Search Tree (BST) Explained – Shiv Tech Tutorials",
+      "youtubeUrl": "https://www.youtube.com/watch?v=9kYuYHIHclw",
+      "description": "BST insertion, deletion, search, traversal and operation complexity.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "How many children can a node in a binary tree have at most?",
+      "options": [
+        "One",
+        "Two",
+        "Three",
+        "Any number"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Binary trees allow at most two children.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the depth of the root node when measured in edges?",
+      "options": [
+        "-1",
+        "0",
+        "1",
+        "2"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The root is zero edges away from itself.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which traversal visits Root, Left, Right?",
+      "options": [
+        "Inorder",
+        "Postorder",
+        "Preorder",
+        "Level order"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Preorder processes the root before both subtrees.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which traversal of a valid BST with unique keys produces sorted ascending values?",
+      "options": [
+        "Preorder",
+        "Postorder",
+        "Inorder",
+        "Level order"
+      ],
+      "correctAnswer": 2,
+      "explanation": "BST inorder visits smaller keys, root, then larger keys.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the time complexity of visiting every node once in a tree?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n²)"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Each node is visited once.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is worst-case BST search time for an unbalanced chain of n nodes?",
+      "options": [
+        "O(1)",
+        "O(log n)",
+        "O(n)",
+        "O(n log n)"
+      ],
+      "correctAnswer": 2,
+      "explanation": "A skewed BST may require scanning all nodes.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which structure is commonly used for level-order traversal?",
+      "options": [
+        "Queue",
+        "Stack only",
+        "Min-heap",
+        "Hash set only"
+      ],
+      "correctAnswer": 0,
+      "explanation": "BFS maintains a FIFO queue.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "If height is measured in nodes, what is the height of an empty tree?",
+      "options": [
+        "-1",
+        "0",
+        "1",
+        "Undefined"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Under the node-count convention the empty tree has height zero.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the diameter in edges of a tree containing a single node?",
+      "options": [
+        "0",
+        "1",
+        "2",
+        "-1"
+      ],
+      "correctAnswer": 0,
+      "explanation": "There are no edges in the longest path of a single-node tree.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which approach computes tree diameter in O(n) time?",
+      "options": [
+        "Recompute height at every node",
+        "One postorder DFS computing heights and diameter",
+        "Sort all node values",
+        "Only BFS from root"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Bottom-up DFS combines heights while updating the best diameter.",
+      "difficulty": "Medium"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Build a Binary Tree and Traverse It",
+      "description": "Implement a Node class and three depth-first traversals.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Construct a tree with at least seven nodes. Implement preorder, inorder and postorder traversal in Python. Print the three outputs. Test an empty tree and a single-node tree."
+    },
+    {
+      "title": "Binary Tree Level-Order Traversal",
+      "description": "Return node values grouped by level using BFS.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Implement level_order(root) using collections.deque. Return a list of lists. For an empty tree return []. Analyze time O(n) and auxiliary queue space O(w)."
+    },
+    {
+      "title": "BST Search and Insert",
+      "description": "Create an ordered binary search tree without duplicate keys.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Implement insert(root,key) and contains(root,key). Insert [8,3,10,1,6,14] and test searches for 6 and 7. Explain O(h) time and the worst case when sorted values are inserted."
+    },
+    {
+      "title": "Maximum Depth and Diameter",
+      "description": "Compute height in nodes and diameter in edges.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Write one recursive function to compute height and diameter. For tree 1 with children 2 and 3, where 2 has children 4 and 5, expect height 3 and diameter 3. Handle an empty tree."
+    },
+    {
+      "title": "Validate a Binary Search Tree",
+      "description": "Use ancestor bounds rather than only parent comparisons.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Implement is_valid_bst(root) with recursive lower and upper bounds and a strict no-duplicates rule. Include a tree where a node violates an ancestor bound but not its immediate parent. Analyze O(n) time and O(h) space."
+    }
+  ],
+  "resources": [
+    {
+      "title": "GeeksforGeeks – Binary Tree Data Structure",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/dsa/binary-tree-data-structure/",
+      "description": "Terminology, structure and core operations."
+    },
+    {
+      "title": "GeeksforGeeks – Tree Traversal Techniques",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/dsa/tree-traversals-inorder-preorder-and-postorder/",
+      "description": "Inorder, preorder and postorder with examples."
+    },
+    {
+      "title": "GeeksforGeeks – Binary Search Tree",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/dsa/binary-search-tree-data-structure/",
+      "description": "BST operations and ordering rules."
+    },
+    {
+      "title": "GeeksforGeeks – Diameter of a Binary Tree",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/dsa/diameter-of-a-binary-tree/",
+      "description": "Naive and efficient diameter algorithms."
+    },
+    {
+      "title": "LeetCode – Binary Tree Level Order Traversal",
+      "type": "Website",
+      "url": "https://leetcode.com/problems/binary-tree-level-order-traversal/",
+      "description": "Hands-on BFS interview practice."
+    }
+  ]
+}

@@ -1,0 +1,298 @@
+{
+  "topicTitle": "Data Structures and Algorithms Fundamentals",
+  "lessons": [
+    {
+      "title": "Algorithms, Data Structures and Big O Notation",
+      "description": "Understand algorithms, data structures, pseudocode, time complexity and space complexity.",
+      "content": "An algorithm is a finite, precise sequence of steps that transforms input into output. A data structure organizes values so operations such as access, insertion, deletion and searching can be performed efficiently. The best structure depends on the operations your program performs most often.\n\nAlgorithm design starts by defining inputs, outputs, constraints, edge cases and expected behavior. Pseudocode communicates the approach independently of programming language. A dry run manually traces each step for a sample input.\n\nTime complexity describes how the amount of work grows as input size n increases; space complexity describes additional memory requirements. Big O gives an asymptotic upper bound, often used to discuss worst-case growth. Common growth classes are O(1), O(log n), O(n), O(n log n), O(n²) and O(2^n). Constants and lower-order terms are usually omitted when expressing asymptotic bounds.\n\nOne loop over n items is usually O(n). Two nested loops that each iterate n times are often O(n²). Halving the search space repeatedly yields O(log n). However, always count the actual iterations: nested loops do not automatically mean O(n²).\n\nDistinguish input storage from auxiliary space. An algorithm that uses a fixed number of variables has O(1) auxiliary space; creating a second array of n elements uses O(n).\n\nFor interviews, state your approach, explain why it works, analyze time and space, and test empty inputs, duplicates, boundaries and large values.",
+      "examples": [
+        {
+          "title": "Compare Constant and Linear Work",
+          "language": "python",
+          "explanation": "Run this Python 3 example and examine its output and complexity.",
+          "code": "def first_item(values):\n    return values[0] if values else None  # O(1)\n\ndef total(values):\n    answer = 0\n    for value in values:  # O(n)\n        answer += value\n    return answer\n\nnumbers = [3, 5, 7, 9]\nprint(first_item(numbers))\nprint(total(numbers))"
+        }
+      ],
+      "estimatedMinutes": 22
+    },
+    {
+      "title": "Arrays, Strings and Traversal",
+      "description": "Learn indexing, traversal, insertion costs, frequency counting and two-pointer techniques.",
+      "content": "An array stores an ordered sequence of elements. In many languages arrays occupy contiguous memory; Python lists are dynamic arrays of references. Index access is O(1), while searching an unsorted array is O(n). Inserting or deleting near the front of a dynamic array generally shifts elements and costs O(n). Appending is amortized O(1) for a dynamic array.\n\nTraversal visits each element, often with a for loop. When tracking both index and value in Python, use enumerate(). A frequency map records how often each value occurs; dictionary lookups are average O(1), so a single pass can often build counts in O(n) expected time.\n\nStrings represent sequences of characters. In Python strings are immutable: operations that produce a changed string return a new string. Building a result with a list of characters and ''.join(parts) is useful when many pieces must be combined.\n\nTwo pointers are indices that move through a sequence. Opposite-end pointers can check whether a string is a palindrome. Same-direction pointers can compact or filter elements. Sliding-window patterns track a contiguous segment, often avoiding repeated work.\n\nAlways define how to handle empty arrays, one-element arrays, repeated values and case sensitivity. For a palindrome that ignores punctuation and letter case, normalize the input before comparison.\n\nExample interview tasks include finding a maximum, counting frequencies, reversing a string, checking palindromes and removing duplicates from a sorted array.",
+      "examples": [
+        {
+          "title": "Frequency Counter and Palindrome",
+          "language": "python",
+          "explanation": "Run this Python 3 example and examine its output and complexity.",
+          "code": "def frequencies(values):\n    counts = {}\n    for value in values:\n        counts[value] = counts.get(value, 0) + 1\n    return counts\n\ndef is_palindrome(text):\n    left, right = 0, len(text) - 1\n    while left < right:\n        if text[left] != text[right]:\n            return False\n        left += 1\n        right -= 1\n    return True\n\nprint(frequencies([2, 3, 2, 4, 3, 2]))\nprint(is_palindrome('level'))"
+        }
+      ],
+      "estimatedMinutes": 23
+    },
+    {
+      "title": "Searching Algorithms: Linear and Binary Search",
+      "description": "Compare sequential searching with divide-and-conquer searching on sorted data.",
+      "content": "Searching finds whether an element exists and, often, its position. Linear search checks each element until a match is found or the collection ends. It works on unsorted data and has O(n) worst-case time and O(1) auxiliary space.\n\nBinary search works on sorted data with random-access indexing. Compare the target with the middle element. If equal, return the index. If the target is smaller, search the left half; otherwise search the right half. Each comparison removes approximately half the candidates, yielding O(log n) time and O(1) auxiliary space for the iterative form.\n\nFor an inclusive search interval [left, right], continue while left <= right and update right = mid - 1 or left = mid + 1. Forgetting these updates can cause an infinite loop.\n\nA missing value should produce a documented result such as -1. If duplicate values exist, a basic binary search may return any matching position. To find the first occurrence, keep searching left after a match.\n\nBinary search is not appropriate for arbitrary unsorted data. Sorting first costs additional time, usually O(n log n), and can change original positions.\n\nWhen explaining a search, identify the precondition, invariant, termination condition and complexity. Practice both successful and unsuccessful searches.",
+      "examples": [
+        {
+          "title": "Iterative Binary Search",
+          "language": "python",
+          "explanation": "Run this Python 3 example and examine its output and complexity.",
+          "code": "def binary_search(values, target):\n    left, right = 0, len(values) - 1\n    while left <= right:\n        mid = left + (right - left) // 2\n        if values[mid] == target:\n            return mid\n        if values[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1\n\nnumbers = [2, 5, 8, 12, 16, 23]\nprint(binary_search(numbers, 12))\nprint(binary_search(numbers, 7))"
+        }
+      ],
+      "estimatedMinutes": 22
+    },
+    {
+      "title": "Sorting Algorithms and Their Complexity",
+      "description": "Understand bubble, selection, insertion and merge sort, including stability and complexity.",
+      "content": "Sorting arranges elements in an order, commonly ascending or descending. A stable sorting algorithm preserves the relative order of elements with equal keys. An in-place algorithm uses only a small amount of auxiliary storage, although implementations vary.\n\nBubble sort repeatedly compares adjacent elements and swaps those out of order. With an early-exit flag it can run in O(n) best-case time on sorted input, but O(n²) worst-case time.\n\nSelection sort repeatedly selects the smallest remaining element and moves it into place. It performs O(n²) comparisons even for sorted input and the common swapping implementation is not stable.\n\nInsertion sort maintains a sorted prefix and inserts each new value into its correct position. It is efficient for small or nearly sorted arrays: O(n) best-case and O(n²) worst-case time.\n\nMerge sort recursively divides the array into halves and merges sorted halves. It takes O(n log n) time in the best, average and worst cases. Typical array-based merge sort requires O(n) additional space and is stable when ties are handled appropriately.\n\nPython's built-in sorted() and list.sort() use Timsort, a stable sorting algorithm; prefer built-in sorting in production unless an interview specifically asks for implementation.\n\nCompare algorithms using input size, available memory, stability requirements and whether data is nearly sorted. Always test duplicates, negative numbers, empty input and already sorted input.",
+      "examples": [
+        {
+          "title": "Insertion Sort",
+          "language": "python",
+          "explanation": "Run this Python 3 example and examine its output and complexity.",
+          "code": "def insertion_sort(values):\n    result = values.copy()\n    for i in range(1, len(result)):\n        current = result[i]\n        j = i - 1\n        while j >= 0 and result[j] > current:\n            result[j + 1] = result[j]\n            j -= 1\n        result[j + 1] = current\n    return result\n\nprint(insertion_sort([7, 3, 5, 1, 3]))\nprint(insertion_sort([]))"
+        }
+      ],
+      "estimatedMinutes": 24
+    },
+    {
+      "title": "Problem-Solving Patterns and Interview Practice",
+      "description": "Combine complexity analysis, two pointers, hashing and step-by-step testing.",
+      "content": "Technical interviews assess reasoning, correctness, complexity and clear communication. Begin by restating the problem, asking about constraints and working through a small example. Identify whether the input is sorted, whether duplicates are allowed, and what to return when no solution exists.\n\nA brute-force solution is often a useful starting point. For example, finding two numbers whose sum equals a target can be done with two nested loops in O(n²) time and O(1) extra space. A hash map can reduce expected time to O(n) at the cost of O(n) additional space.\n\nFor sorted arrays, a two-pointer solution can find a pair sum in O(n) time and O(1) extra space. For an unsorted array, a hash-based approach is usually easier.\n\nOther common patterns include frequency counting, prefix sums, sliding windows, divide and conquer and sorting before processing. Do not apply a pattern blindly: verify its assumptions.\n\nWrite tests for empty input, no matching result, repeated elements, negative numbers and boundary cases. Distinguish returning values from printing them, and avoid mutating inputs unless required.\n\nA clear interview explanation includes an example walkthrough, a short correctness argument, worst-case time and auxiliary-space analysis, and the reason you chose the data structure.\n\nAfter solving a problem, review whether the solution handles duplicates correctly, whether it can be simplified and whether its complexity can be improved.",
+      "examples": [
+        {
+          "title": "Two Sum with a Hash Map",
+          "language": "python",
+          "explanation": "Run this Python 3 example and examine its output and complexity.",
+          "code": "def two_sum(values, target):\n    seen = {}\n    for index, value in enumerate(values):\n        needed = target - value\n        if needed in seen:\n            return [seen[needed], index]\n        seen[value] = index\n    return []\n\nprint(two_sum([2, 7, 11, 15], 9))\nprint(two_sum([3, 3], 6))\nprint(two_sum([1, 2], 8))"
+        }
+      ],
+      "estimatedMinutes": 22
+    }
+  ],
+  "videos": [
+    {
+      "title": "Algorithms and Data Structures Tutorial - Full Course for Beginners",
+      "youtubeUrl": "https://www.youtube.com/watch?v=8hly31xKli0",
+      "description": "Introduction to algorithms, data structures, searching and sorting; broad beginner course.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Big O Notation: What It Is and Why You Should Care",
+      "youtubeUrl": "https://www.youtube.com/watch?v=KSNx22U4uWE",
+      "description": "Explains why time complexity and asymptotic growth matter.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Data Structures - Full Course Using C and C++",
+      "youtubeUrl": "https://www.youtube.com/watch?v=B31LgI4Y4DQ",
+      "description": "Data structure foundations; code examples use C and C++ rather than Python.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "What is Binary Search?",
+      "youtubeUrl": "https://www.youtube.com/watch?v=KsoUiNv1SZA",
+      "description": "Binary search explanations and implementations; code examples use C++.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Understanding Sorting Algorithms",
+      "youtubeUrl": "https://www.youtube.com/watch?v=l7-f9gS8VOs",
+      "description": "Selection, bubble, insertion and merge sorting; code examples use C++.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "What does an algorithm describe?",
+      "options": [
+        "A physical storage device",
+        "A finite sequence of steps for solving a problem",
+        "Only a programming language",
+        "A database table"
+      ],
+      "correctAnswer": 1,
+      "explanation": "An algorithm defines steps to transform input into output.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which complexity represents constant-time access?",
+      "options": [
+        "O(n)",
+        "O(n²)",
+        "O(1)",
+        "O(log n)"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Constant-time operations do not grow with input size in the asymptotic model.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the worst-case time complexity of linear search on n elements?",
+      "options": [
+        "O(n)",
+        "O(1)",
+        "O(log n)",
+        "O(n log n)"
+      ],
+      "correctAnswer": 0,
+      "explanation": "A missing target may require checking every element.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which condition must normally hold before applying binary search to an array?",
+      "options": [
+        "The array must contain unique values",
+        "The array must have even length",
+        "The array must contain only positive numbers",
+        "The array must be sorted"
+      ],
+      "correctAnswer": 3,
+      "explanation": "Binary search relies on ordering to discard half the candidates.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the worst-case time complexity of iterative binary search?",
+      "options": [
+        "O(n²)",
+        "O(log n)",
+        "O(n)",
+        "O(1)"
+      ],
+      "correctAnswer": 1,
+      "explanation": "The search interval is halved after each comparison.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which operation is typically O(1) for an indexed dynamic array?",
+      "options": [
+        "Insert at beginning",
+        "Find an arbitrary value",
+        "Access by index",
+        "Delete first element"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Random-access indexing directly locates an array position.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which sorting algorithm usually has O(n log n) worst-case time?",
+      "options": [
+        "Merge sort",
+        "Bubble sort",
+        "Selection sort",
+        "Insertion sort"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Merge sort divides and merges subarrays with logarithmic depth and linear work per level.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the result of checking a palindrome using two pointers from both ends?",
+      "options": [
+        "It always requires sorting",
+        "It needs a hash map",
+        "It requires recursion",
+        "It can run in O(n) time with O(1) auxiliary space"
+      ],
+      "correctAnswer": 3,
+      "explanation": "The pointers move inward once per character pair.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which statement about Python list.sort() is correct?",
+      "options": [
+        "It always creates a new list",
+        "It sorts the list in place",
+        "It cannot sort strings",
+        "It is always O(n²)"
+      ],
+      "correctAnswer": 1,
+      "explanation": "list.sort() mutates the existing list and returns None.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "For unsorted two-sum, what tradeoff does a hash map typically provide?",
+      "options": [
+        "O(n²) time and O(1) space",
+        "O(log n) time and O(1) space",
+        "O(n) expected time and O(n) space",
+        "O(1) time and O(n²) space"
+      ],
+      "correctAnswer": 2,
+      "explanation": "A dictionary stores previously visited values, enabling expected constant-time complement checks.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Analyze Algorithm Complexity",
+      "description": "Explain the cost of common loops and array operations.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "For each algorithm, identify worst-case time and auxiliary-space complexity: reading the first array element, summing all elements, two nested full-length loops and halving a positive integer until it reaches zero. Explain your reasoning and provide examples for n=8."
+    },
+    {
+      "title": "Array Maximum and Frequency Counter",
+      "description": "Traverse arrays and count occurrences.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Write Python functions maximum(values) and frequencies(values). maximum should return None for an empty list; frequencies should return a dictionary mapping each value to its count. Test empty lists, negatives and duplicates."
+    },
+    {
+      "title": "Implement Linear and Binary Search",
+      "description": "Compare two searching techniques.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Implement linear_search(values,target) for unsorted lists and binary_search(values,target) for sorted lists. Both return a matching index or -1. Explain preconditions and time complexity; test missing targets, duplicates, and empty lists."
+    },
+    {
+      "title": "Fix a Broken Binary Search",
+      "description": "Debug boundary and termination errors.",
+      "type": "Debugging",
+      "difficulty": "Medium",
+      "instructions": "A binary search uses while left < right and, after a failed comparison, assigns left = mid or right = mid. Explain why this can miss the last candidate or loop forever. Rewrite it using an inclusive interval, correct updates and -1 when absent."
+    },
+    {
+      "title": "Implement Sorting and Two Sum",
+      "description": "Solve two classic interview problems.",
+      "type": "Coding",
+      "difficulty": "Hard",
+      "instructions": "Implement insertion_sort(values) returning a new ascending list without modifying input. Then implement two_sum(values,target) returning indices of two distinct elements whose sum is target, or [] if none exist. Test duplicates, negatives, empty input and already sorted input. Explain worst-case time and auxiliary-space complexity."
+    }
+  ],
+  "resources": [
+    {
+      "title": "VisuAlgo - Visualising Data Structures and Algorithms",
+      "type": "Website",
+      "url": "https://visualgo.net/en",
+      "description": "Interactive animations for searching, sorting and fundamental data structures."
+    },
+    {
+      "title": "Open Data Structures - Free Textbook",
+      "type": "Website",
+      "url": "https://opendatastructures.org/",
+      "description": "Free textbook covering data structure design and performance."
+    },
+    {
+      "title": "MIT OpenCourseWare - Introduction to Algorithms",
+      "type": "Website",
+      "url": "https://ocw.mit.edu/courses/6-006-introduction-to-algorithms-spring-2020/",
+      "description": "University course materials on algorithm design and complexity."
+    },
+    {
+      "title": "Python Documentation - Sorting HOWTO",
+      "type": "Documentation",
+      "url": "https://docs.python.org/3/howto/sorting.html",
+      "description": "Python sorting, custom keys and stability."
+    },
+    {
+      "title": "CP-Algorithms - Algorithms for Competitive Programming",
+      "type": "Website",
+      "url": "https://cp-algorithms.com/",
+      "description": "Reference articles on searching, sorting and algorithmic problem-solving."
+    }
+  ]
+}

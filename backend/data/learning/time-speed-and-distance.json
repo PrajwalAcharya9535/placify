@@ -1,0 +1,204 @@
+
+{
+  "topicTitle": "Time Speed and Distance",
+  "lessons": [
+    {
+      "title": "Fundamentals of Speed, Time and Distance",
+      "description": "Understand the basic formulas, unit conversions and relationships between speed, time and distance.",
+      "content": "Speed, time and distance are fundamental quantitative aptitude concepts frequently tested in placement examinations.\n\nSpeed = Distance / Time\nDistance = Speed × Time\nTime = Distance / Speed\n\nUnits must be consistent before applying these formulas.\n\nTo convert km/h to m/s, multiply by 5/18.\nTo convert m/s to km/h, multiply by 18/5.\n\nExample 1: A car travels 180 km in 3 hours. Speed = 180/3 = 60 km/h.\n\nExample 2: A cyclist travels at 12 m/s for 50 seconds. Distance = 12 × 50 = 600 metres.\n\nExample 3: A bus travels at 72 km/h. Its speed in m/s is 72 × 5/18 = 20 m/s.\n\nImportant concepts:\n1. Constant speed means equal distances are covered in equal time intervals.\n2. Average speed is total distance divided by total time.\n3. If distance remains constant, speed and time are inversely proportional.\n4. If time remains constant, speed and distance are directly proportional.\n\nPlacement tip: Always check whether the question uses kilometres, metres, hours, minutes or seconds before calculating."
+    },
+    {
+      "title": "Average Speed and Relative Speed",
+      "description": "Calculate average speed and relative speed for objects moving in the same or opposite directions.",
+      "content": "Average speed measures total distance travelled per unit of total time.\n\nAverage Speed = Total Distance / Total Time.\n\nExample: A person travels 60 km at 30 km/h and another 60 km at 60 km/h.\nTime for first journey = 60/30 = 2 hours.\nTime for second journey = 60/60 = 1 hour.\nTotal distance = 120 km.\nTotal time = 3 hours.\nAverage speed = 120/3 = 40 km/h.\n\nFor two equal-distance journeys at speeds a and b, average speed = 2ab/(a+b).\n\nRelative speed describes how quickly the distance between two moving objects changes.\n\nFor two objects moving in opposite directions, relative speed = a+b.\nFor two objects moving in the same direction, relative speed = |a-b|.\n\nExample: Two cars move towards each other at 40 km/h and 60 km/h. Their closing speed is 100 km/h.\n\nIf they are initially 200 km apart, meeting time = 200/100 = 2 hours.\n\nExample: A faster car travels at 80 km/h and follows another travelling at 60 km/h. Their relative speed is 20 km/h. If the faster car is 40 km behind, catching time = 40/20 = 2 hours.\n\nImportant: The arithmetic mean of two speeds is not generally the average speed for equal-distance trips.\n\nPlacement tip: Draw arrows to represent travel directions before choosing whether to add or subtract speeds."
+    },
+    {
+      "title": "Problems on Trains",
+      "description": "Solve train problems involving poles, platforms and trains moving in different directions.",
+      "content": "Train problems combine distance, speed and relative motion.\n\nWhen a train crosses a pole or stationary person, the distance travelled is the train's length.\n\nTime = Train Length / Train Speed.\n\nExample: A 150-metre train moves at 54 km/h.\nSpeed = 54 × 5/18 = 15 m/s.\nTime to cross a pole = 150/15 = 10 seconds.\n\nWhen a train crosses a platform, the total distance travelled is train length plus platform length.\n\nExample: A 200-metre train crosses a 300-metre platform at 25 m/s.\nDistance = 200+300 = 500 metres.\nTime = 500/25 = 20 seconds.\n\nWhen two trains cross each other, the distance is the sum of their lengths.\n\nFor trains travelling in opposite directions, add their speeds.\nFor trains travelling in the same direction, subtract the slower speed from the faster speed.\n\nExample: Two trains of lengths 100 metres and 150 metres travel in opposite directions at 36 km/h and 54 km/h.\nRelative speed = 90 km/h = 25 m/s.\nCombined length = 250 metres.\nCrossing time = 250/25 = 10 seconds.\n\nPlacement tip: Determine exactly what is being crossed before calculating the required distance."
+    },
+    {
+      "title": "Boats and Streams",
+      "description": "Understand upstream speed, downstream speed and river-current problems.",
+      "content": "Boat and stream questions involve the speed of a boat in still water and the speed of the water current.\n\nLet B = speed of boat in still water.\nLet S = speed of stream.\n\nDownstream speed = B+S.\nUpstream speed = B-S, assuming B>S.\n\nBoat speed in still water = (Downstream Speed + Upstream Speed)/2.\nStream speed = (Downstream Speed - Upstream Speed)/2.\n\nExample: A boat moves downstream at 18 km/h and upstream at 12 km/h.\nBoat speed = (18+12)/2 = 15 km/h.\nStream speed = (18-12)/2 = 3 km/h.\n\nExample: A boat travels 24 km downstream at 12 km/h.\nTime = 24/12 = 2 hours.\n\nIf its upstream speed is 8 km/h, the return journey takes 24/8 = 3 hours.\n\nTotal travel time = 5 hours.\nTotal distance = 48 km.\nAverage speed = 48/5 = 9.6 km/h.\n\nRemember that the stream helps downstream movement and opposes upstream movement.\n\nPlacement tip: Write separate equations for upstream and downstream travel before solving."
+    },
+    {
+      "title": "Advanced Time Speed and Distance Problems",
+      "description": "Apply relative motion, circular tracks, percentage changes and meeting-point strategies.",
+      "content": "Advanced speed and distance problems often combine several concepts.\n\nPercentage changes in speed:\nFor a fixed distance, time is inversely proportional to speed.\n\nIf speed increases by 25%, the new time is original time divided by 1.25, representing a 20% decrease.\n\nExample: A journey normally takes 5 hours. If speed increases by 25%, new time = 5/1.25 = 4 hours.\n\nCircular tracks:\nWhen two runners start together and move in opposite directions on a circular track, their first meeting time is track circumference divided by the sum of their speeds.\n\nWhen they run in the same direction at different speeds, their first overtaking time is track circumference divided by the difference in their speeds.\n\nExample: Two runners move in opposite directions at 4 m/s and 6 m/s on a 400-metre circular track.\nMeeting time = 400/(4+6) = 40 seconds.\n\nMeeting problems:\nTwo vehicles 300 km apart move towards each other at 70 km/h and 80 km/h.\nRelative speed = 150 km/h.\nMeeting time = 300/150 = 2 hours.\n\nDelayed starts:\nIf a faster vehicle starts later, first calculate the distance already travelled by the slower vehicle. Then use relative speed to determine catching time.\n\nProblem-solving strategy:\n1. Identify the moving objects.\n2. Convert units consistently.\n3. Draw directions or a timeline.\n4. Calculate relative speed if necessary.\n5. Apply distance = speed × time.\n6. Check whether the final result is reasonable.\n\nPlacement tip: Practice problems under timed conditions after mastering the underlying formulas."
+    }
+  ],
+  "videos": [
+    {
+      "title": "Speed, Time and Distance - Video Lesson",
+      "youtubeUrl": "https://www.youtube.com/watch?v=QzY57FaENXg",
+      "description": "Supplementary video reference. Verify that the video matches this lesson before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Average Speed and Relative Speed - Video Lesson",
+      "youtubeUrl": "https://www.youtube.com/watch?v=6sQDTgOqh-I",
+      "description": "Supplementary video reference. The exact video topic has not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Problems on Trains - Video Lesson",
+      "youtubeUrl": "https://www.youtube.com/watch?v=GFQaEYEc8_8",
+      "description": "Supplementary video reference. The exact video topic has not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Boats and Streams - Video Lesson",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ztHopE5Wnpc",
+      "description": "Supplementary video reference. The exact video topic has not been verified.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Time Speed and Distance Practice - Video Lesson",
+      "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+      "description": "Supplementary video reference. The exact video topic has not been verified.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "A car travels 180 km in 3 hours. What is its speed?",
+      "options": ["40 km/h", "50 km/h", "60 km/h", "70 km/h"],
+      "correctAnswer": 2,
+      "explanation": "Speed = 180/3 = 60 km/h.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Convert 72 km/h into metres per second.",
+      "options": ["10 m/s", "15 m/s", "20 m/s", "25 m/s"],
+      "correctAnswer": 2,
+      "explanation": "72 × 5/18 = 20 m/s.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Two cars move towards each other at 40 km/h and 60 km/h. What is their relative speed?",
+      "options": ["20 km/h", "60 km/h", "80 km/h", "100 km/h"],
+      "correctAnswer": 3,
+      "explanation": "Opposite-direction relative speed = 40+60 = 100 km/h.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "A 150-metre train moves at 15 m/s. How long does it take to cross a pole?",
+      "options": ["5 seconds", "10 seconds", "15 seconds", "20 seconds"],
+      "correctAnswer": 1,
+      "explanation": "Time = 150/15 = 10 seconds.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "A boat travels downstream at 18 km/h and upstream at 12 km/h. Find its speed in still water.",
+      "options": ["12 km/h", "14 km/h", "15 km/h", "18 km/h"],
+      "correctAnswer": 2,
+      "explanation": "Boat speed = (18+12)/2 = 15 km/h.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "A vehicle covers equal distances at 30 km/h and 60 km/h. What is its average speed?",
+      "options": ["35 km/h", "40 km/h", "45 km/h", "50 km/h"],
+      "correctAnswer": 1,
+      "explanation": "Average speed = 2×30×60/(30+60) = 40 km/h.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "A train 200 metres long crosses a 300-metre platform at 25 m/s. Find the crossing time.",
+      "options": ["10 seconds", "15 seconds", "20 seconds", "25 seconds"],
+      "correctAnswer": 2,
+      "explanation": "Total distance = 200+300 = 500 metres. Time = 500/25 = 20 seconds.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "If speed increases by 25% for a fixed distance, by what percentage does travel time decrease?",
+      "options": ["15%", "20%", "25%", "30%"],
+      "correctAnswer": 1,
+      "explanation": "New time = old time/1.25 = 80% of old time, a 20% decrease.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Two runners move in opposite directions at 4 m/s and 6 m/s on a 400-metre circular track. When do they first meet again?",
+      "options": ["20 seconds", "30 seconds", "40 seconds", "50 seconds"],
+      "correctAnswer": 2,
+      "explanation": "Meeting time = 400/(4+6) = 40 seconds.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "A faster car travels at 80 km/h behind another travelling at 60 km/h. If the initial gap is 40 km, how long will the faster car take to catch up?",
+      "options": ["1 hour", "2 hours", "3 hours", "4 hours"],
+      "correctAnswer": 1,
+      "explanation": "Relative speed = 80-60 = 20 km/h. Time = 40/20 = 2 hours.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Calculate Speed and Convert Units",
+      "description": "Find the speed of a vehicle and convert it from km/h to m/s.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "A bus travels 240 km in 4 hours. Calculate its speed in km/h and convert the result into m/s. Show all calculation steps."
+    },
+    {
+      "title": "Average Speed for Equal Distances",
+      "description": "Calculate average speed when a vehicle travels equal distances at different speeds.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "A car travels 90 km at 45 km/h and returns along the same route at 30 km/h. Calculate the total travel time and average speed."
+    },
+    {
+      "title": "Train Crossing a Platform",
+      "description": "Solve a train problem involving train length and platform length.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "A train 180 metres long moves at 54 km/h and crosses a platform 270 metres long. Calculate the time required to cross the platform completely."
+    },
+    {
+      "title": "Boat and Stream Calculation",
+      "description": "Calculate the speed of a boat and the speed of a river current.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "A boat travels downstream at 20 km/h and upstream at 12 km/h. Find the boat's speed in still water, the stream speed and the time required to travel 48 km upstream."
+    },
+    {
+      "title": "Relative Speed and Meeting Time Challenge",
+      "description": "Solve a multi-step problem involving two vehicles travelling towards each other.",
+      "type": "Written",
+      "difficulty": "Hard",
+      "instructions": "Two cities are 420 km apart. A car leaves the first city at 60 km/h. Another car leaves the second city 1 hour later at 80 km/h, travelling towards the first car. Calculate how long after the second car starts they meet and how far from the first city the meeting occurs."
+    }
+  ],
+  "resources": [
+    {
+      "title": "IndiaBIX - Time and Distance",
+      "type": "Website",
+      "url": "https://www.indiabix.com/aptitude/time-and-distance/",
+      "description": "Placement-oriented time and distance questions with explanations."
+    },
+    {
+      "title": "IndiaBIX - Problems on Trains",
+      "type": "Website",
+      "url": "https://www.indiabix.com/aptitude/problems-on-trains/",
+      "description": "Practice train crossing and relative speed questions."
+    },
+    {
+      "title": "IndiaBIX - Boats and Streams",
+      "type": "Website",
+      "url": "https://www.indiabix.com/aptitude/boats-and-streams/",
+      "description": "Practice upstream and downstream speed calculations."
+    },
+    {
+      "title": "Khan Academy - Rates and Proportional Relationships",
+      "type": "Website",
+      "url": "https://www.khanacademy.org/math/7th-grade/xb5ed4f7b:proportional-relationships",
+      "description": "Learn rates, proportional relationships and related mathematical reasoning."
+    },
+    {
+      "title": "GeeksforGeeks - Quantitative Aptitude",
+      "type": "Website",
+      "url": "https://www.geeksforgeeks.org/aptitude/quantitative-aptitude/",
+      "description": "Additional quantitative aptitude tutorials and practice problems."
+    }
+  ]
+}

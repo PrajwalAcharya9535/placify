@@ -16,6 +16,42 @@ const {
   createNotification,
 } = require("../../services/notificationService");
 
+
+// ========================================
+// TELEGRAM APPLICATION SUPPORT
+// ========================================
+
+const populateTelegramApplication = async (application) => {
+  if (!application) {
+    return null;
+  }
+
+  if (application.telegramAnnouncement) {
+    await application.populate("telegramAnnouncement");
+  }
+
+  return application;
+};
+
+const getApplicationDetails = (application) => {
+  const source =
+    application.opportunity ||
+    application.telegramAnnouncement;
+
+  return {
+    companyName:
+      source?.companyName ||
+      source?.company ||
+      "Company not announced",
+
+    jobRole:
+      source?.jobRole ||
+      source?.role ||
+      source?.title ||
+      "Role not announced",
+  };
+};
+
 // ========================================
 // VALID PLACEMENT STAGES
 // ========================================
@@ -321,6 +357,7 @@ const getPlacementTracker = async (
             "isActive",
           ].join(" ")
         )
+        .populate("telegramAnnouncement")
         .sort({
           updatedAt: -1,
         });
@@ -485,15 +522,16 @@ const getPlacementApplicationById =
           ].join(" ")
         );
 
-      if (!application) {
-        return res
-          .status(404)
-          .json({
-            success: false,
-            message:
-              "Placement tracker application not found",
-          });
+           if (!application) {
+        return res.status(404).json({
+          success: false,
+          message:
+            "Placement tracker application not found",
+        });
       }
+
+      // Populate Telegram announcement details
+      await populateTelegramApplication(application);
 
       // ----------------------------------------
       // RESPONSE
@@ -634,6 +672,10 @@ const updatePlacementApplicationNotes =
           "isActive",
         ].join(" ")
       );
+
+
+            // Populate Telegram announcement details
+      await populateTelegramApplication(application);
 
       // ----------------------------------------
       // RESPONSE
@@ -897,6 +939,13 @@ const updatePlacementOfferDetails =
         ].join(" ")
       );
 
+
+            // Populate Telegram announcement details
+      await populateTelegramApplication(application);
+            // Support both regular and Telegram applications
+      const { companyName, jobRole } =
+        getApplicationDetails(application);
+
       // ----------------------------------------
 // SYNC JOINING DATE TO CALENDAR
 // ----------------------------------------
@@ -911,9 +960,9 @@ if (application.offerDetails.joiningDate) {
     },
     {
       $set: {
-        title: `${application.opportunity.companyName} - Joining Date`,
+        title: `${companyName} - Joining Date`,
 
-        description: `Joining date for ${application.opportunity.jobRole}.`,
+        description: `Joining date for ${jobRole}.`,
 
         eventType: "Joining",
 
@@ -934,16 +983,13 @@ if (application.offerDetails.joiningDate) {
 
         actionUrl: `/placement-tracker/${application._id}`,
 
-        metadata: {
-          companyName:
-            application.opportunity.companyName,
+       metadata: {
+  companyName,
+  jobRole,
 
-          jobRole:
-            application.opportunity.jobRole,
-
-          package:
-            application.offerDetails.package,
-        },
+  package:
+    application.offerDetails.package,
+},
       },
 
       $setOnInsert: {
@@ -1039,6 +1085,13 @@ const updatePlacementStage = async (
     const {
       applicationId,
     } = req.params;
+
+    if (!mongoose.Types.ObjectId.isValid(applicationId)) {
+  return res.status(400).json({
+    success: false,
+    message: "Invalid placement application ID",
+  });
+}
 
     const {
       stage,
@@ -1237,6 +1290,13 @@ const updatePlacementStage = async (
       ].join(" ")
     );
 
+
+    // Populate Telegram announcement details
+    await populateTelegramApplication(application);
+        // Support both regular and Telegram applications
+    const { companyName, jobRole } =
+      getApplicationDetails(application);
+
     // ----------------------------------------
 // SYNC NEXT PLACEMENT ROUND TO CALENDAR
 // ----------------------------------------
@@ -1251,9 +1311,9 @@ if (application.nextRoundDate) {
 },
     {
       $set: {
-        title: `${application.opportunity.companyName} - ${stage} Round`,
+        title: `${companyName} - ${stage} Round`,
 
-        description: `${stage} round for ${application.opportunity.jobRole}.`,
+        description: `${stage} round for ${jobRole}.`,
 
         eventType: "Application Round",
 
@@ -1273,15 +1333,11 @@ if (application.nextRoundDate) {
 
         actionUrl: `/placement-tracker/${application._id}`,
 
-        metadata: {
-          companyName:
-            application.opportunity.companyName,
-
-          jobRole:
-            application.opportunity.jobRole,
-
-          stage,
-        },
+      metadata: {
+  companyName,
+  jobRole,
+  stage,
+},
       },
 
       $setOnInsert: {
@@ -1332,7 +1388,7 @@ await createNotification({
 
   title: "Placement Application Update",
 
-  message: `Your ${application.opportunity.companyName} application has moved to ${stage}.`,
+  message: `Your ${companyName} application has moved to ${stage}.`,
 
   type: "Application",
 
@@ -1349,18 +1405,14 @@ await createNotification({
 
   actionUrl: `/placement-tracker/${application._id}`,
 
-  metadata: {
-    companyName:
-      application.opportunity.companyName,
+metadata: {
+  companyName,
+  jobRole,
+  stage,
 
-    jobRole:
-      application.opportunity.jobRole,
-
-    stage,
-
-    nextRoundDate:
-      application.nextRoundDate || null,
-  },
+  nextRoundDate:
+    application.nextRoundDate || null,
+},
 });
 
 

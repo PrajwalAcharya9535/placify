@@ -1,0 +1,249 @@
+
+{
+  "topicTitle": "Java Exception Handling",
+  "lessons": [
+    {
+      "title": "Introduction to Exception Handling",
+      "description": "Understand exceptions, errors and Java's exception hierarchy.",
+      "content": "Exception handling is a mechanism for detecting and responding to exceptional conditions during program execution.\n\nJava uses Throwable as the root of its exception and error hierarchy.\n\nTwo important subclasses are:\n1. Exception — Conditions applications may be able to handle.\n2. Error — Serious problems that applications generally should not attempt to recover from.\n\nExamples of exceptions include ArithmeticException, NullPointerException, NumberFormatException and IOException.\n\nAn exception can interrupt normal program execution. Java searches the call stack for a compatible exception handler.\n\nException handling improves application reliability by allowing programs to handle expected failures appropriately.\n\nReal-world example: A banking application must respond safely when a user enters an invalid amount or when a database operation fails.",
+      "examples": [
+        {
+          "title": "Division by Zero",
+          "language": "java",
+          "explanation": "Demonstrates an ArithmeticException caused by integer division by zero.",
+          "code": "public class Main {\n    public static void main(String[] args) {\n        int a = 10;\n        int b = 0;\n        System.out.println(a / b);\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 12
+    },
+    {
+      "title": "try, catch and finally Blocks",
+      "description": "Handle exceptions using Java's exception-handling blocks.",
+      "content": "The try block contains code that might throw an exception.\n\nA catch block handles exceptions compatible with its declared type.\n\nMultiple catch blocks may handle different exception types. More specific exception types must appear before their broader parent types.\n\nThe finally block normally executes after try and catch, whether an exception occurs or not. It is commonly used for cleanup, although try-with-resources is preferred for AutoCloseable resources.\n\nThe finally block is not absolutely guaranteed to execute in situations such as abrupt JVM termination.\n\nA catch block should not silently ignore failures. Handle the exception appropriately or propagate it when necessary.",
+      "examples": [
+        {
+          "title": "Safe Division",
+          "language": "java",
+          "explanation": "Handles integer division by zero and executes a finally block.",
+          "code": "public class Main {\n    public static void main(String[] args) {\n        try {\n            int result = 10 / 0;\n            System.out.println(result);\n        } catch (ArithmeticException e) {\n            System.out.println(\"Cannot divide by zero\");\n        } finally {\n            System.out.println(\"Operation finished\");\n        }\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Checked and Unchecked Exceptions",
+      "description": "Understand compile-time exception checking and runtime exceptions.",
+      "content": "Java distinguishes between checked and unchecked exceptions.\n\nChecked exceptions must generally be caught or declared using throws. Examples include IOException and SQLException.\n\nUnchecked exceptions include RuntimeException and its subclasses, such as ArithmeticException, IllegalArgumentException and NullPointerException.\n\nErrors are also unchecked.\n\nChecked exceptions commonly represent conditions that callers are expected to consider handling.\n\nUnchecked exceptions often indicate programming mistakes or invalid arguments, although they can also represent other runtime failures.\n\nThe compiler checks whether checked exceptions are handled or declared. It does not guarantee that an application will be free from runtime exceptions.\n\nAvoid catching Exception or Throwable unnecessarily because broad handlers can hide important problems.",
+      "examples": [
+        {
+          "title": "Checked Exception Example",
+          "language": "java",
+          "explanation": "Handles IOException while reading a text file.",
+          "code": "import java.io.IOException;\nimport java.nio.file.Files;\nimport java.nio.file.Path;\n\npublic class Main {\n    public static void main(String[] args) {\n        try {\n            String text = Files.readString(Path.of(\"notes.txt\"));\n            System.out.println(text);\n        } catch (IOException e) {\n            System.out.println(\"Unable to read file: \" + e.getMessage());\n        }\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "throw, throws and Custom Exceptions",
+      "description": "Learn how to throw exceptions and declare exception propagation.",
+      "content": "The throw keyword explicitly throws an exception object.\n\nThe throws clause declares exceptions that a method may propagate to its caller.\n\nFor example, throw new IllegalArgumentException(\"Invalid age\") creates and throws an unchecked exception.\n\nA method that can propagate a checked IOException may declare throws IOException.\n\nCustom exceptions represent application-specific failures.\n\nA custom checked exception can extend Exception. A custom unchecked exception can extend RuntimeException.\n\nCustom exceptions should have meaningful names and useful messages.\n\nUse exceptions for exceptional situations rather than ordinary control flow.\n\nReal-world example: An online payment system may throw InsufficientBalanceException when a withdrawal exceeds the available balance.",
+      "examples": [
+        {
+          "title": "Custom Exception",
+          "language": "java",
+          "explanation": "Creates and throws an application-specific checked exception.",
+          "code": "class InsufficientBalanceException extends Exception {\n    InsufficientBalanceException(String message) {\n        super(message);\n    }\n}\n\nclass BankAccount {\n    private double balance = 500;\n\n    void withdraw(double amount) throws InsufficientBalanceException {\n        if (amount <= 0) {\n            throw new IllegalArgumentException(\"Amount must be positive\");\n        }\n        if (amount > balance) {\n            throw new InsufficientBalanceException(\"Insufficient balance\");\n        }\n        balance -= amount;\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Try-with-Resources and Exception Best Practices",
+      "description": "Manage resources safely and debug exceptions effectively.",
+      "content": "Try-with-resources automatically closes resources that implement AutoCloseable.\n\nIt is especially useful for files, streams, database connections and other resources that require cleanup.\n\nJava closes declared resources in reverse order after the try block completes.\n\nIf both the try body and resource closing throw exceptions, the closing exception may be recorded as a suppressed exception.\n\nException-handling best practices:\n1. Catch specific exceptions where possible.\n2. Preserve the original cause when wrapping exceptions.\n3. Provide meaningful error messages.\n4. Avoid empty catch blocks.\n5. Validate input before performing operations.\n6. Use try-with-resources for supported resources.\n7. Do not expose sensitive implementation details to end users.\n\nA stack trace identifies the exception type and the sequence of method calls involved in the failure.",
+      "examples": [
+        {
+          "title": "Read a File Safely",
+          "language": "java",
+          "explanation": "Automatically closes a BufferedReader using try-with-resources.",
+          "code": "import java.io.BufferedReader;\nimport java.io.FileReader;\nimport java.io.IOException;\n\npublic class Main {\n    public static void main(String[] args) {\n        try (BufferedReader reader = new BufferedReader(new FileReader(\"notes.txt\"))) {\n            System.out.println(reader.readLine());\n        } catch (IOException e) {\n            System.out.println(\"File operation failed: \" + e.getMessage());\n        }\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    }
+  ],
+  "videos": [
+    {
+      "title": "Java Exception Handling - Tutorial Search",
+      "youtubeUrl": "https://www.youtube.com/watch?v=1XAfapkBQjk",
+      "description": "Video reference for Java exceptions, try-catch blocks and exception handling fundamentals.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java Exceptions Explained",
+      "youtubeUrl": "https://www.youtube.com/watch?v=2B6Jz4sWSqg",
+      "description": "Video reference for checked and unchecked exceptions and Java exception handling.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java Exception Handling Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=5r_ERSm7NKE",
+      "description": "Video reference covering Java exception handling syntax and examples.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java try catch finally Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=K_-3OLkXkzY",
+      "description": "Video reference for try, catch and finally behavior in Java.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java throw and throws Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=7rJ9kJ0Z5xI",
+      "description": "Video reference for throwing exceptions and declaring exceptions in Java methods.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Which class is the root of Java's exception and error hierarchy?",
+      "options": ["Exception", "RuntimeException", "Throwable", "ObjectException"],
+      "correctAnswer": 2,
+      "explanation": "Throwable is the superclass of Exception and Error.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which block contains code that might throw an exception?",
+      "options": ["catch", "try", "finally", "throws"],
+      "correctAnswer": 1,
+      "explanation": "The try block encloses statements that may throw exceptions.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which exception is thrown when Java integer division uses zero as the divisor?",
+      "options": ["IOException", "NullPointerException", "ArithmeticException", "ClassNotFoundException"],
+      "correctAnswer": 2,
+      "explanation": "Integer division by zero causes an ArithmeticException.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which of the following is a checked exception?",
+      "options": ["ArithmeticException", "NullPointerException", "IllegalArgumentException", "IOException"],
+      "correctAnswer": 3,
+      "explanation": "IOException is checked and generally must be caught or declared.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What does the throw keyword do?",
+      "options": ["Declares a package", "Explicitly throws an exception", "Closes a file automatically", "Creates a catch block"],
+      "correctAnswer": 1,
+      "explanation": "throw explicitly throws an exception object.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the purpose of a throws clause?",
+      "options": ["To guarantee an exception occurs", "To declare exceptions that a method may propagate", "To execute a finally block", "To prevent all runtime exceptions"],
+      "correctAnswer": 1,
+      "explanation": "The throws clause declares exception types that a method may propagate to callers.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which statement about finally is correct?",
+      "options": ["It runs only when an exception occurs", "It runs only when no exception occurs", "It normally runs after try/catch regardless of whether an exception occurs", "It always prevents JVM termination"],
+      "correctAnswer": 2,
+      "explanation": "finally normally executes after try/catch, but execution is not guaranteed in cases such as abrupt JVM termination.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which class should a custom checked exception normally extend?",
+      "options": ["RuntimeException", "Exception", "Thread", "String"],
+      "correctAnswer": 1,
+      "explanation": "A custom checked exception commonly extends Exception without extending RuntimeException.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the main benefit of try-with-resources?",
+      "options": ["It prevents every exception", "It makes all variables global", "It automatically closes declared AutoCloseable resources", "It replaces all catch blocks"],
+      "correctAnswer": 2,
+      "explanation": "Try-with-resources closes declared AutoCloseable resources automatically.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "Which statement about multiple catch blocks is correct?",
+      "options": ["A broader superclass catch must always appear first", "A specific subclass catch should appear before its broader superclass catch", "Every catch must handle Throwable", "Catch order never matters"],
+      "correctAnswer": 1,
+      "explanation": "A broader catch placed before a more specific catch can make the specific catch unreachable.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Handle Division by Zero",
+      "description": "Practice try-catch exception handling.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Create a Java program that reads two integers using Scanner and divides them. Catch ArithmeticException when the divisor is zero. Display a helpful message without exposing an unhandled stack trace."
+    },
+    {
+      "title": "Validate Student Age",
+      "description": "Use throw to reject invalid input.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Write a method registerStudent(int age). Throw IllegalArgumentException if age is less than 0 or greater than 120. Call the method with valid and invalid ages and handle the exception appropriately."
+    },
+    {
+      "title": "Build a Custom Banking Exception",
+      "description": "Create and use a custom checked exception.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Create InsufficientBalanceException extending Exception. Implement a BankAccount class with deposit and withdraw methods. Throw the custom exception when the withdrawal exceeds the balance. Reject non-positive transaction amounts."
+    },
+    {
+      "title": "Read a File with Try-with-Resources",
+      "description": "Handle file errors and close resources safely.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Write a Java program using BufferedReader and try-with-resources to read a text file line by line. Catch IOException and display a meaningful error message. Test with both an existing file and a missing file."
+    },
+    {
+      "title": "Debug Exception Catch Order",
+      "description": "Fix unreachable catch blocks.",
+      "type": "Debugging",
+      "difficulty": "Hard",
+      "instructions": "Consider: try { int n = Integer.parseInt(\"abc\"); } catch (Exception e) { System.out.println(\"General\"); } catch (NumberFormatException e) { System.out.println(\"Invalid number\"); }. Explain why this does not compile. Rewrite the catch blocks in the correct order and test the program."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Oracle Java Tutorial - Exceptions",
+      "type": "Documentation",
+      "url": "https://docs.oracle.com/javase/tutorial/essential/exceptions/",
+      "description": "Official Java tutorial explaining exception handling, try-catch and try-with-resources."
+    },
+    {
+      "title": "Dev.java - Exceptions",
+      "type": "Documentation",
+      "url": "https://dev.java/learn/exceptions/",
+      "description": "Modern Java learning resources about exceptions and error handling."
+    },
+    {
+      "title": "Java Exceptions - W3Schools",
+      "type": "Website",
+      "url": "https://www.w3schools.com/java/java_try_catch.asp",
+      "description": "Beginner-friendly explanation of try, catch, finally and throw."
+    },
+    {
+      "title": "Exceptions in Java - GeeksforGeeks",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/java/exceptions-in-java/",
+      "description": "Examples of Java exception types, handling and common interview questions."
+    },
+    {
+      "title": "Java Exception Handling - Programiz",
+      "type": "Website",
+      "url": "https://www.programiz.com/java-programming/exception-handling",
+      "description": "Java exception handling concepts with practical code examples."
+    }
+  ]
+}

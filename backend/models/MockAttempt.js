@@ -1,8 +1,9 @@
+
 const mongoose = require("mongoose");
 
-// ==============================
+// ==========================================
 // ROUND RESULT SCHEMA
-// ==============================
+// ==========================================
 const roundResultSchema = new mongoose.Schema(
   {
     roundName: {
@@ -20,8 +21,16 @@ const roundResultSchema = new mongoose.Schema(
         "Technical",
         "Coding",
         "SQL",
+        "Communication",
+        "Interview",
       ],
       required: true,
+    },
+
+    sectionKey: {
+      type: String,
+      trim: true,
+      default: "",
     },
 
     order: {
@@ -54,7 +63,51 @@ const roundResultSchema = new mongoose.Schema(
       default: false,
     },
 
+    // ======================================
+    // ROUND PRACTICE STATE
+    // ======================================
+    status: {
+      type: String,
+      enum: [
+        "Not Started",
+        "In Progress",
+        "Completed",
+        "Auto Submitted",
+        "Skipped",
+      ],
+      default: "Not Started",
+    },
+
+    durationMinutes: {
+      type: Number,
+      min: 1,
+      default: null,
+    },
+
+    numberOfQuestions: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+
+    attemptedQuestions: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+
+    correctAnswers: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+
     startedAt: {
+      type: Date,
+      default: null,
+    },
+
+    expiresAt: {
       type: Date,
       default: null,
     },
@@ -63,15 +116,27 @@ const roundResultSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+
+    timeSpentSeconds: {
+      type: Number,
+      min: 0,
+      default: 0,
+    },
+
+    feedback: {
+      type: String,
+      trim: true,
+      default: "",
+    },
   },
   {
     _id: true,
   }
 );
 
-// ==============================
+// ==========================================
 // PROCTORING VIOLATION SCHEMA
-// ==============================
+// ==========================================
 const proctoringViolationSchema = new mongoose.Schema(
   {
     type: {
@@ -112,9 +177,9 @@ const proctoringViolationSchema = new mongoose.Schema(
   }
 );
 
-// ==============================
+// ==========================================
 // MOCK ATTEMPT SCHEMA
-// ==============================
+// ==========================================
 const mockAttemptSchema = new mongoose.Schema(
   {
     user: {
@@ -127,6 +192,15 @@ const mockAttemptSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "MockTest",
       required: true,
+    },
+
+    // ======================================
+    // PRACTICE MODE
+    // ======================================
+    practiceMode: {
+      type: String,
+      enum: ["Full", "Demo"],
+      default: "Full",
     },
 
     status: {
@@ -147,11 +221,26 @@ const mockAttemptSchema = new mongoose.Schema(
       default: 0,
     },
 
+
+
+    // ======================================
+    // QUESTION ASSIGNMENT LOCKS
+    // ======================================
+    assignmentLocks: {
+      type: Map,
+      of: Date,
+      default: {},
+    },
+
+
     roundResults: {
       type: [roundResultSchema],
       default: [],
     },
 
+    // ======================================
+    // SCORING
+    // ======================================
     totalScore: {
       type: Number,
       min: 0,
@@ -182,6 +271,14 @@ const mockAttemptSchema = new mongoose.Schema(
       default: "Pending",
     },
 
+    // ======================================
+    // OPTIONAL PRACTICE PROCTORING
+    // ======================================
+    proctoringEnabled: {
+      type: Boolean,
+      default: false,
+    },
+
     proctoringViolations: {
       type: [proctoringViolationSchema],
       default: [],
@@ -193,6 +290,9 @@ const mockAttemptSchema = new mongoose.Schema(
       default: 0,
     },
 
+    // ======================================
+    // ATTEMPT TIMESTAMPS
+    // ======================================
     startedAt: {
       type: Date,
       default: null,
@@ -213,11 +313,22 @@ const mockAttemptSchema = new mongoose.Schema(
   }
 );
 
+// ==========================================
+// INDEXES
+// ==========================================
 mockAttemptSchema.index({
   user: 1,
   mockTest: 1,
 });
 
+mockAttemptSchema.index({
+  user: 1,
+  status: 1,
+});
+
+// ==========================================
+// EXPORT
+// ==========================================
 module.exports = mongoose.model(
   "MockAttempt",
   mockAttemptSchema

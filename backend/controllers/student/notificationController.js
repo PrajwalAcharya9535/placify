@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 
 const Notification = require(
@@ -323,6 +324,87 @@ const deleteNotification =
   };
 
 // ========================================
+// GET TELEGRAM OPPORTUNITY UNREAD COUNT
+// ========================================
+
+const getTelegramOpportunityUnreadCount =
+  async (req, res) => {
+    try {
+      const unreadCount =
+        await Notification.countDocuments({
+          user: req.user.id,
+          type: "Opportunity",
+          "metadata.source": "Telegram",
+          isRead: false,
+        });
+
+      return res.status(200).json({
+        success: true,
+        message:
+          "Telegram opportunity unread count fetched successfully",
+        unreadCount,
+      });
+    } catch (error) {
+      console.error(
+        "Telegram opportunity unread count error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Failed to fetch Telegram opportunity unread count",
+      });
+    }
+  };
+
+// ========================================
+// MARK TELEGRAM OPPORTUNITIES AS READ
+// ========================================
+
+const markTelegramOpportunitiesAsRead =
+  async (req, res) => {
+    try {
+      const now = new Date();
+
+      const result =
+        await Notification.updateMany(
+          {
+            user: req.user.id,
+            type: "Opportunity",
+            "metadata.source": "Telegram",
+            isRead: false,
+          },
+          {
+            $set: {
+              isRead: true,
+              readAt: now,
+            },
+          }
+        );
+
+      return res.status(200).json({
+        success: true,
+        message:
+          "Telegram opportunity notifications marked as read",
+        updatedCount:
+          result.modifiedCount || 0,
+      });
+    } catch (error) {
+      console.error(
+        "Mark Telegram opportunities as read error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Failed to mark Telegram opportunities as read",
+      });
+    }
+  };
+
+// ========================================
 // EXPORTS
 // ========================================
 
@@ -332,4 +414,6 @@ module.exports = {
   markNotificationAsRead,
   markAllNotificationsAsRead,
   deleteNotification,
+  getTelegramOpportunityUnreadCount,
+  markTelegramOpportunitiesAsRead,
 };

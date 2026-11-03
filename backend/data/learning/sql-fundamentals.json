@@ -1,0 +1,298 @@
+{
+  "topicTitle": "SQL Fundamentals",
+  "lessons": [
+    {
+      "title": "Introduction to SQL, Tables and SELECT",
+      "description": "Understand relational tables and retrieve columns with SELECT.",
+      "content": "SQL (Structured Query Language) is used to define, read, and modify data in relational databases. A database contains tables; each table has columns (attributes) and rows (records). A primary key uniquely identifies a row. Common column types include INTEGER, VARCHAR, DATE, and DECIMAL. SQL statements are commonly terminated with a semicolon. SQL keywords are usually case-insensitive, but identifiers and string comparisons can depend on the database configuration.\n\nSELECT reads data without changing it. SELECT name, city FROM students returns selected columns; SELECT * returns every column, but explicit columns are usually preferable in production. DISTINCT removes duplicate combinations of selected values. Use meaningful aliases with AS: SELECT name AS student_name FROM students. Without ORDER BY, the order of returned rows is not guaranteed.\n\nA useful practice schema is students(student_id, name, city, marks) with one row per student. SQL examples below are designed for MySQL-compatible syntax, though most SELECT concepts are standard across relational databases. Never concatenate untrusted input into SQL statements; applications should use parameterized queries.",
+      "examples": [
+        {
+          "title": "Introduction to SQL, Tables and SELECT - SQL Example",
+          "language": "sql",
+          "explanation": "Run this query in a MySQL-compatible database. Create the sample students table from lesson 1 first when needed.",
+          "code": "CREATE TABLE students (\n  student_id INT PRIMARY KEY,\n  name VARCHAR(60) NOT NULL,\n  city VARCHAR(60),\n  marks INT\n);\nINSERT INTO students VALUES\n  (1, 'Asha', 'Bengaluru', 85),\n  (2, 'Ravi', 'Mysuru', 72),\n  (3, 'Neha', 'Bengaluru', 91);\nSELECT name, marks FROM students;\nSELECT DISTINCT city FROM students;"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Filtering Rows with WHERE and Logical Operators",
+      "description": "Use WHERE, comparisons, NULL checks and pattern matching.",
+      "content": "WHERE filters individual rows before they appear in a query result. For numeric comparisons use =, <>, <, <=, > and >=. Combine conditions using AND, OR, and NOT; AND generally has higher precedence than OR, so add parentheses when mixing them. BETWEEN is inclusive of both endpoints. IN tests membership in a list. LIKE matches string patterns: % matches zero or more characters and _ matches one character.\n\nNULL represents an unknown or missing value; comparing to NULL using = or <> does not work as expected. Use IS NULL or IS NOT NULL. SQL uses three-valued logic (TRUE, FALSE, UNKNOWN); for example marks > 80 is UNKNOWN when marks is NULL, so the row is excluded by WHERE. String comparisons and LIKE case sensitivity vary by collation and database.\n\nWhen filtering, be precise about boundaries and parentheses. For example, WHERE city = 'Bengaluru' AND marks >= 80 returns students in Bengaluru with at least 80 marks. A WHERE clause is evaluated per row, unlike HAVING, which filters grouped results.",
+      "examples": [
+        {
+          "title": "Filtering Rows with WHERE and Logical Operators - SQL Example",
+          "language": "sql",
+          "explanation": "Run this query in a MySQL-compatible database. Create the sample students table from lesson 1 first when needed.",
+          "code": "SELECT name, marks FROM students WHERE marks >= 80;\nSELECT name FROM students WHERE city IN ('Bengaluru', 'Mysuru');\nSELECT name FROM students WHERE name LIKE 'A%';\nSELECT name FROM students WHERE marks BETWEEN 70 AND 90;\nSELECT name FROM students WHERE city IS NOT NULL;"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Sorting, Limiting and SQL Query Order",
+      "description": "Control result ordering and understand the logical query pipeline.",
+      "content": "ORDER BY sorts the result set by one or more expressions. ASC is ascending (default), and DESC is descending. You can sort by multiple columns, for example ORDER BY marks DESC, name ASC, to break ties predictably. Without ORDER BY, result order is unspecified even if it appears stable. LIMIT n restricts how many rows are returned in MySQL and SQLite; PostgreSQL also supports LIMIT, while SQL Server commonly uses TOP or OFFSET/FETCH.\n\nTo obtain the highest-scoring students, sort marks descending before applying LIMIT. Pagination often uses LIMIT ... OFFSET ..., but large offsets may be inefficient; keyset pagination is an alternative in production. NULL sort placement varies across SQL engines.\n\nA useful mental model for simple SELECT statements is FROM -> WHERE -> GROUP BY -> HAVING -> SELECT -> ORDER BY -> LIMIT. This is a conceptual processing order rather than a guarantee about the database engine's execution plan. A WHERE filter is applied before grouping, while ORDER BY happens after the selected output is computed.",
+      "examples": [
+        {
+          "title": "Sorting, Limiting and SQL Query Order - SQL Example",
+          "language": "sql",
+          "explanation": "Run this query in a MySQL-compatible database. Create the sample students table from lesson 1 first when needed.",
+          "code": "SELECT name, marks\nFROM students\nORDER BY marks DESC, name ASC\nLIMIT 2;\n\nSELECT name, city\nFROM students\nWHERE city = 'Bengaluru'\nORDER BY name ASC;"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Aggregate Functions, GROUP BY and HAVING",
+      "description": "Summarize data using COUNT, SUM, AVG, MIN and MAX.",
+      "content": "Aggregate functions compute summaries over multiple rows. COUNT(*) counts rows, including those with NULL values; COUNT(column) counts only non-NULL values in that column. SUM and AVG ignore NULL inputs. MIN and MAX return the smallest and largest non-NULL values. COUNT(DISTINCT city) counts unique non-NULL cities.\n\nGROUP BY combines rows with the same grouping values into one group. SELECT city, COUNT(*) FROM students GROUP BY city reports student counts per city. In portable SQL, every non-aggregated selected expression should appear in GROUP BY (unless the database supports a valid functional-dependency exception). HAVING filters groups after aggregation, whereas WHERE filters input rows before grouping.\n\nFor example, WHERE marks >= 60 followed by GROUP BY city and HAVING COUNT(*) >= 2 identifies cities with at least two qualifying students. An aggregate without GROUP BY returns one summary row for the full filtered dataset. Always consider how NULL values affect averages and counts.",
+      "examples": [
+        {
+          "title": "Aggregate Functions, GROUP BY and HAVING - SQL Example",
+          "language": "sql",
+          "explanation": "Run this query in a MySQL-compatible database. Create the sample students table from lesson 1 first when needed.",
+          "code": "SELECT COUNT(*) AS total_students, AVG(marks) AS average_marks\nFROM students;\n\nSELECT city, COUNT(*) AS student_count, MAX(marks) AS top_mark\nFROM students\nGROUP BY city\nHAVING COUNT(*) >= 2\nORDER BY student_count DESC;"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "INSERT, UPDATE, DELETE and Safe Data Changes",
+      "description": "Modify table data safely and distinguish DML from schema changes.",
+      "content": "INSERT adds rows. Specify target columns explicitly so the statement remains clear if table structure changes. UPDATE modifies existing rows; always review the WHERE condition first, because an UPDATE without WHERE affects every row. DELETE removes rows; DELETE without WHERE removes all rows from the table (subject to permissions and constraints). These commands are Data Manipulation Language (DML). CREATE TABLE and ALTER TABLE change schema and are commonly classified as Data Definition Language (DDL).\n\nTransactions let multiple changes succeed or fail as a unit when supported by the storage engine. START TRANSACTION begins a transaction in MySQL; COMMIT persists changes, and ROLLBACK undoes uncommitted changes. In MySQL, DDL statements can cause implicit commits, so do not assume every statement can be rolled back. Database permissions and foreign-key constraints may restrict modifications.\n\nFor safety, preview affected rows with SELECT using the same WHERE predicate before running UPDATE or DELETE. Parameterize values in application code. Use an explicit transaction when performing related changes, such as moving funds between accounts, and verify the affected-row count.",
+      "examples": [
+        {
+          "title": "INSERT, UPDATE, DELETE and Safe Data Changes - SQL Example",
+          "language": "sql",
+          "explanation": "Run this query in a MySQL-compatible database. Create the sample students table from lesson 1 first when needed.",
+          "code": "INSERT INTO students (student_id, name, city, marks)\nVALUES (4, 'Imran', 'Hubballi', 78);\n\nSTART TRANSACTION;\nSELECT * FROM students WHERE student_id = 4;\nUPDATE students SET marks = 82 WHERE student_id = 4;\nSELECT * FROM students WHERE student_id = 4;\nROLLBACK;\n\n-- A permanent deletion requires a carefully reviewed WHERE:\n-- DELETE FROM students WHERE student_id = 4;"
+        }
+      ],
+      "estimatedMinutes": 20
+    }
+  ],
+  "videos": [
+    {
+      "title": "SQL Tutorial - Full Database Course for Beginners (freeCodeCamp)",
+      "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+      "description": "Beginner MySQL course covering tables, SQL queries, data modification, aggregation and more.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL Basics Tutorial For Beginners | Installing SQL Server Management Studio and Create Tables | 1/4",
+      "youtubeUrl": "https://www.youtube.com/watch?v=RSlqWnP-Dy8",
+      "description": "Alex The Analyst demonstrates database setup, creating tables and inserting records using SQL Server.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL Basics Tutorial For Beginners | Select + From Statements | 2/4",
+      "youtubeUrl": "https://www.youtube.com/watch?v=PyYgERKq25I",
+      "description": "Alex The Analyst explains SELECT and FROM for retrieving data.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL Basics Tutorial For Beginners | Where Statement | 3/4",
+      "youtubeUrl": "https://www.youtube.com/watch?v=A9TOuDZTPDU",
+      "description": "Alex The Analyst explains filtering rows with WHERE.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "SQL Basics Tutorial For Beginners | Group By + Order By Statements | 4/4",
+      "youtubeUrl": "https://www.youtube.com/watch?v=LXwfzIRD-Ds",
+      "description": "Alex The Analyst explains grouping, aggregation and sorting query results.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Which SQL statement retrieves data from a table?",
+      "options": [
+        "INSERT",
+        "SELECT",
+        "UPDATE",
+        "DELETE"
+      ],
+      "correctAnswer": 1,
+      "explanation": "SELECT retrieves rows and columns.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What does SELECT DISTINCT city return?",
+      "options": [
+        "Every city value including duplicates",
+        "Only NULL values",
+        "Unique city values",
+        "Cities sorted descending"
+      ],
+      "correctAnswer": 2,
+      "explanation": "DISTINCT removes duplicate selected values.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which clause filters individual rows before grouping?",
+      "options": [
+        "WHERE",
+        "HAVING",
+        "ORDER BY",
+        "GROUP BY"
+      ],
+      "correctAnswer": 0,
+      "explanation": "WHERE filters rows before aggregate grouping.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which condition correctly finds missing city values?",
+      "options": [
+        "city = NULL",
+        "city <> NULL",
+        "city IS NULL",
+        "city LIKE NULL"
+      ],
+      "correctAnswer": 2,
+      "explanation": "NULL is tested using IS NULL.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which LIKE pattern matches names beginning with A?",
+      "options": [
+        "'%A'",
+        "'A%'",
+        "'_A'",
+        "'A'"
+      ],
+      "correctAnswer": 1,
+      "explanation": "% matches any suffix.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "How do you sort marks from highest to lowest?",
+      "options": [
+        "ORDER BY marks ASC",
+        "GROUP BY marks",
+        "WHERE marks DESC",
+        "ORDER BY marks DESC"
+      ],
+      "correctAnswer": 3,
+      "explanation": "DESC specifies descending order.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which expression counts every row, including rows containing NULLs?",
+      "options": [
+        "COUNT(*)",
+        "COUNT(city)",
+        "SUM(city)",
+        "AVG(city)"
+      ],
+      "correctAnswer": 0,
+      "explanation": "COUNT(*) counts all rows.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which clause filters groups after GROUP BY?",
+      "options": [
+        "WHERE",
+        "HAVING",
+        "LIMIT",
+        "DISTINCT"
+      ],
+      "correctAnswer": 1,
+      "explanation": "HAVING filters aggregated groups.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What happens if UPDATE students SET marks = 0 has no WHERE clause?",
+      "options": [
+        "Only the first row changes",
+        "No rows change",
+        "Every row is updated",
+        "The table is deleted"
+      ],
+      "correctAnswer": 2,
+      "explanation": "An UPDATE without WHERE affects all matching rows, which means all rows here.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which statement cancels uncommitted changes in a transaction?",
+      "options": [
+        "COMMIT",
+        "ROLLBACK",
+        "INSERT",
+        "ORDER BY"
+      ],
+      "correctAnswer": 1,
+      "explanation": "ROLLBACK undoes uncommitted changes in a transactional engine.",
+      "difficulty": "Medium"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Retrieve Student Names and Marks",
+      "description": "Select the requested columns from a student table.",
+      "type": "SQL",
+      "difficulty": "Easy",
+      "instructions": "Using students(student_id, name, city, marks), write a query returning name and marks for all students. Do not use SELECT *. Explain which clause identifies the table."
+    },
+    {
+      "title": "Filter Students by City and Score",
+      "description": "Practice WHERE, AND and inclusive comparisons.",
+      "type": "SQL",
+      "difficulty": "Easy",
+      "instructions": "Write a query to return name and marks for students whose city is 'Bengaluru' and marks are at least 80. Test with a NULL marks row and explain why it is excluded."
+    },
+    {
+      "title": "Find the Top Three Students",
+      "description": "Use ORDER BY and LIMIT to produce a ranked result.",
+      "type": "SQL",
+      "difficulty": "Medium",
+      "instructions": "Return student_id, name and marks for the three highest-scoring students. Break ties by student_id ascending. Use MySQL-compatible SQL and explain why ORDER BY is essential."
+    },
+    {
+      "title": "Summarize Student Performance by City",
+      "description": "Combine GROUP BY, aggregates and HAVING.",
+      "type": "SQL",
+      "difficulty": "Medium",
+      "instructions": "For each city, return city, student_count and average_marks. Include only cities with at least two students; order by average_marks descending. Explain COUNT(*) versus COUNT(marks)."
+    },
+    {
+      "title": "Safely Update One Student Record",
+      "description": "Practice a targeted UPDATE within a transaction.",
+      "type": "SQL",
+      "difficulty": "Medium",
+      "instructions": "Write a MySQL transaction that selects student_id = 3, updates that student’s marks to 95, verifies the row, and rolls back for testing. Explain why a WHERE clause is required."
+    }
+  ],
+  "resources": [
+    {
+      "title": "MySQL 8.4 Reference Manual — SELECT",
+      "type": "Documentation",
+      "url": "https://dev.mysql.com/doc/refman/8.4/en/select.html",
+      "description": "Official SELECT syntax, clauses, and query behavior."
+    },
+    {
+      "title": "MySQL 8.4 Reference Manual — WHERE",
+      "type": "Documentation",
+      "url": "https://dev.mysql.com/doc/refman/8.4/en/select.html",
+      "description": "Official MySQL SELECT reference including WHERE filtering."
+    },
+    {
+      "title": "PostgreSQL Tutorial — Querying a Table",
+      "type": "Documentation",
+      "url": "https://www.postgresql.org/docs/current/tutorial-sql.html",
+      "description": "Official SQL language tutorial with querying, joins and aggregates."
+    },
+    {
+      "title": "SQLBolt — Interactive SQL Lessons",
+      "type": "Website",
+      "url": "https://sqlbolt.com/",
+      "description": "Interactive beginner SQL practice with immediate feedback."
+    },
+    {
+      "title": "W3Schools — SQL Tutorial",
+      "type": "Website",
+      "url": "https://www.w3schools.com/sql/",
+      "description": "Quick syntax reference and beginner examples for SQL statements."
+    }
+  ]
+}

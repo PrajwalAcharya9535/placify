@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 
 // ==============================
@@ -186,6 +187,66 @@ const placementOpportunitySchema =
       },
 
       // ==============================
+      // OPPORTUNITY SOURCE
+      // ==============================
+
+      source: {
+        type: String,
+        enum: ["Admin", "Telegram"],
+        default: "Admin",
+      },
+
+      // ==============================
+      // TELEGRAM MESSAGE DETAILS
+      // ==============================
+
+      telegram: {
+        chatId: {
+          type: String,
+          default: "",
+        },
+
+        messageId: {
+          type: Number,
+          default: null,
+        },
+
+        chatTitle: {
+          type: String,
+          default: "",
+        },
+
+        messageText: {
+          type: String,
+          default: "",
+        },
+
+        messageUrl: {
+          type: String,
+          default: "",
+        },
+
+        receivedAt: {
+          type: Date,
+          default: null,
+        },
+      },
+
+      // ==============================
+      // REGISTRATION DEADLINE
+      // ==============================
+
+      registrationDeadline: {
+        type: Date,
+        default: null,
+      },
+
+      deadlineTimeConfirmed: {
+        type: Boolean,
+        default: false,
+      },
+
+      // ==============================
       // ADMIN WHO CREATED IT
       // ==============================
 
@@ -222,6 +283,29 @@ placementOpportunitySchema.index({
 placementOpportunitySchema.index({
   requiredSkills: 1,
 });
+
+// ==============================
+// TELEGRAM DUPLICATE PROTECTION
+// ==============================
+
+placementOpportunitySchema.index(
+  {
+    "telegram.chatId": 1,
+    "telegram.messageId": 1,
+  },
+  {
+    unique: true,
+    partialFilterExpression: {
+      source: "Telegram",
+      "telegram.chatId": {
+        $type: "string",
+      },
+      "telegram.messageId": {
+        $type: "number",
+      },
+    },
+  }
+);
 
 // ==============================
 // MODEL

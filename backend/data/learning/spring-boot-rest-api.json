@@ -1,0 +1,298 @@
+{
+  "topicTitle": "REST API Development with Spring Boot",
+  "lessons": [
+    {
+      "title": "REST API Fundamentals and HTTP Methods",
+      "description": "Understand REST principles, HTTP requests, responses, status codes and resource-oriented API design.",
+      "content": "REST stands for Representational State Transfer. It is an architectural style commonly used to design web APIs.\n\nA REST API exposes resources through URLs and uses HTTP methods to perform operations. For example, /api/students represents a collection of students, while /api/students/10 represents an individual student.\n\nCommon HTTP methods:\nGET retrieves a resource.\nPOST submits data, often to create a resource.\nPUT replaces the representation of a resource.\nPATCH applies partial modifications.\nDELETE removes a resource.\n\nImportant HTTP status codes:\n200 OK: request succeeded.\n201 Created: resource created successfully.\n204 No Content: successful response without a body.\n400 Bad Request: invalid client request.\n401 Unauthorized: authentication is required or invalid.\n403 Forbidden: authenticated client lacks permission.\n404 Not Found: requested resource does not exist.\n409 Conflict: request conflicts with current resource state.\n500 Internal Server Error: unexpected server failure.\n\nREST emphasizes stateless requests, a uniform interface, cacheability where appropriate and separation between clients and servers.\n\nJSON is a common response format. HTTP itself does not require REST APIs to use JSON.\n\nGood endpoint names describe resources rather than actions. Prefer GET /api/students/10 instead of GET /api/getStudentById/10.\n\nAPI design should also consider pagination, filtering, validation, security and consistent error responses.",
+      "examples": [
+        {
+          "title": "Student API Endpoint Design",
+          "language": "text",
+          "explanation": "A resource-oriented set of HTTP endpoints for student management.",
+          "code": "GET    /api/students\nGET    /api/students/10\nPOST   /api/students\nPUT    /api/students/10\nPATCH  /api/students/10\nDELETE /api/students/10\n\nPOST /api/students\nContent-Type: application/json\n\n{\n  \"name\": \"Rahul\",\n  \"email\": \"rahul@example.com\"\n}\n\nHTTP/1.1 201 Created\nLocation: /api/students/10"
+        }
+      ],
+      "estimatedMinutes": 18
+    },
+    {
+      "title": "Building REST Controllers with Spring Boot",
+      "description": "Create API endpoints using @RestController, @RequestMapping and HTTP mapping annotations.",
+      "content": "Spring Boot simplifies building web applications and REST APIs using Spring MVC.\n\n@RestController marks a class as a controller whose handler methods return response bodies by default.\n\n@RequestMapping defines a common URL prefix or additional request-matching conditions.\n\n@GetMapping, @PostMapping, @PutMapping, @PatchMapping and @DeleteMapping map HTTP methods to Java methods.\n\n@PathVariable reads values embedded in a URL path.\n\n@RequestParam reads query parameters, such as page=0 or search=java.\n\n@RequestBody tells Spring to deserialize a request body, commonly JSON, into a Java object.\n\nResponseEntity allows a controller to explicitly specify the HTTP status, headers and response body.\n\nA typical Spring Boot REST application uses spring-boot-starter-web and includes a class annotated with @SpringBootApplication.\n\nControllers should focus on handling HTTP requests and responses. Business rules belong in a service layer, while persistence operations belong in a repository layer.\n\nA simple REST endpoint can be tested from a browser for GET requests or with an HTTP client for other methods.",
+      "examples": [
+        {
+          "title": "Simple Student REST Controller",
+          "language": "java",
+          "explanation": "Creates two GET endpoints using Spring MVC annotations.",
+          "code": "import org.springframework.web.bind.annotation.GetMapping;\nimport org.springframework.web.bind.annotation.PathVariable;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\n@RestController\n@RequestMapping(\"/api/students\")\npublic class StudentController {\n\n    @GetMapping\n    public String getAllStudents() {\n        return \"Student list\";\n    }\n\n    @GetMapping(\"/{id}\")\n    public String getStudent(@PathVariable Long id) {\n        return \"Student ID: \" + id;\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Request Bodies, DTOs and Validation",
+      "description": "Accept JSON input, use DTOs and validate incoming API data.",
+      "content": "A Data Transfer Object, or DTO, represents data exchanged between API clients and the server.\n\nDTOs help avoid exposing persistence entities directly and allow request and response structures to evolve independently.\n\n@RequestBody converts incoming JSON into a Java object using the configured HTTP message converters.\n\nBean Validation supports annotations such as @NotBlank, @NotNull, @Email, @Size, @Min and @Max.\n\nIn a Spring Boot application, validation commonly requires the spring-boot-starter-validation dependency.\n\n@Valid triggers validation of an annotated request body when the appropriate validation provider is configured.\n\nInvalid request bodies commonly produce HTTP 400 responses. Applications can customize the error format using exception handling.\n\nUse clear validation messages and never trust incoming client data.\n\nValidation is different from authorization. A valid request may still be forbidden if the caller lacks permission.\n\nDo not expose passwords, access tokens or other sensitive values in API responses.",
+      "examples": [
+        {
+          "title": "Validated Student Request DTO",
+          "language": "java",
+          "explanation": "Validates a student's name and email before processing the request.",
+          "code": "import jakarta.validation.Valid;\nimport jakarta.validation.constraints.Email;\nimport jakarta.validation.constraints.NotBlank;\nimport org.springframework.http.HttpStatus;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.annotation.PostMapping;\nimport org.springframework.web.bind.annotation.RequestBody;\nimport org.springframework.web.bind.annotation.RequestMapping;\nimport org.springframework.web.bind.annotation.RestController;\n\nrecord StudentRequest(\n    @NotBlank String name,\n    @NotBlank @Email String email\n) {}\n\n@RestController\n@RequestMapping(\"/api/students\")\npublic class StudentCreateController {\n\n    @PostMapping\n    public ResponseEntity<StudentRequest> create(\n            @Valid @RequestBody StudentRequest request) {\n        return ResponseEntity.status(HttpStatus.CREATED).body(request);\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 20
+    },
+    {
+      "title": "Service Layer, CRUD Operations and Spring Data JPA",
+      "description": "Separate controller, service and repository responsibilities while implementing CRUD APIs.",
+      "content": "CRUD means Create, Read, Update and Delete.\n\nA maintainable Spring Boot application commonly separates responsibilities into controller, service, repository, entity and DTO layers.\n\nController: accepts HTTP requests and creates HTTP responses.\nService: implements business rules and coordinates application operations.\nRepository: performs persistence operations.\nEntity: maps application data to database tables when using JPA.\nDTO: defines the information accepted or returned by an API.\n\nSpring Data JPA provides repository interfaces such as JpaRepository<Entity, ID>.\n\nCommon repository methods include save(), findById(), findAll(), existsById() and deleteById().\n\nAn entity typically uses @Entity and @Id. Generated primary keys may use @GeneratedValue.\n\nA service can use Optional.orElseThrow() to handle missing records explicitly.\n\nFor update operations, first load the existing record, modify permitted fields and persist the result.\n\nDatabase configuration and a supported JDBC driver are required for a real JPA-backed application.\n\nUse @Transactional when operations need a consistent transaction boundary, particularly when multiple related writes must succeed or fail together.\n\nDo not assume that every delete request succeeds: missing resources and business constraints require deliberate handling.",
+      "examples": [
+        {
+          "title": "Entity, Repository and Service",
+          "language": "java",
+          "explanation": "Shows a simple Spring Data JPA persistence flow. In a real project, place each public type in its own file.",
+          "code": "import jakarta.persistence.Entity;\nimport jakarta.persistence.GeneratedValue;\nimport jakarta.persistence.GenerationType;\nimport jakarta.persistence.Id;\nimport org.springframework.data.jpa.repository.JpaRepository;\nimport org.springframework.stereotype.Service;\n\n@Entity\nclass Student {\n    @Id\n    @GeneratedValue(strategy = GenerationType.IDENTITY)\n    private Long id;\n    private String name;\n\n    protected Student() {}\n\n    public Student(String name) {\n        this.name = name;\n    }\n\n    public Long getId() { return id; }\n    public String getName() { return name; }\n}\n\ninterface StudentRepository extends JpaRepository<Student, Long> {}\n\n@Service\nclass StudentService {\n    private final StudentRepository repository;\n\n    StudentService(StudentRepository repository) {\n        this.repository = repository;\n    }\n\n    public Student create(String name) {\n        return repository.save(new Student(name));\n    }\n\n    public Student findById(Long id) {\n        return repository.findById(id)\n            .orElseThrow(() -> new IllegalArgumentException(\"Student not found\"));\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 22
+    },
+    {
+      "title": "Exception Handling, API Testing and Best Practices",
+      "description": "Build consistent error responses and test REST endpoints effectively.",
+      "content": "Production APIs should return clear and consistent HTTP responses for successful and failed requests.\n\n@RestControllerAdvice defines exception handlers that can apply across multiple REST controllers.\n\n@ExceptionHandler identifies which exception type a handler processes.\n\nResponseEntity can set appropriate HTTP statuses for errors.\n\nA missing resource should generally produce 404 Not Found rather than an unexpected 500 Internal Server Error.\n\nDo not reveal stack traces, database credentials or internal implementation details in public error messages.\n\nSpring Boot APIs can be tested using tools such as curl, HTTP client applications and automated tests.\n\nMockMvc supports controller-level HTTP request testing without starting a real network server.\n\nIntegration tests can verify controllers, services, repositories and database interactions together.\n\nUseful API design practices include versioning where appropriate, pagination for large collections, clear DTOs, input validation, logging, authentication, authorization and rate limiting when needed.\n\nCORS determines which browser origins are allowed to access API responses. It is not a substitute for authentication or authorization.\n\nFor a placement platform, a REST API might manage student profiles, assessments, applications and learning progress. Each endpoint should enforce the appropriate access rules.",
+      "examples": [
+        {
+          "title": "Global Exception Handling",
+          "language": "java",
+          "explanation": "Converts a missing-student exception into a structured 404 response.",
+          "code": "import org.springframework.http.HttpStatus;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.annotation.ExceptionHandler;\nimport org.springframework.web.bind.annotation.RestControllerAdvice;\n\nrecord ApiError(String message) {}\n\nclass StudentNotFoundException extends RuntimeException {\n    StudentNotFoundException(Long id) {\n        super(\"Student not found: \" + id);\n    }\n}\n\n@RestControllerAdvice\npublic class GlobalExceptionHandler {\n\n    @ExceptionHandler(StudentNotFoundException.class)\n    public ResponseEntity<ApiError> handleNotFound(\n            StudentNotFoundException exception) {\n        return ResponseEntity.status(HttpStatus.NOT_FOUND)\n            .body(new ApiError(exception.getMessage()));\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 20
+    }
+  ],
+  "videos": [
+    {
+      "title": "REST API Fundamentals and HTTP Methods",
+      "youtubeUrl": "https://www.youtube.com/watch?v=LNUxT6uo490",
+      "description": "Spring Boot REST API basics, controllers, JSON and HTTP methods.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Building REST Controllers with Spring Boot",
+      "youtubeUrl": "https://www.youtube.com/watch?v=Cw0J6jYJtzw",
+      "description": "Amigoscode Spring Boot tutorial covering REST endpoints, request bodies and persistence.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Spring Boot Request Validation",
+      "youtubeUrl": "https://www.youtube.com/watch?v=mB2C8sbnmiE",
+      "description": "Spring Boot validation with @Valid, @NotNull, @NotBlank and @Email.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Spring Boot CRUD API with Spring Data JPA",
+      "youtubeUrl": "https://www.youtube.com/watch?v=yDF3ZOp0uzQ",
+      "description": "Chai aur Code Spring Boot REST APIs, CRUD, persistence and pagination.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Spring Boot Exception Handling",
+      "youtubeUrl": "https://www.youtube.com/watch?v=7OT3EjyI2x4",
+      "description": "Spring Boot REST API exception handling with @RestControllerAdvice and @ExceptionHandler.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Which HTTP method is primarily used to retrieve a resource?",
+      "options": [
+        "POST",
+        "GET",
+        "DELETE",
+        "PATCH"
+      ],
+      "correctAnswer": 1,
+      "explanation": "GET requests retrieve representations of resources and should not intentionally modify server state.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which Spring annotation is commonly used to create REST controllers?",
+      "options": [
+        "@Entity",
+        "@Repository",
+        "@RestController",
+        "@ConfigurationProperties"
+      ],
+      "correctAnswer": 2,
+      "explanation": "@RestController combines controller functionality with response-body handling.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which annotation reads an ID from a URL such as /api/students/25?",
+      "options": [
+        "@PathVariable",
+        "@RequestBody",
+        "@RequestHeader",
+        "@Autowired"
+      ],
+      "correctAnswer": 0,
+      "explanation": "@PathVariable binds a URI template variable to a method parameter.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which HTTP status code normally indicates that a resource was created successfully?",
+      "options": [
+        "200 OK",
+        "400 Bad Request",
+        "404 Not Found",
+        "201 Created"
+      ],
+      "correctAnswer": 3,
+      "explanation": "201 Created indicates that a request successfully resulted in creation of a resource.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What is the main purpose of @RequestBody in Spring MVC?",
+      "options": [
+        "Read a URL path variable",
+        "Convert an HTTP request body into a Java object",
+        "Create a database table",
+        "Start the Spring Boot application"
+      ],
+      "correctAnswer": 1,
+      "explanation": "@RequestBody binds the incoming request body to a method argument through an HTTP message converter.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which dependency commonly provides Bean Validation support in Spring Boot?",
+      "options": [
+        "spring-boot-starter-mail",
+        "spring-boot-starter-actuator",
+        "spring-boot-starter-validation",
+        "spring-boot-starter-cache"
+      ],
+      "correctAnswer": 2,
+      "explanation": "spring-boot-starter-validation provides the commonly used Bean Validation integration.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which Spring Data JPA interface provides common CRUD and pagination methods?",
+      "options": [
+        "JpaRepository",
+        "Runnable",
+        "HttpServletRequest",
+        "Comparator"
+      ],
+      "correctAnswer": 0,
+      "explanation": "JpaRepository provides persistence operations including save, findById, findAll and delete.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which annotation is commonly used to handle exceptions across multiple REST controllers?",
+      "options": [
+        "@GeneratedValue",
+        "@GetMapping",
+        "@Table",
+        "@RestControllerAdvice"
+      ],
+      "correctAnswer": 3,
+      "explanation": "@RestControllerAdvice allows shared exception handlers for REST controllers.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the most appropriate response when a requested student record does not exist?",
+      "options": [
+        "Always return 200 with an empty string",
+        "Return 404 Not Found",
+        "Always return 500 Internal Server Error",
+        "Return 201 Created"
+      ],
+      "correctAnswer": 1,
+      "explanation": "404 Not Found communicates that the requested resource could not be found.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "Which statement about CORS is correct?",
+      "options": [
+        "CORS replaces user authentication",
+        "CORS encrypts all API traffic",
+        "CORS controls browser access across origins but does not replace authorization",
+        "CORS automatically validates request DTOs"
+      ],
+      "correctAnswer": 2,
+      "explanation": "CORS is a browser-enforced cross-origin access mechanism. APIs still need authentication and authorization.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Create Your First Student REST Controller",
+      "description": "Implement simple GET endpoints with Spring Boot.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Create a Spring Boot application with spring-boot-starter-web. Implement GET /api/students returning a sample list of student names and GET /api/students/{id} returning the requested ID. Use @RestController, @RequestMapping, @GetMapping and @PathVariable. Test both endpoints."
+    },
+    {
+      "title": "Implement a Validated Student Registration Endpoint",
+      "description": "Accept and validate JSON input using DTOs.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Create POST /api/students accepting name, email and age in a request DTO. Apply @NotBlank to name, @Email and @NotBlank to email, and @Min(18) to age. Use @Valid and return HTTP 201 for valid requests. Verify that invalid requests return HTTP 400."
+    },
+    {
+      "title": "Build a Complete Student CRUD REST API",
+      "description": "Implement create, read, update and delete endpoints.",
+      "type": "Coding",
+      "difficulty": "Hard",
+      "instructions": "Build a Student entity with id, name, email and course. Use Spring Data JPA with a configured database. Create controller, service and repository layers. Implement POST /api/students, GET /api/students, GET /api/students/{id}, PUT /api/students/{id} and DELETE /api/students/{id}. Return appropriate HTTP status codes and handle missing IDs."
+    },
+    {
+      "title": "Debug Incorrect HTTP Responses",
+      "description": "Identify REST endpoint design and error-handling problems.",
+      "type": "Debugging",
+      "difficulty": "Medium",
+      "instructions": "A controller uses @GetMapping to delete a student, returns 200 for missing records and exposes raw exception stack traces to clients. Identify all three problems. Rewrite the endpoint using @DeleteMapping, return 404 for missing students and implement safe structured error handling."
+    },
+    {
+      "title": "Test a REST API with MockMvc",
+      "description": "Write automated tests for success and validation failures.",
+      "type": "Coding",
+      "difficulty": "Hard",
+      "instructions": "Create automated MockMvc tests for a student registration endpoint. Verify that a valid JSON request returns 201, a blank name returns 400 and an invalid email returns 400. Add a test confirming that GET /api/students/{id} returns 404 when the student does not exist."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Spring Framework - REST Controllers",
+      "type": "Documentation",
+      "url": "https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-restcontroller.html",
+      "description": "Official documentation for Spring MVC REST controllers."
+    },
+    {
+      "title": "Spring Guide - Building a RESTful Web Service",
+      "type": "Documentation",
+      "url": "https://spring.io/guides/gs/rest-service",
+      "description": "Official hands-on Spring guide for creating a REST endpoint."
+    },
+    {
+      "title": "Spring Guide - Accessing Data with JPA",
+      "type": "Documentation",
+      "url": "https://spring.io/guides/gs/accessing-data-jpa",
+      "description": "Official Spring guide for entity persistence and repository-based database access."
+    },
+    {
+      "title": "Spring Framework - Validation",
+      "type": "Documentation",
+      "url": "https://docs.spring.io/spring-framework/reference/core/validation/beanvalidation.html",
+      "description": "Official reference for Bean Validation integration in Spring applications."
+    },
+    {
+      "title": "MDN - HTTP Response Status Codes",
+      "type": "Documentation",
+      "url": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status",
+      "description": "HTTP status code reference for designing consistent REST API responses."
+    }
+  ]
+}

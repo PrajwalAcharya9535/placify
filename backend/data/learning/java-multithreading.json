@@ -1,0 +1,249 @@
+
+{
+  "topicTitle": "Java Multithreading",
+  "lessons": [
+    {
+      "title": "Introduction to Threads and Concurrency",
+      "description": "Understand processes, threads, concurrency and parallelism in Java.",
+      "content": "Multithreading allows multiple threads of execution within a Java process. Threads share the process heap but have their own execution stacks.\n\nA process is a running program with its own resources. A thread is an execution path within that process.\n\nConcurrency means multiple tasks can make progress during overlapping periods. Parallelism means tasks execute simultaneously on different processing resources.\n\nMultithreading is useful for responsive applications, background operations, network servers and processing independent tasks.\n\nJava provides Thread, Runnable, Callable, ExecutorService and concurrency utilities.\n\nThread scheduling depends on the JVM and operating system. Execution order is not guaranteed.\n\nCreating too many threads can increase memory use and context-switching overhead. Use appropriate thread pools and structured task management.",
+      "examples": [
+        {
+          "title": "Creating a Thread",
+          "language": "java",
+          "explanation": "Starts a separate execution thread.",
+          "code": "public class Main {\n    public static void main(String[] args) {\n        Thread worker = new Thread(() -> {\n            System.out.println(\"Running on: \" + Thread.currentThread().getName());\n        });\n\n        worker.start();\n        System.out.println(\"Main thread continues\");\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Thread Creation, Runnable and Lifecycle",
+      "description": "Create threads correctly and understand their lifecycle.",
+      "content": "Java threads can be created by extending Thread or by passing a Runnable to a Thread object.\n\nRunnable represents a task with a run() method. Calling start() creates a new execution thread, while calling run() directly executes the method on the current thread.\n\nJava Thread.State values include NEW, RUNNABLE, BLOCKED, WAITING, TIMED_WAITING and TERMINATED.\n\nA RUNNABLE thread may be executing or waiting for CPU scheduling.\n\nThe join() method allows one thread to wait for another thread to finish.\n\nsleep() pauses the current thread for at least approximately the requested duration, subject to scheduling and interruption.\n\nA thread cannot be restarted after it has terminated. Calling start() more than once on the same Thread object throws IllegalThreadStateException.\n\nPrefer separating task logic from thread management.",
+      "examples": [
+        {
+          "title": "Runnable and join()",
+          "language": "java",
+          "explanation": "Runs a task on a separate thread and waits for completion.",
+          "code": "public class Main {\n    public static void main(String[] args) throws InterruptedException {\n        Runnable task = () -> {\n            for (int i = 1; i <= 3; i++) {\n                System.out.println(\"Task step: \" + i);\n            }\n        };\n\n        Thread worker = new Thread(task);\n        worker.start();\n        worker.join();\n        System.out.println(\"Worker finished\");\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Synchronization and Race Conditions",
+      "description": "Protect shared mutable data from concurrent access problems.",
+      "content": "A race condition occurs when a program's behavior depends on the timing of concurrent operations.\n\nFor example, count++ involves reading, modifying and writing a value. It is not an atomic operation.\n\nThe synchronized keyword provides mutual exclusion using an object's monitor. It also establishes memory visibility guarantees between properly synchronized operations.\n\nA synchronized instance method locks the current object. A synchronized static method locks the corresponding Class object.\n\nAtomicInteger provides atomic operations such as incrementAndGet() without requiring an explicit synchronized block for simple counters.\n\nThe volatile keyword provides visibility and ordering guarantees for a field, but it does not make compound operations such as count++ atomic.\n\nReduce shared mutable state where possible. Immutable objects and thread-safe collections can simplify concurrent programming.",
+      "examples": [
+        {
+          "title": "Thread-Safe Counter",
+          "language": "java",
+          "explanation": "Uses AtomicInteger to increment a shared counter safely.",
+          "code": "import java.util.concurrent.atomic.AtomicInteger;\n\nclass Counter {\n    private final AtomicInteger count = new AtomicInteger();\n\n    void increment() {\n        count.incrementAndGet();\n    }\n\n    int getCount() {\n        return count.get();\n    }\n}\n\npublic class Main {\n    public static void main(String[] args) throws InterruptedException {\n        Counter counter = new Counter();\n        Thread a = new Thread(() -> {\n            for (int i = 0; i < 1000; i++) counter.increment();\n        });\n        Thread b = new Thread(() -> {\n            for (int i = 0; i < 1000; i++) counter.increment();\n        });\n        a.start();\n        b.start();\n        a.join();\n        b.join();\n        System.out.println(counter.getCount());\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 18
+    },
+    {
+      "title": "Deadlocks, Interruption and Thread Safety",
+      "description": "Recognize common concurrency failures and manage thread cancellation.",
+      "content": "A deadlock occurs when threads wait indefinitely for resources held by one another.\n\nA classic example involves Thread A holding Lock 1 while waiting for Lock 2, and Thread B holding Lock 2 while waiting for Lock 1.\n\nConsistent lock ordering helps prevent deadlocks. Other approaches include reducing lock scope and using timed lock acquisition.\n\nThread interruption is a cooperative cancellation mechanism. Calling interrupt() sets the interruption status or causes certain blocking methods to throw InterruptedException.\n\nWhen InterruptedException is caught and the method cannot propagate it, restoring the interruption status with Thread.currentThread().interrupt() is often appropriate.\n\nThread safety means shared objects behave correctly under concurrent access.\n\nCommon concurrency problems include race conditions, deadlocks, starvation and visibility errors.\n\nAvoid holding locks during long-running or unpredictable operations when possible.",
+      "examples": [
+        {
+          "title": "Cooperative Interruption",
+          "language": "java",
+          "explanation": "Stops a worker by interrupting its sleep and preserving interruption status.",
+          "code": "public class Main {\n    public static void main(String[] args) throws InterruptedException {\n        Thread worker = new Thread(() -> {\n            try {\n                while (!Thread.currentThread().isInterrupted()) {\n                    System.out.println(\"Working...\");\n                    Thread.sleep(200);\n                }\n            } catch (InterruptedException e) {\n                Thread.currentThread().interrupt();\n            }\n        });\n\n        worker.start();\n        Thread.sleep(500);\n        worker.interrupt();\n        worker.join();\n        System.out.println(\"Stopped\");\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 18
+    },
+    {
+      "title": "ExecutorService, Callable and Concurrent Tasks",
+      "description": "Manage multiple tasks using Java concurrency utilities.",
+      "content": "ExecutorService separates task submission from thread creation and scheduling.\n\nA fixed thread pool reuses a bounded number of worker threads to execute submitted tasks.\n\nRunnable represents a task that does not return a result. Callable<V> represents a task that returns a value and may throw a checked exception.\n\nSubmitting a Callable returns a Future<V>. Future.get() waits for completion and retrieves the result or reports task failure.\n\nAlways shut down an ExecutorService when it is no longer needed. shutdown() rejects new tasks while allowing previously submitted tasks to complete.\n\nJava also provides concurrent collections such as ConcurrentHashMap and blocking queues such as LinkedBlockingQueue.\n\nCompletableFuture supports composing asynchronous operations.\n\nReal-world example: A placement platform can process independent report-generation jobs through an executor instead of manually managing one Thread per job.",
+      "examples": [
+        {
+          "title": "Parallel Task Execution",
+          "language": "java",
+          "explanation": "Executes two Callable tasks and retrieves their results.",
+          "code": "import java.util.concurrent.Callable;\nimport java.util.concurrent.ExecutorService;\nimport java.util.concurrent.Executors;\nimport java.util.concurrent.Future;\n\npublic class Main {\n    public static void main(String[] args) throws Exception {\n        ExecutorService executor = Executors.newFixedThreadPool(2);\n        try {\n            Callable<Integer> first = () -> 10 + 20;\n            Callable<Integer> second = () -> 30 + 40;\n\n            Future<Integer> a = executor.submit(first);\n            Future<Integer> b = executor.submit(second);\n\n            System.out.println(a.get() + b.get());\n        } finally {\n            executor.shutdown();\n        }\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 18
+    }
+  ],
+  "videos": [
+    {
+      "title": "Java Multithreading Fundamentals - Video Reference",
+      "youtubeUrl": "https://www.youtube.com/watch?v=r_MbozD32eo",
+      "description": "Reference video for Java thread creation, Runnable and thread execution.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java Threads and Runnable - Video Reference",
+      "youtubeUrl": "https://www.youtube.com/watch?v=TCd8QIS-2KI",
+      "description": "Reference material for thread creation and lifecycle concepts.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java Synchronization - Video Reference",
+      "youtubeUrl": "https://www.youtube.com/watch?v=RH7G-N2pa8M",
+      "description": "Reference material about synchronization and shared mutable state.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java Thread Safety - Video Reference",
+      "youtubeUrl": "https://www.youtube.com/watch?v=WH5UvQJizH0",
+      "description": "Reference material for race conditions, thread safety and concurrent execution.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java ExecutorService - Video Reference",
+      "youtubeUrl": "https://www.youtube.com/watch?v=6Oo-9Can3H8",
+      "description": "Reference material for executor services, thread pools and task execution.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Which method starts a new Java thread of execution?",
+      "options": ["run()", "start()", "executeNow()", "begin()"],
+      "correctAnswer": 1,
+      "explanation": "Thread.start() schedules a new thread to execute its run() method. Calling run() directly does not create a new thread.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which interface defines a task with a run() method?",
+      "options": ["Callable", "Future", "Runnable", "ExecutorService"],
+      "correctAnswer": 2,
+      "explanation": "Runnable defines the run() method and represents a task that does not return a result.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which method waits for another Thread object to finish execution?",
+      "options": ["join()", "sleep()", "yield()", "interrupt()"],
+      "correctAnswer": 0,
+      "explanation": "Thread.join() allows the calling thread to wait until the target thread terminates.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "What happens when start() is called twice on the same Thread object?",
+      "options": ["Two threads run", "The thread restarts", "IllegalThreadStateException is thrown", "The second call is ignored"],
+      "correctAnswer": 2,
+      "explanation": "A Java Thread instance can be started only once. Calling start() again throws IllegalThreadStateException.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Why can count++ produce incorrect results when multiple threads update a shared counter?",
+      "options": ["Java cannot store integers", "The operation is not atomic", "The JVM disables arithmetic in threads", "Every integer is immutable"],
+      "correctAnswer": 1,
+      "explanation": "count++ performs multiple steps that can interleave between threads, causing lost updates.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which Java utility provides atomic increment operations?",
+      "options": ["ArrayList", "StringBuilder", "AtomicInteger", "HashSet"],
+      "correctAnswer": 2,
+      "explanation": "AtomicInteger provides atomic methods such as incrementAndGet() for thread-safe counter updates.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is a deadlock?",
+      "options": ["A completed thread", "Threads waiting indefinitely for resources held by one another", "A thread sleeping temporarily", "A successfully synchronized operation"],
+      "correctAnswer": 1,
+      "explanation": "Deadlock can occur when threads form a circular wait for locks or other resources.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which statement about volatile is correct?",
+      "options": ["It makes count++ atomic", "It guarantees every method is synchronized", "It provides visibility guarantees but not atomicity for compound updates", "It creates a new thread"],
+      "correctAnswer": 2,
+      "explanation": "volatile helps ensure visibility and ordering for field accesses, but compound updates such as count++ still require atomic operations or synchronization.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "Which interface represents a task that can return a result and throw a checked exception?",
+      "options": ["Runnable", "Callable", "Iterator", "Comparable"],
+      "correctAnswer": 1,
+      "explanation": "Callable<V> defines call(), which can return a result and declare checked exceptions.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "What does ExecutorService.shutdown() do?",
+      "options": ["Immediately kills every running thread", "Accepts new tasks indefinitely", "Stops accepting new tasks while allowing previously submitted tasks to complete", "Deletes all Future objects"],
+      "correctAnswer": 2,
+      "explanation": "shutdown() initiates an orderly shutdown. Previously submitted tasks are allowed to finish, and new tasks are rejected.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Run Three Download Tasks Concurrently",
+      "description": "Create three independent threads using Runnable.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Write a Java program with three Runnable download simulations. Each task should print its filename, sleep for one second and print a completion message. Start all three threads before joining them. Observe that completion order is not guaranteed."
+    },
+    {
+      "title": "Explore Thread Lifecycle and join()",
+      "description": "Observe thread states and wait for completion.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Create a worker Thread that performs a short task. Print its state before start(), immediately after start() and after join(). Explain why the intermediate state may vary between runs."
+    },
+    {
+      "title": "Fix a Shared Counter Race Condition",
+      "description": "Protect shared mutable state from lost updates.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Create a shared counter incremented 10,000 times by each of two threads. First implement it using a plain int and observe possible incorrect results. Then fix it using AtomicInteger or synchronized. Wait for both threads to finish and verify the expected result of 20,000."
+    },
+    {
+      "title": "Build a Thread Pool Task Processor",
+      "description": "Use ExecutorService and Future to manage tasks.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Create an ExecutorService with a fixed pool of three threads. Submit five Callable<Integer> tasks that return the square of their input. Collect the Future results, print them and shut down the executor in a finally block."
+    },
+    {
+      "title": "Debug a Two-Lock Deadlock",
+      "description": "Identify circular lock acquisition and correct lock ordering.",
+      "type": "Debugging",
+      "difficulty": "Hard",
+      "instructions": "Consider two locks, A and B. Thread 1 acquires A then B, while Thread 2 acquires B then A. Explain how deadlock can occur. Rewrite the locking logic so both threads acquire A before B. Explain why consistent ordering prevents this particular circular-wait deadlock."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Oracle Java Thread Documentation",
+      "type": "Documentation",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Thread.html",
+      "description": "Official Java Thread API reference, including thread lifecycle and operations."
+    },
+    {
+      "title": "Oracle Java Concurrency Package",
+      "type": "Documentation",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/concurrent/package-summary.html",
+      "description": "Official documentation for ExecutorService, Future and Java concurrency utilities."
+    },
+    {
+      "title": "Oracle Java Tutorial - Concurrency",
+      "type": "Documentation",
+      "url": "https://docs.oracle.com/javase/tutorial/essential/concurrency/",
+      "description": "Java tutorial covering threads, synchronization and concurrency concepts."
+    },
+    {
+      "title": "Java Multithreading - GeeksforGeeks",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/java/multithreading-in-java/",
+      "description": "Explanation of Java multithreading with examples and common interview topics."
+    },
+    {
+      "title": "Java Multithreading - Programiz",
+      "type": "Website",
+      "url": "https://www.programiz.com/java-programming/multithreading",
+      "description": "Beginner-oriented Java multithreading explanations and examples."
+    }
+  ]
+}

@@ -1,5 +1,11 @@
+
 const MockAttempt = require("../../models/MockAttempt");
 const MockTest = require("../../models/MockTest");
+
+// ==============================
+// PROCTORING CONFIGURATION
+// ==============================
+const MAX_WARNINGS = 3;
 
 // ==============================
 // LOG PROCTORING VIOLATION
@@ -44,8 +50,7 @@ const logProctoringViolation = async (req, res) => {
 
     if (!mockAttempt) {
       return res.status(404).json({
-        message:
-          "Active mock placement attempt not found",
+        message: "Active mock placement attempt not found",
       });
     }
 
@@ -66,6 +71,9 @@ const logProctoringViolation = async (req, res) => {
       });
     }
 
+    // ==============================
+    // RECORD VIOLATION
+    // ==============================
     mockAttempt.proctoringViolations.push({
       type,
       message,
@@ -73,45 +81,58 @@ const logProctoringViolation = async (req, res) => {
       occurredAt: new Date(),
     });
 
-    mockAttempt.violationCount += 1;
+    mockAttempt.violationCount =
+      mockAttempt.proctoringViolations.length;
+
+    const warningCount = mockAttempt.violationCount;
+
+    const remainingWarnings = Math.max(
+      0,
+      MAX_WARNINGS - warningCount
+    );
 
     let autoSubmitted = false;
 
     // ==============================
-    // TAB SWITCH LIMIT CHECK
+    // EXISTING TAB SWITCH RULE
     // ==============================
-    if (type === "Tab Switch") {
-      const tabSwitchCount =
-        mockAttempt.proctoringViolations.filter(
-          (violation) =>
-            violation.type === "Tab Switch"
-        ).length;
+    const tabSwitchCount =
+      mockAttempt.proctoringViolations.filter(
+        (violation) =>
+          violation.type === "Tab Switch"
+      ).length;
 
-      if (
-        mockTest.autoSubmitOnViolation &&
-        tabSwitchCount >
-          mockTest.maxTabSwitches
-      ) {
-        const now = new Date();
+    const tabSwitchLimitExceeded =
+      type === "Tab Switch" &&
+      mockTest.autoSubmitOnViolation &&
+      tabSwitchCount > mockTest.maxTabSwitches;
 
-        mockAttempt.status =
-          "Auto Submitted";
+    // ==============================
+    // THREE WARNING RULE
+    // ==============================
+    const warningLimitReached =
+      warningCount >= MAX_WARNINGS;
 
-        mockAttempt.result = "Failed";
+    if (
+      tabSwitchLimitExceeded ||
+      warningLimitReached
+    ) {
+      const now = new Date();
 
-        mockAttempt.completedAt = now;
-        mockAttempt.submittedAt = now;
+      mockAttempt.status = "Auto Submitted";
+      mockAttempt.result = "Failed";
+      mockAttempt.completedAt = now;
+      mockAttempt.submittedAt = now;
 
-        autoSubmitted = true;
-      }
+      autoSubmitted = true;
     }
 
     await mockAttempt.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       message: autoSubmitted
-        ? "Mock placement test auto submitted due to proctoring violations"
-        : "Proctoring violation logged successfully",
+        ? "Assessment ended due to proctoring violations."
+        : `Proctoring warning ${warningCount} of ${MAX_WARNINGS}.`,
 
       violation: {
         type,
@@ -119,19 +140,23 @@ const logProctoringViolation = async (req, res) => {
         roundName,
       },
 
-      violationCount:
-        mockAttempt.violationCount,
+      violationCount: mockAttempt.violationCount,
+      warningCount,
+      maxWarnings: MAX_WARNINGS,
+      remainingWarnings,
 
       status: mockAttempt.status,
-
       result: mockAttempt.result,
-
       autoSubmitted,
     });
   } catch (error) {
-    res.status(500).json({
-      message:
-        "Failed to log proctoring violation",
+    console.error(
+      "Proctoring violation error:",
+      error
+    );
+
+    return res.status(500).json({
+      message: "Failed to log proctoring violation",
       error: error.message,
     });
   }

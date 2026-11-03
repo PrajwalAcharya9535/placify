@@ -1,0 +1,249 @@
+
+{
+  "topicTitle": "Java Collections Framework",
+  "lessons": [
+    {
+      "title": "Introduction to Java Collections and Generics",
+      "description": "Understand the Java Collections Framework, interfaces, implementations and generics.",
+      "content": "The Java Collections Framework provides interfaces and classes for storing, accessing and manipulating groups of objects.\n\nImportant interfaces include Collection, List, Set, Queue and Deque. Map is also part of the framework, but it does not extend Collection.\n\nList stores ordered elements and generally permits duplicates.\nSet prevents duplicate elements according to its equality rules.\nQueue supports processing elements, often in FIFO order.\nMap associates unique keys with values.\n\nGenerics provide compile-time type checking. For example, List<String> restricts the elements that can be added to Strings.\n\nCollection classes store object references, not primitive values directly. Autoboxing allows primitive values such as int to be stored using wrapper types such as Integer.\n\nChoosing the correct collection depends on ordering, duplicate handling, lookup performance, insertion requirements and thread safety.",
+      "examples": [
+        {
+          "title": "Using a Generic List",
+          "language": "java",
+          "explanation": "Creates a type-safe list of student names.",
+          "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> students = new ArrayList<>();\n        students.add(\"Rahul\");\n        students.add(\"Priya\");\n        students.add(\"Rahul\");\n\n        System.out.println(students);\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "List, ArrayList and LinkedList",
+      "description": "Learn ordered collections, indexing and common list operations.",
+      "content": "The List interface represents an ordered collection that generally allows duplicate elements.\n\nArrayList uses a resizable array internally. It provides efficient indexed access and is commonly the default choice for general-purpose lists.\n\nLinkedList uses a doubly linked structure and implements List and Deque.\n\nCommon operations include add(), get(), set(), remove(), contains(), size() and clear().\n\nArrayList provides constant-time indexed access in typical implementations, while insertion or removal near the beginning may require shifting elements.\n\nLinkedList can insert or remove efficiently at known node positions, but locating an element by index requires traversal.\n\nFor most ordinary application workloads, ArrayList is a good starting choice. Use LinkedList when its particular deque or linked-node characteristics are beneficial.",
+      "examples": [
+        {
+          "title": "ArrayList Operations",
+          "language": "java",
+          "explanation": "Adds, updates and removes list elements.",
+          "code": "import java.util.ArrayList;\nimport java.util.List;\n\npublic class Main {\n    public static void main(String[] args) {\n        List<String> skills = new ArrayList<>();\n        skills.add(\"Java\");\n        skills.add(\"SQL\");\n        skills.add(\"Python\");\n\n        skills.set(1, \"Spring Boot\");\n        skills.remove(\"Python\");\n\n        for (String skill : skills) {\n            System.out.println(skill);\n        }\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Set, HashSet and TreeSet",
+      "description": "Understand unique-element collections and ordering behavior.",
+      "content": "A Set is a collection that does not permit duplicate elements according to its equality rules.\n\nHashSet is backed by a hash-based structure. It does not guarantee iteration order.\n\nLinkedHashSet maintains insertion order.\n\nTreeSet maintains elements in sorted order using their natural ordering or a supplied Comparator.\n\nHashSet typically provides efficient add(), remove() and contains() operations when hash distribution is suitable.\n\nFor custom objects stored in hash-based collections, equals() and hashCode() must be implemented consistently.\n\nA TreeSet generally provides logarithmic-time operations, while a HashSet commonly provides expected constant-time basic operations.\n\nReal-world applications include storing unique email addresses, tags, permissions and product categories.",
+      "examples": [
+        {
+          "title": "Removing Duplicate Values",
+          "language": "java",
+          "explanation": "Uses HashSet to store unique numbers.",
+          "code": "import java.util.HashSet;\nimport java.util.Set;\n\npublic class Main {\n    public static void main(String[] args) {\n        Set<Integer> numbers = new HashSet<>();\n        numbers.add(10);\n        numbers.add(20);\n        numbers.add(10);\n        numbers.add(30);\n\n        System.out.println(numbers.size());\n        System.out.println(numbers.contains(20));\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Map, HashMap and TreeMap",
+      "description": "Store and retrieve values using unique keys.",
+      "content": "A Map stores key-value associations. Each key is unique, but multiple keys may map to equal values.\n\nHashMap provides hash-based key lookup and does not guarantee iteration order.\n\nLinkedHashMap maintains a predictable iteration order, commonly insertion order.\n\nTreeMap maintains keys in sorted order.\n\nCommon methods include put(), get(), getOrDefault(), containsKey(), remove(), keySet(), values() and entrySet().\n\nHashMap permits one null key and multiple null values. TreeMap's null-key behavior depends on its ordering configuration and commonly rejects null keys under natural ordering.\n\nHashMap is useful for frequency counting, caching, student records and lookup tables.\n\nWhen custom objects serve as hash-based keys, their equals() and hashCode() implementations must be consistent.",
+      "examples": [
+        {
+          "title": "Count Word Frequencies",
+          "language": "java",
+          "explanation": "Counts how many times each word appears.",
+          "code": "import java.util.HashMap;\nimport java.util.Map;\n\npublic class Main {\n    public static void main(String[] args) {\n        String[] words = {\"java\", \"sql\", \"java\", \"python\", \"sql\", \"java\"};\n        Map<String, Integer> frequency = new HashMap<>();\n\n        for (String word : words) {\n            frequency.put(word, frequency.getOrDefault(word, 0) + 1);\n        }\n\n        System.out.println(frequency);\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    },
+    {
+      "title": "Queue, Deque, Iterator and Collection Selection",
+      "description": "Learn queue processing, safe iteration and practical collection choices.",
+      "content": "Queue represents a collection designed for holding elements before processing. Many queue implementations use FIFO ordering, but priority queues use priority-based ordering.\n\nArrayDeque implements Deque and supports efficient insertion and removal at both ends.\n\nCommon Queue operations include offer(), poll() and peek(). offer() adds an element, poll() retrieves and removes the head, and peek() retrieves the head without removing it.\n\nAn Iterator traverses a collection using hasNext() and next(). Its remove() method can remove the most recently returned element when supported.\n\nRemoving elements directly from many collections during iteration may cause ConcurrentModificationException. Use Iterator.remove() or suitable collection methods instead.\n\nChoose ArrayList for general indexed sequences, HashSet for unique values, HashMap for key-based lookup and ArrayDeque for stack or queue behavior.\n\nThe standard ArrayList, HashSet and HashMap implementations are not inherently thread-safe. Concurrent access may require synchronization or concurrent collection implementations.",
+      "examples": [
+        {
+          "title": "Queue and Iterator",
+          "language": "java",
+          "explanation": "Processes tasks in FIFO order and removes values safely during iteration.",
+          "code": "import java.util.ArrayDeque;\nimport java.util.ArrayList;\nimport java.util.Iterator;\nimport java.util.List;\nimport java.util.Queue;\n\npublic class Main {\n    public static void main(String[] args) {\n        Queue<String> tasks = new ArrayDeque<>();\n        tasks.offer(\"Resume Review\");\n        tasks.offer(\"Mock Interview\");\n        System.out.println(tasks.poll());\n\n        List<Integer> numbers = new ArrayList<>(List.of(1, 2, 3, 4));\n        Iterator<Integer> iterator = numbers.iterator();\n        while (iterator.hasNext()) {\n            if (iterator.next() % 2 == 0) {\n                iterator.remove();\n            }\n        }\n        System.out.println(numbers);\n    }\n}"
+        }
+      ],
+      "estimatedMinutes": 15
+    }
+  ],
+  "videos": [
+    {
+      "title": "Java Collections Framework - Full Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=viTHc_4XfCA",
+      "description": "Video reference for Java collections, collection interfaces and common implementations.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java ArrayList Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=NbYgm0r7u6o",
+      "description": "Video reference for ArrayList operations and dynamic lists in Java.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java HashMap Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=H62Jfv1DJlU",
+      "description": "Video reference for HashMap key-value storage and retrieval.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java HashSet Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=QvHBHuuddYk",
+      "description": "Video reference for HashSet, duplicate handling and set operations.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Java Queue Tutorial",
+      "youtubeUrl": "https://www.youtube.com/watch?v=nq3o4k3o0bE",
+      "description": "Video reference for Queue, FIFO processing and common queue operations.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "Which Java collection interface permits ordered elements and generally allows duplicates?",
+      "options": ["Set", "List", "Map", "Queue"],
+      "correctAnswer": 1,
+      "explanation": "List maintains element order and generally permits duplicate values.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which implementation is commonly preferred for efficient indexed access?",
+      "options": ["HashSet", "TreeMap", "ArrayList", "PriorityQueue"],
+      "correctAnswer": 2,
+      "explanation": "ArrayList uses a resizable array and provides efficient access by index.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which collection is designed to prevent duplicate elements?",
+      "options": ["ArrayList", "LinkedList", "HashSet", "ArrayDeque"],
+      "correctAnswer": 2,
+      "explanation": "HashSet implements Set and stores unique elements according to equality rules.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which Java interface stores associations between unique keys and values?",
+      "options": ["List", "Set", "Queue", "Map"],
+      "correctAnswer": 3,
+      "explanation": "Map stores key-value associations and does not allow duplicate keys.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which HashMap method returns a fallback value when a key is absent?",
+      "options": ["getOrDefault()", "getFallback()", "findOrElse()", "containsValue()"],
+      "correctAnswer": 0,
+      "explanation": "getOrDefault(key, defaultValue) returns the mapped value or the supplied default when no mapping exists.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which collection maintains elements in sorted order?",
+      "options": ["HashSet", "ArrayList", "TreeSet", "LinkedHashSet"],
+      "correctAnswer": 2,
+      "explanation": "TreeSet maintains its elements in sorted order using natural ordering or a Comparator.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What does Queue.poll() do?",
+      "options": ["Adds an element", "Returns and removes the head or returns null when empty", "Returns the head without removing it", "Sorts the queue"],
+      "correctAnswer": 1,
+      "explanation": "poll() retrieves and removes the head, returning null when the queue is empty.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Why are generics useful in Java collections?",
+      "options": ["They remove the need for objects", "They provide compile-time type checking", "They guarantee thread safety", "They automatically sort every collection"],
+      "correctAnswer": 1,
+      "explanation": "Generics allow the compiler to detect many type errors before runtime.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which method is appropriate for removing the current element while traversing an ArrayList with an Iterator?",
+      "options": ["list.clear() after every next()", "list.remove(index) directly during iteration", "iterator.remove()", "iterator.delete()"],
+      "correctAnswer": 2,
+      "explanation": "Iterator.remove() supports removing the most recently returned element when the iterator implementation allows it.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "Which statement about HashMap is correct?",
+      "options": ["It guarantees sorted keys", "It allows duplicate keys as separate entries", "It guarantees insertion order", "It does not guarantee iteration order"],
+      "correctAnswer": 3,
+      "explanation": "HashMap does not guarantee iteration order. TreeMap sorts keys, while LinkedHashMap maintains a predictable order.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Manage Student Names with ArrayList",
+      "description": "Practice adding, updating, searching and removing list elements.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Create an ArrayList<String> containing five student names. Add another student, replace one existing name, remove one name and search for a given student using contains(). Display the final list and its size."
+    },
+    {
+      "title": "Remove Duplicate Email Addresses",
+      "description": "Use a Set to store unique email addresses.",
+      "type": "Coding",
+      "difficulty": "Easy",
+      "instructions": "Create a List<String> containing at least eight email addresses with duplicates. Convert the list into a HashSet and display the unique addresses. Explain why HashSet does not guarantee iteration order."
+    },
+    {
+      "title": "Build a Word Frequency Counter",
+      "description": "Count repeated words using HashMap.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Read a sentence from the user. Convert it to lowercase, split it into words and count each word's frequency using HashMap<String, Integer>. Print every word with its count. Test the program with repeated words."
+    },
+    {
+      "title": "Create a Placement Task Queue",
+      "description": "Implement FIFO task processing with ArrayDeque.",
+      "type": "Coding",
+      "difficulty": "Medium",
+      "instructions": "Create a Queue<String> using ArrayDeque. Add five placement preparation tasks using offer(). Display the next task with peek(), process tasks using poll(), and continue until the queue is empty."
+    },
+    {
+      "title": "Debug Concurrent Modification During Iteration",
+      "description": "Fix unsafe removal from an ArrayList.",
+      "type": "Debugging",
+      "difficulty": "Hard",
+      "instructions": "Consider: List<Integer> nums = new ArrayList<>(List.of(1, 2, 3, 4)); for (Integer n : nums) { if (n % 2 == 0) nums.remove(n); }. Explain why this modification pattern is unsafe and may throw ConcurrentModificationException. Rewrite it using Iterator.remove() or removeIf()."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Oracle Java Collections Framework",
+      "type": "Documentation",
+      "url": "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/doc-files/coll-overview.html",
+      "description": "Official Java documentation describing the Collections Framework and its interfaces."
+    },
+    {
+      "title": "Dev.java - Collections Framework",
+      "type": "Documentation",
+      "url": "https://dev.java/learn/api/collections-framework/",
+      "description": "Java learning materials covering collection interfaces, implementations and operations."
+    },
+    {
+      "title": "Java ArrayList - W3Schools",
+      "type": "Website",
+      "url": "https://www.w3schools.com/java/java_arraylist.asp",
+      "description": "Beginner-friendly guide to ArrayList operations with examples."
+    },
+    {
+      "title": "Collections in Java - GeeksforGeeks",
+      "type": "Article",
+      "url": "https://www.geeksforgeeks.org/java/collections-in-java-2/",
+      "description": "Overview of Java collection interfaces, implementations and examples."
+    },
+    {
+      "title": "Java Collections Framework - Programiz",
+      "type": "Website",
+      "url": "https://www.programiz.com/java-programming/collections",
+      "description": "Introduction to Java collections with practical examples."
+    }
+  ]
+}

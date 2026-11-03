@@ -1,0 +1,254 @@
+
+{
+  "topicTitle": "Operating Systems Fundamentals",
+  "lessons": [
+    {
+      "title": "Introduction to Operating Systems",
+      "description": "Understand operating system functions, architecture, kernel, system calls and different types of operating systems.",
+      "content": "An Operating System (OS) is system software that manages computer hardware and provides services to applications and users.\n\nExamples include Windows, Linux, macOS, Android and iOS.\n\nMajor functions of an operating system:\n1. Process management: Creates, schedules and terminates processes.\n2. Memory management: Allocates and protects memory.\n3. File management: Organizes files and directories.\n4. Device management: Coordinates hardware through device drivers.\n5. Security: Controls access to system resources.\n6. Resource allocation: Distributes CPU time, memory and I/O resources.\n\nImportant components:\nKernel: The central component responsible for core system operations.\nShell: An interface for interacting with the operating system, often through commands.\nSystem Call: A controlled interface through which programs request operating system services.\nDevice Driver: Software that allows the operating system to communicate with hardware devices.\n\nUser Mode vs Kernel Mode:\nUser mode restricts direct access to privileged operations.\nKernel mode allows execution of privileged operating system instructions.\n\nExample: When an application reads a file, it requests the operation through operating system interfaces rather than directly controlling the storage hardware.\n\nTypes of operating systems:\nBatch OS: Processes groups of jobs with limited interaction.\nTime-Sharing OS: Shares processor time among multiple users or tasks.\nReal-Time OS: Designed to satisfy specified timing requirements.\nDistributed OS: Coordinates resources across multiple computers.\nEmbedded OS: Designed for specialized devices.\n\nMultiprogramming keeps multiple programs available for execution to improve resource utilization.\n\nMultitasking allows multiple tasks to make progress through scheduling.\n\nMultiprocessing uses multiple processors or CPU cores for execution.\n\nInterview question: What is the difference between an operating system and a kernel?\n\nAnswer: The operating system includes system services and supporting software, while the kernel is its central component responsible for privileged resource management."
+    },
+    {
+      "title": "Processes, Threads and CPU Scheduling",
+      "description": "Learn process states, process control blocks, multithreading, context switching and CPU scheduling algorithms.",
+      "content": "A process is a program in execution. A thread is a unit of execution within a process.\n\nA process typically has its own virtual address space and operating system resources.\n\nThreads within the same process generally share its address space and resources while maintaining separate execution stacks and register states.\n\nCommon process states:\nNew: Process is being created.\nReady: Waiting for CPU allocation.\nRunning: Currently executing.\nWaiting or Blocked: Waiting for an event or resource.\nTerminated: Execution has finished.\n\nProcess Control Block (PCB):\nStores information such as process identifier, state, scheduling information, register context and memory-management details.\n\nContext Switching:\nThe operating system saves the execution context of one task and restores another so the CPU can execute a different task.\n\nContext switching introduces overhead because useful application execution is temporarily interrupted.\n\nCPU scheduling algorithms:\n\nFirst Come First Served (FCFS):\nProcesses execute in arrival order. It is simple but can suffer from the convoy effect.\n\nShortest Job First (SJF):\nSelects the process with the shortest estimated CPU burst. It minimizes average waiting time under suitable assumptions when all jobs are available, but requires burst estimation.\n\nShortest Remaining Time First (SRTF):\nPreemptive version of shortest-job scheduling.\n\nRound Robin (RR):\nEach ready process receives a time quantum before being preempted if it has not finished.\n\nPriority Scheduling:\nSelects processes according to priority. Low-priority processes may experience starvation.\n\nScheduling metrics:\nTurnaround Time = Completion Time - Arrival Time.\nWaiting Time = Turnaround Time - CPU Burst Time, for simple single-burst scheduling problems without additional waiting phases.\nResponse Time = First CPU Start Time - Arrival Time.\n\nExample:\nP1 arrives at time 0 with burst 4.\nP2 arrives at time 0 with burst 3.\nUsing FCFS with P1 first:\nP1 executes from 0 to 4.\nP2 executes from 4 to 7.\n\nWaiting times:\nP1 = 0.\nP2 = 4.\nAverage waiting time = 2.\n\nMultithreading improves responsiveness and can enable parallel execution on multiple CPU cores.\n\nInterview question: Process vs thread?\n\nAnswer: Processes have separate address spaces and resource boundaries, while threads are execution units that commonly share their process's memory and resources."
+    },
+    {
+      "title": "Process Synchronization and Deadlocks",
+      "description": "Understand race conditions, critical sections, mutexes, semaphores and deadlock prevention.",
+      "content": "Process synchronization coordinates concurrent activities to maintain correct access to shared resources.\n\nRace Condition:\nA race condition occurs when a program's outcome depends on the timing or interleaving of concurrent operations.\n\nExample:\nTwo threads read counter = 5.\nBoth calculate counter + 1.\nBoth write 6.\n\nThe expected result after two increments is 7, but the actual result may be 6.\n\nCritical Section:\nA portion of code that accesses shared data and requires synchronization to prevent conflicting operations.\n\nCommon synchronization tools:\nMutex: Provides mutual exclusion for a protected resource.\nSemaphore: Maintains a counter used to coordinate access or signal events.\nCondition Variable: Allows threads to wait for a condition and receive notifications.\nMonitor: Combines shared state and synchronization mechanisms in a structured abstraction.\n\nBinary semaphore commonly has values 0 and 1.\n\nCounting semaphore can represent multiple available resource units.\n\nClassic synchronization problems:\nProducer-Consumer Problem.\nReaders-Writers Problem.\nDining Philosophers Problem.\n\nDeadlock:\nA deadlock occurs when a set of processes or threads cannot proceed because each is waiting for resources or events dependent on others in the set.\n\nFour Coffman conditions for resource deadlock:\n1. Mutual Exclusion: At least one resource cannot be shared simultaneously.\n2. Hold and Wait: A process holds resources while waiting for others.\n3. No Preemption: Resources cannot be forcibly taken away under the model.\n4. Circular Wait: A circular chain of waiting processes exists.\n\nExample:\nProcess P1 holds Resource A and waits for Resource B.\nProcess P2 holds Resource B and waits for Resource A.\n\nBoth processes remain blocked.\n\nDeadlock handling approaches:\nPrevention: Design allocation rules to break a necessary deadlock condition.\nAvoidance: Grant requests only when the resulting state remains safe under the chosen model.\nDetection: Identify deadlocks after they occur.\nRecovery: Terminate processes, roll back work or reclaim resources when possible.\n\nBanker's Algorithm is a classic deadlock-avoidance algorithm based on resource requirements and safe-state analysis.\n\nStarvation differs from deadlock. Starvation occurs when a process waits indefinitely because it repeatedly fails to receive needed resources or scheduling opportunities.\n\nInterview tip: Explain race conditions and deadlocks using short examples rather than memorized definitions alone."
+    },
+    {
+      "title": "Memory Management and Virtual Memory",
+      "description": "Understand memory allocation, paging, segmentation, virtual memory and page replacement algorithms.",
+      "content": "Memory management controls how processes use primary memory and provides protection and efficient allocation.\n\nLogical or Virtual Address:\nAddress generated within a process's virtual address space.\n\nPhysical Address:\nActual location in physical memory.\n\nMemory Management Unit (MMU):\nHardware involved in translating virtual addresses into physical addresses and enforcing memory protections.\n\nContiguous allocation assigns each process a continuous memory region.\n\nFragmentation:\nInternal Fragmentation: Unused space inside allocated memory units.\nExternal Fragmentation: Free memory exists in separate regions that may be unsuitable for a requested contiguous allocation.\n\nPaging:\nDivides virtual memory into fixed-size pages and physical memory into fixed-size frames.\n\nPage tables map virtual pages to physical frames or indicate that a page is not currently resident.\n\nExample:\nPage size = 4 KB.\nVirtual address = 10 KB.\n\nPage number = floor(10 / 4) = 2.\nOffset = 2 KB.\n\nThe physical address depends on the frame assigned to virtual page 2.\n\nSegmentation:\nDivides memory into logical segments such as code, data and stack, depending on the architecture and operating system design.\n\nVirtual Memory:\nAllows processes to use virtual address spaces independently of the amount of physical memory currently assigned to them.\n\nDemand Paging:\nLoads pages into physical memory when needed.\n\nPage Fault:\nOccurs when a memory reference requires operating system handling because the referenced virtual page is not currently mapped in the required way. A missing page may be loaded from storage if the access is valid.\n\nPage replacement algorithms:\nFIFO: Replaces the page that entered memory earliest.\nLRU: Replaces the least recently used page.\nOptimal: Replaces the page whose next use is farthest in the future; mainly a theoretical benchmark.\n\nThrashing:\nA condition where excessive paging activity severely reduces useful execution progress.\n\nTranslation Lookaside Buffer (TLB):\nA hardware cache of recent address translations that can reduce page-table lookup overhead.\n\nInterview question: Paging vs segmentation?\n\nAnswer: Paging uses fixed-size memory units, while segmentation uses logical regions that may vary in size.\n\nInterview question: What is virtual memory?\n\nAnswer: Virtual memory provides processes with virtual address spaces mapped to physical memory and, where supported, secondary storage."
+    },
+    {
+      "title": "File Systems, Disk Scheduling and OS Interview Preparation",
+      "description": "Learn file organization, disk scheduling, I/O management and frequently asked operating system interview concepts.",
+      "content": "A file system organizes and manages data stored on storage devices.\n\nCommon file systems include NTFS, ext4, APFS and FAT32.\n\nFile system responsibilities:\n1. File creation and deletion.\n2. Directory organization.\n3. Access permissions.\n4. Metadata management.\n5. Storage allocation.\n6. Free-space tracking.\n\nFile attributes may include name, size, timestamps, permissions and storage metadata.\n\nCommon directory structures:\nSingle-Level Directory.\nTwo-Level Directory.\nTree-Structured Directory.\n\nFile allocation techniques:\nContiguous Allocation: File blocks occupy consecutive storage locations.\nLinked Allocation: File blocks are connected through pointers or equivalent metadata.\nIndexed Allocation: An index structure records locations of file blocks.\n\nDisk scheduling algorithms were developed primarily for mechanical disks, where seek time and rotational latency matter.\n\nFCFS: Services requests in arrival order.\nSSTF: Selects the request with the shortest seek distance from the current head position.\nSCAN: Moves the disk head in one direction servicing requests, then reverses direction.\nC-SCAN: Services requests in one direction and returns to the starting side for another pass.\nLOOK: Similar to SCAN but reverses at the last pending request in the current direction.\n\nSolid-state drives have different performance characteristics, so traditional seek-based scheduling has less relevance to SSDs.\n\nI/O management:\nBuffering: Temporarily stores data during transfer.\nCaching: Keeps frequently accessed data available for faster reuse.\nSpooling: Queues work for devices such as printers.\n\nImportant interview comparisons:\n\nProgram vs Process:\nA program is stored executable instructions; a process is an executing instance with associated state.\n\nProcess vs Thread:\nA process provides an execution and resource boundary; a thread is an execution unit within a process.\n\nConcurrency vs Parallelism:\nConcurrency means multiple tasks make progress over overlapping periods.\nParallelism means tasks execute simultaneously on different processing resources.\n\nDeadlock vs Starvation:\nDeadlock involves circular or otherwise unresolved waiting dependencies. Starvation involves indefinite lack of progress due to resource or scheduling decisions.\n\nPaging vs Swapping:\nPaging manages memory in page-sized units. Swapping traditionally refers to moving process memory between RAM and secondary storage, though terminology varies by system.\n\nInterview preparation checklist:\n1. Operating system functions.\n2. Kernel and system calls.\n3. Processes and threads.\n4. CPU scheduling algorithms.\n5. Race conditions and synchronization.\n6. Deadlocks and Banker's Algorithm.\n7. Paging and virtual memory.\n8. Page replacement algorithms.\n9. File systems.\n10. Disk scheduling.\n\nPlacement tip: Practice CPU scheduling calculations, page replacement problems and synchronization scenarios alongside conceptual questions."
+    }
+  ],
+  "videos": [
+    {
+      "title": "Operating Systems Fundamentals",
+      "youtubeUrl": "https://www.youtube.com/watch?v=vBURTt97EkA",
+      "description": "Introduction to operating system concepts and architecture. Verify video relevance before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Processes and CPU Scheduling",
+      "youtubeUrl": "https://www.youtube.com/watch?v=OrM7nZcxXZU",
+      "description": "Supplementary video reference for processes and scheduling. Verify video relevance before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Synchronization and Deadlocks",
+      "youtubeUrl": "https://www.youtube.com/watch?v=UVo9mGARkhQ",
+      "description": "Supplementary video reference for synchronization and deadlocks. Verify video relevance before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Memory Management and Paging",
+      "youtubeUrl": "https://www.youtube.com/watch?v=2quKyPnUShQ",
+      "description": "Supplementary video reference for virtual memory and paging. Verify video relevance before publishing.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "File Systems and Operating System Interview Questions",
+      "youtubeUrl": "https://www.youtube.com/watch?v=RozoeWzT7IM",
+      "description": "Supplementary video reference for file systems and OS interview preparation. Verify video relevance before publishing.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "What is the primary purpose of an operating system?",
+      "options": [
+        "To replace computer hardware",
+        "To manage hardware resources and provide services to applications",
+        "To create only database applications",
+        "To eliminate the need for programming languages"
+      ],
+      "correctAnswer": 1,
+      "explanation": "An operating system manages hardware resources and provides services to applications and users.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which component is responsible for core privileged resource management in an operating system?",
+      "options": [
+        "Web Browser",
+        "Compiler",
+        "Kernel",
+        "Text Editor"
+      ],
+      "correctAnswer": 2,
+      "explanation": "The kernel is the central operating system component responsible for privileged resource management.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which CPU scheduling algorithm allocates a fixed time quantum to ready processes?",
+      "options": [
+        "FCFS",
+        "Round Robin",
+        "Non-preemptive SJF",
+        "FIFO Page Replacement"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Round Robin scheduling assigns each ready process a time quantum.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "A process arrives at time 2, starts execution at time 5 and completes at time 11. What is its response time?",
+      "options": [
+        "3 units",
+        "6 units",
+        "9 units",
+        "11 units"
+      ],
+      "correctAnswer": 0,
+      "explanation": "Response Time = First Start Time - Arrival Time = 5 - 2 = 3.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which situation best describes a race condition?",
+      "options": [
+        "A process completes before its deadline",
+        "Two threads access shared data and the outcome depends on their execution order",
+        "A program uses only one thread",
+        "A file is stored on a disk"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A race condition occurs when concurrent operations produce timing-dependent results.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which of the following is NOT one of the four Coffman conditions for deadlock?",
+      "options": [
+        "Mutual Exclusion",
+        "Hold and Wait",
+        "Circular Wait",
+        "Round Robin Scheduling"
+      ],
+      "correctAnswer": 3,
+      "explanation": "The four conditions are mutual exclusion, hold and wait, no preemption and circular wait.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is the primary purpose of a page table?",
+      "options": [
+        "To store user passwords",
+        "To map virtual pages to physical frames or other page states",
+        "To schedule CPU processes",
+        "To manage network packets"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A page table maintains virtual-memory mapping information used during address translation.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which page replacement algorithm replaces the page that has not been used for the longest time?",
+      "options": [
+        "FIFO",
+        "LRU",
+        "Round Robin",
+        "FCFS"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Least Recently Used (LRU) replaces the page with the oldest recent-use history.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Three processes arrive at time 0 with CPU bursts P1=5, P2=3 and P3=2. Using non-preemptive SJF, what is the average waiting time?",
+      "options": [
+        "2 units",
+        "2.33 units",
+        "3 units",
+        "3.33 units"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Execution order is P3, P2, P1. Waiting times are 0, 2 and 5. Average = 7/3 = approximately 2.33 units.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "A system spends most of its time moving pages between memory and storage instead of executing useful work. What is this condition called?",
+      "options": [
+        "Multiprocessing",
+        "Thrashing",
+        "Spooling",
+        "Context Switching"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Thrashing occurs when excessive paging severely reduces useful system performance.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Operating System Concepts",
+      "description": "Explain essential operating system components and functions.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "Explain the functions of an operating system. Differentiate between kernel and shell, user mode and kernel mode, and program and process. Provide one practical example for each concept."
+    },
+    {
+      "title": "CPU Scheduling Calculation",
+      "description": "Calculate completion time, turnaround time and waiting time using CPU scheduling algorithms.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Four processes arrive at time 0 with CPU bursts P1=6, P2=2, P3=8 and P4=3. Calculate the execution order, completion time, turnaround time and waiting time for FCFS and non-preemptive SJF. Compare the average waiting times."
+    },
+    {
+      "title": "Process Synchronization Scenario",
+      "description": "Analyze race conditions and synchronization mechanisms.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Two threads simultaneously increment a shared counter initially equal to 10. Explain how a race condition can produce an incorrect result. Describe how a mutex prevents this issue and explain the difference between a mutex and a counting semaphore."
+    },
+    {
+      "title": "Page Replacement Challenge",
+      "description": "Calculate page faults using FIFO and LRU page replacement algorithms.",
+      "type": "Written",
+      "difficulty": "Hard",
+      "instructions": "Given the page reference string 1, 2, 3, 2, 4, 1, 5, 2, 4, 5 and three initially empty page frames, calculate the total number of page faults using FIFO and LRU. Show the contents of all frames after each reference and compare the results."
+    },
+    {
+      "title": "Deadlock and Operating System Interview Scenario",
+      "description": "Apply deadlock theory, memory management and scheduling knowledge to real-world situations.",
+      "type": "Written",
+      "difficulty": "Hard",
+      "instructions": "A system has three processes sharing two types of resources. Explain the four necessary conditions for resource deadlock. Construct a simple deadlock example using two processes and two resources. Describe deadlock prevention, avoidance, detection and recovery. Then explain how Banker's Algorithm determines whether a resource allocation state is safe."
+    }
+  ],
+  "resources": [
+    {
+      "title": "GeeksforGeeks - Operating Systems",
+      "type": "Website",
+      "url": "https://www.geeksforgeeks.org/operating-systems/",
+      "description": "Operating system tutorials covering scheduling, synchronization, memory management and file systems."
+    },
+    {
+      "title": "MIT OpenCourseWare - Operating System Engineering",
+      "type": "Website",
+      "url": "https://pdos.csail.mit.edu/6.1810/",
+      "description": "University-level operating systems material with lectures, labs and practical concepts."
+    },
+    {
+      "title": "Operating Systems: Three Easy Pieces",
+      "type": "Website",
+      "url": "https://pages.cs.wisc.edu/~remzi/OSTEP/",
+      "description": "Free operating systems textbook covering virtualization, concurrency and persistence."
+    },
+    {
+      "title": "Linux Kernel Documentation",
+      "type": "Documentation",
+      "url": "https://docs.kernel.org/",
+      "description": "Official Linux kernel documentation covering memory, scheduling and system internals."
+    },
+    {
+      "title": "Microsoft Learn - Windows Architecture",
+      "type": "Documentation",
+      "url": "https://learn.microsoft.com/en-us/windows/",
+      "description": "Official Microsoft documentation for Windows platform and operating system concepts."
+    }
+  ]
+}

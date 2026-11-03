@@ -1,0 +1,255 @@
+
+{
+  "topicTitle": "DBMS Interview Fundamentals",
+  "lessons": [
+    {
+      "title": "Introduction to DBMS and Database Architecture",
+      "description": "Understand database management systems, relational databases, keys and database architecture.",
+      "content": "A Database Management System (DBMS) is software used to store, organize, retrieve, update and manage data efficiently.\n\nExamples include MySQL, PostgreSQL, Oracle Database, Microsoft SQL Server and MongoDB. MongoDB is a document-oriented database, while MySQL and PostgreSQL are relational database management systems.\n\nDBMS advantages:\n1. Reduces unnecessary data duplication.\n2. Supports data integrity.\n3. Provides controlled data access.\n4. Supports concurrent users.\n5. Enables backup and recovery.\n6. Supports efficient queries.\n\nDBMS vs RDBMS:\nA DBMS is a broad category of database management software. An RDBMS is a DBMS based on the relational model, which represents data through relations, commonly implemented as tables.\n\nExample Student table:\nStudentID | Name | Department\n101 | Rahul | MCA\n102 | Priya | MBA\n103 | Arjun | MCA\n\nImportant terminology:\nTable: Collection of rows and columns.\nRow: A record or tuple.\nColumn: An attribute.\nSchema: Logical definition of database structures.\nInstance: Actual data stored at a particular time.\n\nDatabase keys:\nPrimary Key: Uniquely identifies a row and cannot contain NULL values.\nForeign Key: References a candidate or primary key in another or the same table, depending on the DBMS.\nCandidate Key: Minimal set of attributes that uniquely identifies a row.\nSuper Key: Any set of attributes that uniquely identifies a row.\nComposite Key: Key consisting of multiple attributes.\nAlternate Key: Candidate key not selected as the primary key.\n\nExample:\nStudents(StudentID, Name, DepartmentID)\nDepartments(DepartmentID, DepartmentName)\n\nStudentID is the primary key of Students. DepartmentID can be a foreign key referencing Departments.\n\nThree-schema architecture:\nExternal Level: User-specific views.\nConceptual Level: Overall logical database structure.\nInternal Level: Physical storage representation.\n\nData independence:\nLogical data independence allows conceptual schema changes without requiring changes to external views when compatibility is preserved.\nPhysical data independence allows changes in physical storage without changing the conceptual schema.\n\nInterview question: What is the difference between a primary key and a foreign key?\n\nAnswer: A primary key uniquely identifies records in its own table. A foreign key establishes a referential relationship with a key in another or the same table."
+    },
+    {
+      "title": "ER Model, Relationships and Normalization",
+      "description": "Learn entity-relationship modeling, cardinality, functional dependencies and normalization.",
+      "content": "The Entity-Relationship (ER) model is used to design the logical structure of a database.\n\nEntity: A distinguishable object such as Student, Course or Employee.\nAttribute: A property of an entity, such as StudentID or Name.\nRelationship: An association between entities.\n\nRelationship cardinality:\nOne-to-One: One employee has one assigned locker, assuming the business rules enforce this relationship.\nOne-to-Many: One department has many employees.\nMany-to-Many: Students enroll in multiple courses and courses contain multiple students.\n\nMany-to-many relationships are commonly implemented using a junction table.\n\nExample:\nStudents(StudentID, Name)\nCourses(CourseID, CourseName)\nEnrollments(StudentID, CourseID)\n\nNormalization organizes relational tables to reduce redundancy and undesirable data dependencies.\n\nFunctional dependency:\nA -> B means the value of A determines the value of B.\n\nExample:\nStudentID -> StudentName.\n\nFirst Normal Form (1NF):\nEach field contains a single value from its domain, and repeating groups are eliminated.\n\nSecond Normal Form (2NF):\nThe table is in 1NF and every non-prime attribute is fully functionally dependent on every candidate key, eliminating partial dependencies.\n\nThird Normal Form (3NF):\nThe table is in 2NF and, for every nontrivial functional dependency X -> A, either X is a superkey or A is a prime attribute.\n\nIn common introductory examples, 3NF removes transitive dependencies of non-key attributes on a key.\n\nBoyce-Codd Normal Form (BCNF):\nFor every nontrivial functional dependency X -> Y, X must be a superkey.\n\nExample of a normalization problem:\nEnrollment(StudentID, StudentName, CourseID, CourseName)\n\nIf StudentID determines StudentName and CourseID determines CourseName, storing these values repeatedly creates redundancy.\n\nA normalized design may use:\nStudents(StudentID, StudentName)\nCourses(CourseID, CourseName)\nEnrollments(StudentID, CourseID)\n\nDatabase anomalies:\nInsertion anomaly: Difficulty inserting information independently.\nUpdate anomaly: Inconsistent data after partial updates.\nDeletion anomaly: Losing unrelated information when deleting a record.\n\nInterview question: Why is normalization important?\n\nAnswer: It reduces redundancy, improves consistency and helps prevent insertion, update and deletion anomalies.\n\nNote: Normalization is a logical design technique. Denormalization may be deliberately used for performance when its trade-offs are understood."
+    },
+    {
+      "title": "SQL Concepts, Joins, Subqueries and Views",
+      "description": "Review essential SQL operations and commonly asked DBMS interview queries.",
+      "content": "SQL stands for Structured Query Language. It is used to define, query and manipulate relational database data.\n\nCommon SQL command categories:\nDDL: CREATE, ALTER, DROP, TRUNCATE.\nDML: INSERT, UPDATE, DELETE.\nDQL: SELECT, often treated as a separate category in introductory materials.\nDCL: GRANT, REVOKE.\nTCL: COMMIT, ROLLBACK, SAVEPOINT.\n\nExample:\nCREATE TABLE Employees (\n  EmployeeID INT PRIMARY KEY,\n  EmployeeName VARCHAR(100),\n  Salary DECIMAL(10,2),\n  DepartmentID INT\n);\n\nRetrieve all employees:\nSELECT * FROM Employees;\n\nFilter employees:\nSELECT EmployeeName, Salary\nFROM Employees\nWHERE Salary > 50000;\n\nSort results:\nSELECT * FROM Employees\nORDER BY Salary DESC;\n\nAggregate functions:\nCOUNT(), SUM(), AVG(), MIN(), MAX().\n\nExample:\nSELECT DepartmentID, AVG(Salary)\nFROM Employees\nGROUP BY DepartmentID;\n\nWHERE filters rows before grouping. HAVING filters groups after aggregation.\n\nExample:\nSELECT DepartmentID, COUNT(*) AS EmployeeCount\nFROM Employees\nGROUP BY DepartmentID\nHAVING COUNT(*) > 5;\n\nSQL joins:\nINNER JOIN: Returns rows satisfying the join condition.\nLEFT JOIN: Preserves all left-side rows and matches right-side rows where available.\nRIGHT JOIN: Preserves all right-side rows and matches left-side rows where available.\nFULL OUTER JOIN: Preserves unmatched rows from both sides; availability and syntax vary by DBMS.\nCROSS JOIN: Produces combinations of rows from both inputs.\n\nExample:\nSELECT e.EmployeeName, d.DepartmentName\nFROM Employees e\nINNER JOIN Departments d\nON e.DepartmentID = d.DepartmentID;\n\nSubquery:\nSELECT EmployeeName\nFROM Employees\nWHERE Salary > (SELECT AVG(Salary) FROM Employees);\n\nA view is a stored query definition that can be used like a virtual table. Some database systems also support materialized views that store query results.\n\nExample:\nCREATE VIEW HighSalaryEmployees AS\nSELECT EmployeeID, EmployeeName, Salary\nFROM Employees\nWHERE Salary > 70000;\n\nImportant interview distinctions:\nDELETE removes selected rows and can use WHERE.\nTRUNCATE removes all rows from a table in systems supporting the statement, with transaction behavior varying by DBMS.\nDROP removes a database object such as a table.\n\nUNION combines result sets and removes duplicate rows.\nUNION ALL combines result sets while retaining duplicates.\n\nInterview tip: Be prepared to explain joins, grouping, subqueries and NULL handling with small examples."
+    },
+    {
+      "title": "Transactions, ACID Properties and Concurrency Control",
+      "description": "Understand database transactions, ACID properties, isolation levels, locks and deadlocks.",
+      "content": "A transaction is a logical unit of database work containing one or more operations.\n\nExample: Transferring 1000 from Account A to Account B requires deducting 1000 from A and adding 1000 to B.\n\nBoth operations should succeed together or be rolled back together.\n\nACID properties:\n\nAtomicity:\nA transaction is treated as one unit. Either its operations commit or its changes are rolled back.\n\nConsistency:\nA transaction preserves declared database integrity constraints when moving between valid states.\n\nIsolation:\nConcurrent transactions are controlled so their interactions follow the database's isolation guarantees.\n\nDurability:\nOnce a transaction commits, its effects survive failures according to the DBMS durability guarantees.\n\nExample transaction:\nSTART TRANSACTION;\nUPDATE Accounts SET Balance = Balance - 1000 WHERE AccountID = 1;\nUPDATE Accounts SET Balance = Balance + 1000 WHERE AccountID = 2;\nCOMMIT;\n\nIn production, the application must also verify sufficient funds, affected row counts and transaction errors before committing.\n\nTransaction commands:\nCOMMIT: Makes transaction changes permanent.\nROLLBACK: Reverts uncommitted transaction changes.\nSAVEPOINT: Establishes a point for partial rollback where supported.\n\nConcurrency problems:\nDirty Read: Reading another transaction's uncommitted changes.\nNon-Repeatable Read: Reading the same row twice and observing a different committed value.\nPhantom Read: Repeating a predicate query and observing a changed set of matching rows.\nLost Update: One transaction's update unintentionally overwrites another's update.\n\nCommon SQL isolation levels:\nRead Uncommitted.\nRead Committed.\nRepeatable Read.\nSerializable.\n\nExact behavior depends on the DBMS and its concurrency-control implementation.\n\nLocks:\nShared locks are commonly used for reading protected data.\nExclusive locks are commonly used when modifying protected data.\n\nDeadlock:\nA deadlock occurs when transactions wait on resources held by one another and none can proceed without intervention.\n\nExample:\nTransaction T1 locks Row A and waits for Row B.\nTransaction T2 locks Row B and waits for Row A.\n\nDeadlock prevention and handling techniques include consistent lock ordering, shorter transactions, deadlock detection and retrying aborted transactions.\n\nInterview question: What is the difference between COMMIT and ROLLBACK?\n\nAnswer: COMMIT finalizes a transaction's changes. ROLLBACK reverses uncommitted changes within the transaction."
+    },
+    {
+      "title": "Indexing, Query Optimization and DBMS Interview Preparation",
+      "description": "Understand indexes, query performance, query plans and frequently asked DBMS interview concepts.",
+      "content": "An index is a database structure that helps locate records efficiently without scanning every row in suitable queries.\n\nCommon index types:\nB-tree or B+ tree indexes: Useful for equality and range searches.\nHash indexes: Useful for equality searches in supported database systems.\nComposite indexes: Include multiple columns.\nUnique indexes: Enforce uniqueness of indexed key values according to DBMS rules.\n\nExample:\nCREATE INDEX idx_employee_department\nON Employees(DepartmentID);\n\nThis index may improve queries filtering or joining on DepartmentID.\n\nAdvantages:\n1. Can speed up data retrieval.\n2. Can improve filtering and join performance.\n3. Can support sorting and grouping in suitable query plans.\n\nDisadvantages:\n1. Require storage space.\n2. Increase maintenance work during inserts, updates and deletes.\n3. May provide little benefit for certain queries.\n\nComposite index example:\nCREATE INDEX idx_department_salary\nON Employees(DepartmentID, Salary);\n\nFor many B-tree implementations, column order matters. An index on (DepartmentID, Salary) can be useful when queries filter by DepartmentID, but may not be equally useful for queries filtering only by Salary.\n\nQuery optimization is the process of choosing an efficient execution plan for a query.\n\nCommon optimization techniques:\n1. Select only required columns.\n2. Create appropriate indexes.\n3. Avoid unnecessary joins.\n4. Filter data efficiently.\n5. Examine execution plans.\n6. Avoid unnecessary repeated queries.\n7. Use suitable data types.\n\nEXPLAIN is commonly used to inspect query execution plans, although syntax and output vary by DBMS.\n\nExample:\nEXPLAIN SELECT * FROM Employees WHERE DepartmentID = 10;\n\nImportant DBMS interview concepts:\n\nPrimary Key vs Unique Constraint:\nA primary key uniquely identifies rows and disallows NULL values. Unique constraints enforce uniqueness, while NULL behavior varies by database system.\n\nClustered vs Nonclustered Index:\nA clustered index determines or closely corresponds to the organization of table data in systems that support the distinction. A nonclustered index stores a separate lookup structure. Implementation details differ across database engines.\n\nStored Procedure:\nA stored program containing database operations, supported with different syntax and capabilities across DBMS products.\n\nTrigger:\nA database routine executed automatically in response to specified database events.\n\nView:\nA query-defined database object used to present data through a reusable interface.\n\nInterview preparation checklist:\n1. DBMS vs RDBMS.\n2. Keys and constraints.\n3. ER diagrams and relationships.\n4. Normalization and anomalies.\n5. SQL joins and subqueries.\n6. ACID properties.\n7. Transactions and isolation levels.\n8. Indexing and query optimization.\n9. Deadlocks and concurrency.\n10. Views, procedures and triggers.\n\nPlacement tip: For technical interviews, explain each concept using a simple database example rather than giving only a definition."
+    }
+  ],
+
+"videos": [
+  {
+    "title": "DBMS Fundamentals and Database Architecture",
+    "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+    "description": "Introduction to database concepts and relational databases.",
+    "durationMinutes": 0
+  },
+  {
+    "title": "ER Model and Database Normalization",
+    "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+    "description": "Understanding entity relationships and normalization.",
+    "durationMinutes": 0
+  },
+  {
+    "title": "SQL Joins and Subqueries",
+    "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+    "description": "SQL query concepts, joins and subqueries.",
+    "durationMinutes": 0
+  },
+  {
+    "title": "Transactions and ACID Properties",
+    "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+    "description": "Database transactions, ACID properties and concurrency.",
+    "durationMinutes": 0
+  },
+  {
+    "title": "Indexing and DBMS Interview Questions",
+    "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+    "description": "Indexing, query optimization and interview preparation.",
+    "durationMinutes": 0
+  }
+],
+  "quizzes": [
+    {
+      "question": "What is the primary purpose of a DBMS?",
+      "options": [
+        "To design computer hardware",
+        "To manage and organize data",
+        "To compile programming languages",
+        "To create operating systems"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A DBMS stores, organizes, retrieves and manages data.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which key uniquely identifies each row in a relational table and cannot contain NULL values?",
+      "options": [
+        "Foreign Key",
+        "Primary Key",
+        "Composite Attribute",
+        "Non-key Attribute"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A primary key uniquely identifies every row and does not permit NULL values.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which normal form eliminates partial dependencies on a candidate key?",
+      "options": [
+        "1NF",
+        "2NF",
+        "3NF",
+        "4NF"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Second Normal Form requires 1NF and full functional dependency of non-prime attributes on candidate keys.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which SQL clause filters groups after aggregation?",
+      "options": [
+        "WHERE",
+        "ORDER BY",
+        "HAVING",
+        "FROM"
+      ],
+      "correctAnswer": 2,
+      "explanation": "HAVING filters grouped results, often using aggregate conditions.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which SQL join returns matching rows from both tables according to the join condition?",
+      "options": [
+        "INNER JOIN",
+        "CROSS JOIN",
+        "LEFT JOIN",
+        "FULL OUTER JOIN"
+      ],
+      "correctAnswer": 0,
+      "explanation": "INNER JOIN returns rows satisfying the join condition.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which ACID property ensures that a transaction is treated as a single unit of work?",
+      "options": [
+        "Consistency",
+        "Isolation",
+        "Atomicity",
+        "Durability"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Atomicity ensures that a transaction's operations commit together or are rolled back.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "What is a dirty read?",
+      "options": [
+        "Reading encrypted data",
+        "Reading another transaction's uncommitted changes",
+        "Reading data from an index",
+        "Reading duplicate rows"
+      ],
+      "correctAnswer": 1,
+      "explanation": "A dirty read occurs when a transaction observes changes made by another transaction before those changes commit.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Which SQL command is used to make transaction changes permanent?",
+      "options": [
+        "ROLLBACK",
+        "SAVEPOINT",
+        "COMMIT",
+        "DELETE"
+      ],
+      "correctAnswer": 2,
+      "explanation": "COMMIT finalizes the transaction and makes its changes durable according to the database's guarantees.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Which statement about database indexes is generally correct?",
+      "options": [
+        "Indexes always improve every query",
+        "Indexes require no storage",
+        "Indexes can improve retrieval but add maintenance overhead",
+        "Indexes eliminate the need for primary keys"
+      ],
+      "correctAnswer": 2,
+      "explanation": "Indexes can speed up suitable queries but consume storage and require maintenance during data modifications.",
+      "difficulty": "Hard"
+    },
+    {
+      "question": "Transaction T1 holds Lock A and waits for Lock B. Transaction T2 holds Lock B and waits for Lock A. What situation has occurred?",
+      "options": [
+        "Normalization",
+        "Deadlock",
+        "Indexing",
+        "Data independence"
+      ],
+      "correctAnswer": 1,
+      "explanation": "Both transactions are waiting on resources held by the other, creating a circular wait characteristic of deadlock.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Design a Student Database",
+      "description": "Practice identifying entities, attributes, primary keys and foreign keys.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "Design a database for a college containing Students, Departments and Courses. Identify attributes for each entity, select appropriate primary keys and explain how foreign keys establish relationships."
+    },
+    {
+      "title": "Database Normalization Challenge",
+      "description": "Normalize a relational table and explain data anomalies.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Consider Enrollment(StudentID, StudentName, CourseID, CourseName, InstructorName), where StudentID determines StudentName and CourseID determines CourseName and InstructorName. Assume each course has one instructor. Decompose the table into a suitable normalized design and explain the functional dependencies and anomalies removed."
+    },
+    {
+      "title": "SQL Interview Query Practice",
+      "description": "Write SQL queries using filtering, grouping, joins and subqueries.",
+      "type": "SQL",
+      "difficulty": "Medium",
+      "instructions": "Given Employees(EmployeeID, EmployeeName, Salary, DepartmentID) and Departments(DepartmentID, DepartmentName), write SQL queries to: (1) Find employees earning more than 50000. (2) Find the average salary per department. (3) Display employee names with department names. (4) Find employees earning above the company-wide average salary. (5) Find departments containing more than five employees."
+    },
+    {
+      "title": "Transaction and ACID Analysis",
+      "description": "Explain transaction processing and concurrency problems using a banking example.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "A banking application transfers 2000 from Account A to Account B. Explain how atomicity, consistency, isolation and durability apply. Describe what should happen if the second update fails, and give one example of a possible concurrency problem."
+    },
+    {
+      "title": "Advanced DBMS Interview Scenario",
+      "description": "Analyze indexing, deadlocks and query performance in a realistic database scenario.",
+      "type": "Written",
+      "difficulty": "Hard",
+      "instructions": "An application contains an Employees table with one million records. Queries frequently filter by DepartmentID and sort by Salary. Explain an appropriate indexing strategy and its trade-offs. Describe how to inspect the query execution plan. Then explain how two concurrent transactions could deadlock and suggest at least three ways to reduce or handle deadlocks."
+    }
+  ],
+  "resources": [
+    {
+      "title": "GeeksforGeeks - DBMS",
+      "type": "Website",
+      "url": "https://www.geeksforgeeks.org/dbms/",
+      "description": "DBMS concepts including keys, normalization, transactions, indexing and interview preparation."
+    },
+    {
+      "title": "PostgreSQL Official Documentation",
+      "type": "Documentation",
+      "url": "https://www.postgresql.org/docs/current/",
+      "description": "Official reference for relational database concepts, SQL, transactions and indexes."
+    },
+    {
+      "title": "MySQL Reference Manual",
+      "type": "Documentation",
+      "url": "https://dev.mysql.com/doc/refman/8.4/en/",
+      "description": "Official MySQL documentation covering database operations, SQL and performance."
+    },
+    {
+      "title": "SQLBolt - Interactive SQL Lessons",
+      "type": "Website",
+      "url": "https://sqlbolt.com/",
+      "description": "Interactive SQL tutorials for querying and manipulating relational data."
+    },
+    {
+      "title": "Microsoft Learn - SQL Documentation",
+      "type": "Documentation",
+      "url": "https://learn.microsoft.com/en-us/sql/",
+      "description": "Database documentation covering SQL Server concepts, queries and administration."
+    }
+  ]
+}

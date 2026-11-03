@@ -1,0 +1,204 @@
+
+{
+  "topicTitle": "Quantitative Aptitude Fundamentals",
+  "lessons": [
+    {
+      "title": "Number System and Basic Arithmetic",
+      "description": "Learn number types, divisibility, factors, multiples, HCF and LCM.",
+      "content": "Quantitative aptitude begins with understanding numbers and arithmetic operations.\n\nNatural numbers: 1, 2, 3, ...\nWhole numbers: 0, 1, 2, ...\nIntegers: Negative numbers, zero and positive numbers.\nPrime numbers: Numbers greater than 1 with exactly two positive factors.\nComposite numbers: Numbers greater than 1 having more than two positive factors.\n\nBODMAS defines the usual order of arithmetic operations: Brackets, Orders, Division and Multiplication from left to right, Addition and Subtraction from left to right.\n\nFactors divide a number exactly. Multiples are obtained by multiplying a number by integers.\n\nHCF is the highest common factor. LCM is the least common multiple.\n\nExample: Find HCF and LCM of 12 and 18.\nFactors of 12: 1, 2, 3, 4, 6, 12.\nFactors of 18: 1, 2, 3, 6, 9, 18.\nHCF = 6.\nLCM = 36.\n\nFor two positive integers a and b:\nHCF(a,b) × LCM(a,b) = a × b.\n\nDivisibility rules: A number is divisible by 2 if its last digit is even, by 3 if its digit sum is divisible by 3, by 5 if its last digit is 0 or 5, and by 9 if its digit sum is divisible by 9.\n\nPlacement tip: Practice mental arithmetic, multiplication tables, squares and common fractions to improve calculation speed."
+    },
+    {
+      "title": "Percentages and Percentage Change",
+      "description": "Understand percentage calculations, increases, decreases and successive changes.",
+      "content": "A percentage represents a quantity out of 100.\n\nPercentage = (Part / Whole) × 100.\n\nExample: A student scores 72 marks out of 90.\nPercentage = (72 / 90) × 100 = 80%.\n\nTo find x% of a number N:\nValue = (x / 100) × N.\n\nExample: 15% of 800 = 120.\n\nPercentage increase = ((New Value - Original Value) / Original Value) × 100.\n\nPercentage decrease = ((Original Value - New Value) / Original Value) × 100.\n\nExample: Salary increases from ₹20,000 to ₹25,000.\nIncrease = ₹5,000.\nPercentage increase = (5000 / 20000) × 100 = 25%.\n\nSuccessive percentage changes are multiplicative, not simply additive.\n\nExample: A price increases by 20% and then decreases by 10%.\nStarting price = ₹100.\nAfter increase = ₹120.\nAfter decrease = ₹108.\nOverall increase = 8%.\n\nShortcut: Net percentage change for successive changes a% and b% is a + b + ab/100, using negative values for decreases.\n\nCommon conversions: 1/2 = 50%, 1/4 = 25%, 1/5 = 20%, 1/8 = 12.5%.\n\nPlacement tip: Always identify the original value used as the percentage base."
+    },
+    {
+      "title": "Ratios, Proportions and Averages",
+      "description": "Solve ratio distribution, direct proportion, inverse proportion and average problems.",
+      "content": "A ratio compares two quantities of the same kind.\n\nExample: The ratio of boys to girls is 3:2. If there are 30 boys, the number of girls is 20.\n\nIf A:B = 3:2 and the total is 100, then A = 3/5 × 100 = 60 and B = 2/5 × 100 = 40.\n\nA proportion states that two ratios are equal.\n\nIf a/b = c/d, then ad = bc, provided denominators are nonzero.\n\nDirect proportion: Two quantities increase or decrease in the same ratio.\nExample: If 5 notebooks cost ₹100, 8 notebooks cost ₹160 at the same unit price.\n\nInverse proportion: One quantity increases while the other decreases proportionally.\nExample: If 4 equally efficient workers complete a job in 12 days, 8 workers complete it in 6 days, assuming identical work rates.\n\nArithmetic average = Sum of observations / Number of observations.\n\nExample: Average of 10, 20, 30 and 40 = 100/4 = 25.\n\nWeighted average = Sum(value × weight) / Sum(weights).\n\nExample: A student scores 80 in a test weighted 40% and 90 in a test weighted 60%.\nWeighted average = 80 × 0.4 + 90 × 0.6 = 86.\n\nPlacement tip: For ratio problems, express quantities as multiples of a common variable before solving."
+    },
+    {
+      "title": "Profit, Loss and Discounts",
+      "description": "Learn cost price, selling price, profit percentage, loss percentage and discounts.",
+      "content": "Profit and loss problems involve the cost price (CP) and selling price (SP) of an item.\n\nProfit = SP - CP when SP > CP.\nLoss = CP - SP when CP > SP.\n\nProfit percentage = (Profit / CP) × 100.\nLoss percentage = (Loss / CP) × 100.\n\nExample: A shopkeeper buys an item for ₹800 and sells it for ₹1,000.\nProfit = ₹200.\nProfit percentage = (200 / 800) × 100 = 25%.\n\nExample: An item purchased for ₹1,200 is sold for ₹1,080.\nLoss = ₹120.\nLoss percentage = 10%.\n\nMarked Price (MP) is the listed price before discounts.\nDiscount = MP - SP.\nDiscount percentage = (Discount / MP) × 100.\n\nExample: A shirt marked ₹2,000 receives a 15% discount.\nDiscount = ₹300.\nSelling price = ₹1,700.\n\nSuccessive discounts are multiplicative.\nExample: Discounts of 10% and 20% on ₹1,000 produce a final price of 1000 × 0.9 × 0.8 = ₹720, equivalent to a 28% discount.\n\nFor a target profit of p%:\nSP = CP × (1 + p/100).\n\nFor a target loss of l%:\nSP = CP × (1 - l/100).\n\nPlacement tip: Profit and loss percentages are normally calculated using cost price, while discount percentages use marked price."
+    },
+    {
+      "title": "Simple Interest, Compound Interest and Placement Problem Solving",
+      "description": "Understand interest formulas and apply efficient strategies to aptitude questions.",
+      "content": "Simple Interest (SI) is calculated on the original principal.\n\nSI = (P × R × T) / 100.\n\nP = Principal amount.\nR = Annual interest rate in percent.\nT = Time in years.\n\nExample: Find simple interest on ₹10,000 at 8% per annum for 2 years.\nSI = (10000 × 8 × 2) / 100 = ₹1,600.\nTotal amount = ₹11,600.\n\nCompound Interest (CI) is calculated on the principal and accumulated interest.\n\nFor annual compounding:\nA = P × (1 + R/100)^T.\nCI = A - P.\n\nExample: ₹10,000 at 10% per annum for 2 years, compounded annually.\nA = 10000 × 1.1 × 1.1 = ₹12,100.\nCI = ₹2,100.\n\nFor half-yearly compounding at a nominal annual rate, use R/2 per half-year and 2T periods, assuming the stated rate is compounded half-yearly.\n\nAptitude problem-solving strategy:\n1. Read the question carefully.\n2. Identify the given values.\n3. Determine the unknown quantity.\n4. Select the appropriate formula.\n5. Calculate systematically.\n6. Verify the answer and units.\n\nCommon placement topics include percentages, ratios, averages, profit and loss, interest, time and work, and speed and distance.\n\nPractice under timed conditions, but prioritize correct reasoning before improving speed."
+    }
+  ],
+  "videos": [
+    {
+      "title": "Quantitative Aptitude Fundamentals - Video Lessons",
+      "youtubeUrl": "https://www.youtube.com/watch?v=QzY57FaENXg",
+      "description": "Supplementary video material for aptitude preparation.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Percentage Problems for Competitive Exams",
+      "youtubeUrl": "https://www.youtube.com/watch?v=6sQDTgOqh-I",
+      "description": "Supplementary learning link. Exact video topic requires verification.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Ratio and Proportion Practice",
+      "youtubeUrl": "https://www.youtube.com/watch?v=HXV3zeQKqGY",
+      "description": "Supplementary learning link. Exact video topic requires verification.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Profit and Loss Aptitude Practice",
+      "youtubeUrl": "https://www.youtube.com/watch?v=GFQaEYEc8_8",
+      "description": "Supplementary learning link. Exact video topic requires verification.",
+      "durationMinutes": 0
+    },
+    {
+      "title": "Simple and Compound Interest Practice",
+      "youtubeUrl": "https://www.youtube.com/watch?v=ztHopE5Wnpc",
+      "description": "Supplementary learning link. Exact video topic requires verification.",
+      "durationMinutes": 0
+    }
+  ],
+  "quizzes": [
+    {
+      "question": "What is 25% of 240?",
+      "options": ["40", "50", "60", "80"],
+      "correctAnswer": 2,
+      "explanation": "25% of 240 = 240 × 25/100 = 60.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Find the average of 12, 18, 24 and 30.",
+      "options": ["18", "21", "24", "27"],
+      "correctAnswer": 1,
+      "explanation": "Average = (12 + 18 + 24 + 30)/4 = 21.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "A product costs ₹500 and sells for ₹600. What is the profit percentage?",
+      "options": ["10%", "15%", "20%", "25%"],
+      "correctAnswer": 2,
+      "explanation": "Profit = ₹100. Profit percentage = 100/500 × 100 = 20%.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "The ratio of two numbers is 3:5 and their sum is 64. What is the smaller number?",
+      "options": ["16", "24", "32", "40"],
+      "correctAnswer": 1,
+      "explanation": "Total parts = 8. Smaller number = 3/8 × 64 = 24.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Find the simple interest on ₹5,000 at 10% per annum for 2 years.",
+      "options": ["₹500", "₹750", "₹1,000", "₹1,500"],
+      "correctAnswer": 2,
+      "explanation": "SI = 5000 × 10 × 2 / 100 = ₹1,000.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "A price increases by 20% and then decreases by 20%. What is the overall change?",
+      "options": ["No change", "4% decrease", "4% increase", "20% decrease"],
+      "correctAnswer": 1,
+      "explanation": "100 × 1.2 × 0.8 = 96, so the overall decrease is 4%.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "Find the HCF of 24 and 36.",
+      "options": ["6", "8", "12", "18"],
+      "correctAnswer": 2,
+      "explanation": "12 is the largest positive integer dividing both 24 and 36.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "An item marked ₹1,000 is sold at a 15% discount. Find the selling price.",
+      "options": ["₹750", "₹800", "₹850", "₹900"],
+      "correctAnswer": 2,
+      "explanation": "Discount = ₹150. Selling price = ₹850.",
+      "difficulty": "Easy"
+    },
+    {
+      "question": "Find the compound interest on ₹10,000 at 10% annually for 2 years.",
+      "options": ["₹1,000", "₹2,000", "₹2,100", "₹2,200"],
+      "correctAnswer": 2,
+      "explanation": "Amount = 10000 × 1.1² = ₹12,100. CI = ₹2,100.",
+      "difficulty": "Medium"
+    },
+    {
+      "question": "The average of five numbers is 20. If one number is removed, the average of the remaining four becomes 18. Find the removed number.",
+      "options": ["20", "24", "28", "32"],
+      "correctAnswer": 2,
+      "explanation": "Original total = 100. Remaining total = 72. Removed number = 28.",
+      "difficulty": "Hard"
+    }
+  ],
+  "exercises": [
+    {
+      "title": "Calculate Student Percentage",
+      "description": "Calculate the percentage obtained by a student.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "A student scores 425 marks out of 500. Calculate the percentage and show the formula and steps."
+    },
+    {
+      "title": "Solve a Ratio Distribution Problem",
+      "description": "Divide an amount according to a given ratio.",
+      "type": "Written",
+      "difficulty": "Easy",
+      "instructions": "Divide ₹12,000 between A and B in the ratio 3:5. Calculate the amount received by each person."
+    },
+    {
+      "title": "Profit, Loss and Discount Calculation",
+      "description": "Solve a combined discount and profit problem.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "A shopkeeper buys a product for ₹1,200. The marked price is ₹1,800 and a 10% discount is offered. Calculate the selling price, profit and profit percentage."
+    },
+    {
+      "title": "Simple and Compound Interest Comparison",
+      "description": "Compare simple interest and compound interest.",
+      "type": "Written",
+      "difficulty": "Medium",
+      "instructions": "Calculate simple interest and compound interest on ₹20,000 at 5% per annum for 2 years. Assume annual compounding. Find the difference between them."
+    },
+    {
+      "title": "Combined Quantitative Aptitude Challenge",
+      "description": "Solve a multi-step aptitude problem involving percentages and averages.",
+      "type": "Written",
+      "difficulty": "Hard",
+      "instructions": "A class contains 40 students with an average score of 60. Ten new students join with an average score of 80. Calculate the new class average. If the new average increases by 10%, calculate the resulting average."
+    }
+  ],
+  "resources": [
+    {
+      "title": "Khan Academy - Arithmetic",
+      "type": "Website",
+      "url": "https://www.khanacademy.org/math/arithmetic",
+      "description": "Free lessons and practice for fundamental arithmetic."
+    },
+    {
+      "title": "Khan Academy - Pre-Algebra",
+      "type": "Website",
+      "url": "https://www.khanacademy.org/math/pre-algebra",
+      "description": "Learn ratios, percentages, factors and arithmetic problem-solving."
+    },
+    {
+      "title": "IndiaBIX - Quantitative Aptitude",
+      "type": "Website",
+      "url": "https://www.indiabix.com/aptitude/questions-and-answers/",
+      "description": "Placement-oriented quantitative aptitude questions with explanations."
+    },
+    {
+      "title": "GeeksforGeeks - Quantitative Aptitude",
+      "type": "Website",
+      "url": "https://www.geeksforgeeks.org/aptitude/quantitative-aptitude/",
+      "description": "Quantitative aptitude tutorials and competitive exam practice."
+    },
+    {
+      "title": "Math Is Fun - Percentage",
+      "type": "Article",
+      "url": "https://www.mathsisfun.com/percentage.html",
+      "description": "Clear explanations and examples of percentage calculations."
+    }
+  ]
+}
