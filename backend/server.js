@@ -18,6 +18,14 @@ const adminRoutes = require("./routes/adminRoutes");
 const socketAuthMiddleware = require("./socket/socketAuthMiddleware");
 const gdSocketHandler = require("./socket/gdSocketHandler");
 
+// ==============================
+// AUTOMATIC PLACEMENT REMINDERS
+// ==============================
+
+const {
+  startPlacementReminderScheduler,
+} = require("./services/placementReminderScheduler");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -145,8 +153,22 @@ io.on("connection", (socket) => {
 
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => {
+  .then(async () => {
     console.log("MongoDB Connected");
+
+    // ==============================
+    // START AUTOMATIC REMINDERS
+    // AFTER DATABASE CONNECTION
+    // ==============================
+
+    try {
+      await startPlacementReminderScheduler();
+    } catch (error) {
+      console.error(
+        "Failed to start Placify reminder scheduler:",
+        error.message
+      );
+    }
   })
   .catch((error) => {
     console.log(

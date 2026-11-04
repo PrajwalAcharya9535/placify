@@ -20,6 +20,9 @@
   import StudentInterview from "./pages/student/interview/StudentInterview";
   import StudentOpportunities from "./pages/student/opportunities/StudentOpportunities";
   import StudentApplications from "./pages/student/applications/StudentApplications";
+  import StudentNotifications from "./pages/student/notifications/StudentNotifications";
+  import StudentCalendar from "./pages/student/calendar/StudentCalendar";
+  import StudentAnalytics from "./pages/student/analytics/StudentAnalytics";
   import AIInterviewRoom from "./pages/student/interview/AIInterviewRoom";
   import AIInterviewResult from "./pages/student/interview/AIInterviewResult";
 
@@ -904,6 +907,47 @@
       </ProtectedRoute>
     }
   />
+
+  {/* =========================
+      STUDENT NOTIFICATIONS
+  ========================= */}
+
+  <Route
+    path="/student/notifications"
+    element={
+      <ProtectedRoute allowedRole="student">
+        <StudentNotifications />
+      </ProtectedRoute>
+    }
+  />
+
+
+  {/* =========================
+    STUDENT ANALYTICS
+========================= */}
+
+<Route
+  path="/student/analytics"
+  element={
+    <ProtectedRoute allowedRole="student">
+      <StudentAnalytics />
+    </ProtectedRoute>
+  }
+/>
+
+
+  {/* =========================
+    STUDENT CALENDAR
+========================= */}
+
+<Route
+  path="/student/calendar"
+  element={
+    <ProtectedRoute allowedRole="student">
+      <StudentCalendar />
+    </ProtectedRoute>
+  }
+/>
 
       </Routes>
 

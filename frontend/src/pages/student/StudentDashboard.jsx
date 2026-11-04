@@ -533,31 +533,45 @@ function StudentDashboard() {
                     {placementTracker?.rejectedApplications ??
                       0}
                   </strong>
-                  <span>Rejected</span>
-                </div>
-              </div>
+                
+<span>Rejected</span>
+</div>
+
+<div>
+  <strong>
+    {placementTracker?.upcomingRoundsCount ?? 0}
+  </strong>
+  <span>Upcoming Rounds</span>
+</div>
+</div>
+
 
               {placementTracker?.latestApplication ? (
                 <div className="latest-application">
-                  <div className="latest-application-icon">
-                    {placementTracker.latestApplication.company
-                      ?.charAt(0)
-                      ?.toUpperCase() || "C"}
-                  </div>
+               
+<div className="latest-application-icon">
+  {placementTracker.latestApplication.companyName
+    ?.charAt(0)
+    ?.toUpperCase() || "C"}
+</div>
 
-                  <div className="latest-application-info">
-                    <span>Latest Application</span>
+<div className="latest-application-info">
+  <span>Latest Application</span>
 
-                    <strong>
-                      {placementTracker.latestApplication
-                        .company || "Company"}
-                    </strong>
+  <strong>
+    {placementTracker.latestApplication.companyName ||
+      "Company"}
+  </strong>
 
-                    <p>
-                      {placementTracker.latestApplication.role ||
-                        "Role"}
-                    </p>
-                  </div>
+ 
+<p>
+  {placementTracker.latestApplication.jobRole ||
+    placementTracker.latestApplication.opportunityTitle ||
+    "Role not specified"}
+</p>
+
+</div>
+
 
                   <span className="application-status">
                     {placementTracker.latestApplication.status ||
@@ -584,12 +598,63 @@ function StudentDashboard() {
                     Explore Opportunities
                   </button>
                 </div>
+
+              )}
+
+              {/* UPCOMING PLACEMENT ROUND */}
+              {placementTracker?.nextRound && (
+                <div
+                  className="latest-application"
+                  style={{ marginTop: "16px" }}
+                >
+                  <div className="latest-application-icon">
+                    {placementTracker.nextRound.companyName
+                      ?.charAt(0)
+                      ?.toUpperCase() || "C"}
+                  </div>
+
+                  <div className="latest-application-info">
+                    <span>Upcoming Placement Round</span>
+
+                    <strong>
+                      {placementTracker.nextRound.companyName ||
+                        "Company"}
+                    </strong>
+
+                    <p>
+                      {placementTracker.nextRound.jobRole ||
+                        placementTracker.nextRound.opportunityTitle ||
+                        "Role not specified"}
+                    </p>
+
+                    <p>
+                      {placementTracker.nextRound.nextRoundDate
+                        ? new Date(
+                            placementTracker.nextRound.nextRoundDate
+                          ).toLocaleString("en-IN", {
+                            day: "numeric",
+                            month: "short",
+                            year: "numeric",
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          })
+                        : "Date not scheduled"}
+                    </p>
+                  </div>
+
+                  <span className="application-status">
+                    {placementTracker.nextRound.currentStage ||
+                      "Upcoming"}
+                  </span>
+                </div>
               )}
             </article>
 
           </div>
 
           {/* RIGHT SIDE */}
+
 
           <aside className="dashboard-side-column">
 

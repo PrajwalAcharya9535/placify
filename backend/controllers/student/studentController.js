@@ -132,25 +132,31 @@ const getStudentDashboard = async (
       PlacementApplication.find({
         student: userId,
       })
-        .populate(
-          "opportunity",
-          [
-            "title",
-            "companyName",
-            "jobRole",
-            "location",
-            "workMode",
-            "opportunityType",
-            "applicationDeadline",
-            "salaryMin",
-            "salaryMax",
-            "status",
-            "isActive",
-          ].join(" ")
-        )
-        .sort({
-          updatedAt: -1,
-        }),
+       
+.populate(
+  "opportunity",
+  [
+    "title",
+    "companyName",
+    "jobRole",
+    "location",
+    "workMode",
+    "opportunityType",
+    "applicationDeadline",
+    "salaryMin",
+    "salaryMax",
+    "status",
+    "isActive",
+  ].join(" ")
+)
+.populate(
+  "telegramAnnouncement",
+  "companyName jobRole messageText location"
+)
+.sort({
+  updatedAt: -1,
+}),
+
     ]);
 
     // ==============================
@@ -502,11 +508,16 @@ const getStudentDashboard = async (
       }
     );
 
-    const activePlacementApplications =
-      placementApplications.filter(
-        (application) =>
-          application.isActive === true
-      );
+   
+const activePlacementApplications =
+  placementApplications.filter(
+    (application) =>
+      application.isActive === true &&
+      !["Rejected", "Placed"].includes(
+        application.currentStage
+      )
+  );
+
 
     const placedApplications =
       placementApplications.filter(
@@ -531,26 +542,24 @@ const getStudentDashboard = async (
             "Placed"
       );
 
-    const upcomingPlacementRounds =
-      placementApplications
-        .filter(
-          (application) =>
-            application.isActive ===
-              true &&
-            application.nextRoundDate &&
-            new Date(
-              application.nextRoundDate
-            ) >= new Date()
-        )
-        .sort(
-          (a, b) =>
-            new Date(
-              a.nextRoundDate
-            ) -
-            new Date(
-              b.nextRoundDate
-            )
-        );
+   
+const upcomingPlacementRounds =
+  placementApplications
+    .filter(
+      (application) =>
+        application.isActive === true &&
+        !["Rejected", "Placed"].includes(
+          application.currentStage
+        ) &&
+        application.nextRoundDate &&
+        new Date(application.nextRoundDate) >= new Date()
+    )
+    .sort(
+      (a, b) =>
+        new Date(a.nextRoundDate) -
+        new Date(b.nextRoundDate)
+    );
+
 
     const latestPlacementApplication =
       placementApplications.length > 0
@@ -833,23 +842,28 @@ const getStudentDashboard = async (
                 nextRoundDate:
                   nextPlacementRound.nextRoundDate,
 
-                companyName:
-                  nextPlacementRound
-                    .opportunity
-                    ?.companyName ||
-                  null,
+           
+companyName:
+  nextPlacementRound.opportunity?.companyName ||
+  nextPlacementRound.telegramAnnouncement?.companyName ||
+  null,
 
-                jobRole:
-                  nextPlacementRound
-                    .opportunity
-                    ?.jobRole ||
-                  null,
+jobRole:
+  nextPlacementRound.opportunity?.jobRole ||
+  nextPlacementRound.telegramAnnouncement?.jobRole ||
+  null,
 
-                opportunityTitle:
-                  nextPlacementRound
-                    .opportunity
-                    ?.title ||
-                  null,
+opportunityTitle:
+  nextPlacementRound.opportunity?.title ||
+  nextPlacementRound.telegramAnnouncement?.title ||
+  nextPlacementRound.telegramAnnouncement?.jobRole ||
+  nextPlacementRound.telegramAnnouncement?.messageText
+    ?.split("\n")
+    .map((line) => line.trim())
+    .find((line) => line.length > 0)
+    ?.slice(0, 120) ||
+  null,
+
               }
             : null,
 
@@ -865,23 +879,29 @@ const getStudentDashboard = async (
                 isActive:
                   latestPlacementApplication.isActive,
 
-                companyName:
-                  latestPlacementApplication
-                    .opportunity
-                    ?.companyName ||
-                  null,
+              
+companyName:
+  latestPlacementApplication.opportunity?.companyName ||
+  latestPlacementApplication.telegramAnnouncement?.companyName ||
+  null,
 
-                jobRole:
-                  latestPlacementApplication
-                    .opportunity
-                    ?.jobRole ||
-                  null,
+jobRole:
+  latestPlacementApplication.opportunity?.jobRole ||
+  latestPlacementApplication.telegramAnnouncement?.jobRole ||
+  null,
 
-                opportunityTitle:
-                  latestPlacementApplication
-                    .opportunity
-                    ?.title ||
-                  null,
+
+opportunityTitle:
+  latestPlacementApplication.opportunity?.title ||
+  latestPlacementApplication.telegramAnnouncement?.jobRole ||
+  latestPlacementApplication.telegramAnnouncement?.messageText
+    ?.split("\n")
+    .map((line) => line.trim())
+    .find((line) => line.length > 0)
+    ?.slice(0, 120) ||
+  null,
+
+
 
                 updatedAt:
                   latestPlacementApplication.updatedAt,

@@ -5,9 +5,7 @@ const CalendarEvent = require(
 );
 
 
-const {
-  createNotification,
-} = require("../../services/notificationService");
+
 
 
 // ========================================
@@ -620,103 +618,52 @@ const getUpcomingCalendarEvents = async (
 // GET DUE CALENDAR REMINDERS
 // ========================================
 
-const getDueCalendarReminders = async (
-  req,
-  res
-) => {
+
+const getDueCalendarReminders = async (req, res) => {
   try {
     const now = new Date();
 
+    // Automatic notification delivery is handled
+    // exclusively by placementReminderScheduler.js.
+    // This endpoint only reads reminder status.
     const events = await CalendarEvent.find({
-  user: req.user.id,
-  status: "Scheduled",
-  reminderEnabled: true,
-  reminderSentAt: null,
-  startDate: {
-    $gte: now,
-  },
-}).sort({
-  startDate: 1,
-});
+      user: req.user.id,
+      status: "Scheduled",
+      reminderEnabled: true,
+      reminderSentAt: { $ne: null },
+    })
+      .sort({ reminderSentAt: -1 })
+      .limit(50);
 
-    const dueReminders = events
-      .map((event) => {
-        const reminderTime = new Date(
-          event.startDate.getTime() -
-            event.reminderMinutesBefore *
-              60 *
-              1000
-        );
-
-        return {
-          event,
-          reminderTime,
-        };
-      })
-      .filter(({ reminderTime }) => {
-        return reminderTime <= now;
-      });
-
-      for (const { event, reminderTime } of dueReminders) {
-  await createNotification({
-    user: req.user.id,
-
-    title: `Upcoming ${event.eventType}`,
-
-    message: `${event.title} is coming up soon.`,
-
-    type: "Calendar",
-
-    priority: "High",
-
-    relatedEntityType: "CalendarEvent",
-
-    relatedEntityId: event._id,
-
-    actionUrl:
-      event.actionUrl ||
-      `/calendar/events/${event._id}`,
-
-    scheduledFor: reminderTime,
-
-    metadata: {
-      eventType: event.eventType,
-      eventTitle: event.title,
-      startDate: event.startDate,
-    },
-  });
-
-  event.reminderSentAt = now;
-
-  await event.save();
-}
+    const reminders = events.map((event) => ({
+      event,
+      reminderTime: new Date(
+        event.startDate.getTime() -
+          event.reminderMinutesBefore * 60 * 1000
+      ),
+      reminderSentAt: event.reminderSentAt,
+    }));
 
     return res.status(200).json({
       success: true,
-
-      message:
-        "Due calendar reminders fetched successfully",
-
-      count: dueReminders.length,
-
-      reminders: dueReminders,
+      message: "Calendar reminder history fetched successfully",
+      count: reminders.length,
+      reminders,
     });
   } catch (error) {
     console.error(
-      "Get due calendar reminders error:",
+      "Get calendar reminders error:",
       error
     );
 
     return res.status(500).json({
       success: false,
-
-      message:
-        "Failed to fetch due calendar reminders",
-
+      message: "Failed to fetch calendar reminders",
       error: error.message,
     });
   }
 };
+
 
 // ========================================
 // EXPORTS

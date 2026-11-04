@@ -42,9 +42,11 @@ gdSessions,
       user: userId,
     }),
 
-    MockAttempt.find({
-      user: userId,
-    }),
+   MockAttempt.find({
+  user: userId,
+  practiceMode: "Full",
+  status: "Completed",
+}),
 
     CodingAttempt.find({
       user: userId,
@@ -210,55 +212,25 @@ gdSessions,
   // 4. MOCK PLACEMENT PERFORMANCE
   // ==========================================
 
-  if (mockAttempts.length > 0) {
-    const completedMocks =
-      mockAttempts.filter(
-        (attempt) =>
-          attempt.status === "Completed" ||
-          attempt.completedAt
+ if (mockAttempts.length > 0) {
+  const scores = mockAttempts
+    .map((attempt) => Number(attempt.overallPercentage))
+    .filter((score) => Number.isFinite(score));
+
+  if (scores.length > 0) {
+    const averageMockScore =
+      scores.reduce((sum, score) => sum + score, 0) /
+      scores.length;
+
+    if (averageMockScore < 60) {
+      weakAreas.push(
+        `Mock placement performance (${Math.round(averageMockScore)}%)`
       );
 
-    if (completedMocks.length > 0) {
-      const scores = completedMocks.map(
-        (attempt) => {
-          if (
-            typeof attempt.percentage ===
-            "number"
-          ) {
-            return attempt.percentage;
-          }
-
-          if (
-            typeof attempt.score === "number"
-          ) {
-            return attempt.score;
-          }
-
-          return 0;
-        }
-      );
-
-      const totalScore = scores.reduce(
-        (sum, score) => sum + score,
-        0
-      );
-
-      const averageMockScore =
-        totalScore / scores.length;
-
-      if (averageMockScore < 60) {
-        weakAreas.push(
-          `Mock placement performance (${Math.round(
-            averageMockScore
-          )}%)`
-        );
-
-        priorityAreas.push(
-          "Mock Placement Preparation"
-        );
-      }
+      priorityAreas.push("Mock Placement Preparation");
     }
   }
+}
 
   // ==========================================
   // 5. CODING PERFORMANCE

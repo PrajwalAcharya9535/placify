@@ -54,10 +54,11 @@ const calculateReadiness = async (req, res) => {
       user: userId,
     });
 
-    const mockAttempts = await MockAttempt.find({
-      user: userId,
-      status: "Completed",
-    });
+   const mockAttempts = await MockAttempt.find({
+  user: userId,
+  status: "Completed",
+  practiceMode: "Full",
+});
 
     const interviewSessions =
       await InterviewSession.find({

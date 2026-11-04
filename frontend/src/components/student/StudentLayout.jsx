@@ -1,5 +1,7 @@
+
 import { useEffect, useState } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
 import { fetchTelegramOpportunities } from "../../services/telegramOpportunityService";
 import "./StudentLayout.css";
 
@@ -9,7 +11,9 @@ const CHECK_INTERVAL_MS = 60000;
 function StudentLayout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
+
   const [opportunityNotificationCount, setOpportunityNotificationCount] = useState(0);
+  const [unreadNotificationCount, setUnreadNotificationCount] = useState(0);
 
   const storedUser = localStorage.getItem("placifyUser");
   let user = null;
@@ -67,11 +71,71 @@ function StudentLayout({ children }) {
 
     checkNewOpportunities();
     const interval = window.setInterval(checkNewOpportunities, CHECK_INTERVAL_MS);
+
     return () => {
       cancelled = true;
       window.clearInterval(interval);
     };
   }, [seenStorageKey, onOpportunitiesPage]);
+
+  // Fetch MongoDB notification count independently
+  // from Telegram Opportunities tracking.
+  useEffect(() => {
+    let cancelled = false;
+
+    const checkUnreadNotifications = async () => {
+      const token = localStorage.getItem("placifyToken");
+
+      if (!token) {
+        if (!cancelled) {
+          setUnreadNotificationCount(0);
+        }
+        return;
+      }
+
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/student/notifications/unread-count",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        if (cancelled) return;
+
+        const data = response.data;
+
+        if (data?.success) {
+          const count = Number(
+            data.unreadCount ??
+            data.count ??
+            data.unread ??
+            0
+          );
+
+          setUnreadNotificationCount(
+            Number.isFinite(count) ? Math.max(0, count) : 0
+          );
+        }
+      } catch {
+        // Keep the previous count if the API is temporarily unavailable.
+      }
+    };
+
+    checkUnreadNotifications();
+
+    const interval = window.setInterval(
+      checkUnreadNotifications,
+      CHECK_INTERVAL_MS
+    );
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(interval);
+    };
+  }, [location.pathname]);
 
   const handleLogout = () => {
     localStorage.removeItem("placifyToken");
@@ -211,10 +275,51 @@ function StudentLayout({ children }) {
             <button
               type="button"
               className="student-topbar-button"
-              aria-label="Notifications"
+              aria-label={
+                unreadNotificationCount > 0
+                  ? `Notifications, ${unreadNotificationCount} unread`
+                  : "Notifications"
+              }
+              title="View Notifications"
+              onClick={() => navigate("/student/notifications")}
+              style={{
+                position: "relative",
+                overflow: "visible",
+              }}
             >
               ♢
+
+              {unreadNotificationCount > 0 && (
+                <span
+                  aria-hidden="true"
+                  style={{
+                    position: "absolute",
+                    top: "-7px",
+                    right: "-7px",
+                    minWidth: "20px",
+                    height: "20px",
+                    padding: "0 5px",
+                    borderRadius: "999px",
+                    backgroundColor: "#ef3340",
+                    color: "#fff",
+                    fontSize: "10px",
+                    fontWeight: 800,
+                    lineHeight: 1,
+                    display: "inline-flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    border: "2px solid #fff",
+                    boxSizing: "content-box",
+                    pointerEvents: "none",
+                  }}
+                >
+                  {unreadNotificationCount > 99
+                    ? "99+"
+                    : unreadNotificationCount}
+                </span>
+              )}
             </button>
+
             <button type="button" className="student-profile-button">
               <span className="student-profile-avatar">
                 {user?.name?.charAt(0)?.toUpperCase() || "S"}
