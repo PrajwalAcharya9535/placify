@@ -1,8 +1,11 @@
+
 const express = require("express");
 
 const {
   registerUser,
   loginUser,
+  sendRegistrationOtp,
+  verifyRegistrationOtp,
 } = require("../controllers/authController");
 
 const protect = require("../middleware/authMiddleware");
@@ -10,13 +13,38 @@ const authorizeRoles = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
-// Register
+// ==============================
+// REGISTRATION OTP
+// ==============================
+
+// Send registration OTP
+router.post(
+  "/register/send-otp",
+  sendRegistrationOtp
+);
+
+// Verify OTP and complete registration
+router.post(
+  "/register/verify-otp",
+  verifyRegistrationOtp
+);
+
+// ==============================
+// REGISTER USER
+// ==============================
+
 router.post("/register", registerUser);
 
-// Login
+// ==============================
+// LOGIN USER
+// ==============================
+
 router.post("/login", loginUser);
 
-// Protected route
+// ==============================
+// PROTECTED ROUTE
+// ==============================
+
 router.get("/protected", protect, (req, res) => {
   res.status(200).json({
     message: "Protected route accessed successfully",
@@ -24,7 +52,10 @@ router.get("/protected", protect, (req, res) => {
   });
 });
 
-// Admin-only route
+// ==============================
+// ADMIN-ONLY ROUTE
+// ==============================
+
 router.get(
   "/admin",
   protect,

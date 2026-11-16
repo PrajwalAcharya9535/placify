@@ -40,6 +40,24 @@
     "../../services/aiInterviewResultService"
   );
 
+  
+const {
+  generateDemoAnswer,
+} = require("../../services/aiInterviewDemoAnswerService");
+
+const getDemoAnswer = async (session, question) => {
+  if (!question?.questionText) return "";
+
+  return generateDemoAnswer({
+    questionText: question.questionText,
+    stage: question.stage || session.currentStage,
+    targetRole: session.targetRole,
+    targetCompany: session.targetCompany,
+    resumeSnapshot: session.resumeSnapshot,
+  });
+};
+
+
   // ======================================================
   // BASIC HELPERS
   // ======================================================
@@ -716,6 +734,7 @@
             turnNumber: currentTurn.turnNumber,
             stage: currentTurn.stage,
             questionText: currentTurn.questionText,
+            demoAnswer: await getDemoAnswer(session, currentTurn),
             acknowledgement: currentTurn.acknowledgement || "",
             focusArea: currentTurn.focusArea,
             topic: currentTurn.topic,
@@ -846,6 +865,7 @@
           stage: firstTurn.stage,
           questionText:
             firstTurn.questionText,
+            demoAnswer: await getDemoAnswer(session, firstTurn),
             acknowledgement: firstTurn.acknowledgement || "",
           focusArea: firstTurn.focusArea,
           topic: firstTurn.topic,
@@ -1097,6 +1117,7 @@
         turnNumber: nextTurn.turnNumber,
         stage: nextTurn.stage,
         questionText: nextTurn.questionText,
+        demoAnswer: await getDemoAnswer(session, nextTurn),
         acknowledgement: nextTurn.acknowledgement,
         focusArea: nextTurn.focusArea,
         topic: nextTurn.topic,
@@ -1222,6 +1243,7 @@
           turnNumber: currentTurn.turnNumber,
           stage: currentTurn.stage,
           questionText: currentTurn.questionText,
+          demoAnswer: await getDemoAnswer(session, currentTurn),
           focusArea: currentTurn.focusArea,
           topic: currentTurn.topic,
           difficulty: currentTurn.difficulty,
@@ -1593,6 +1615,7 @@
 
           questionText:
             nextTurn.questionText,
+            demoAnswer: await getDemoAnswer(session, nextTurn),
 
             acknowledgement: nextTurn.acknowledgement || "",
 

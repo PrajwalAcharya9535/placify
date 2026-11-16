@@ -1671,3 +1671,167 @@
     font-size: 11px;
   }
 }
+
+
+
+/* =========================================
+   PLACIFY LOGIN / REGISTER 3D FLIP
+   ========================================= */
+
+.auth-flip-scene {
+  width: 100%;
+  perspective: 1400px;
+}
+
+.auth-flip-card {
+  position: relative;
+  width: 100%;
+  display: grid;
+  transform-style: preserve-3d;
+  transition: transform 0.75s cubic-bezier(
+    0.22, 1, 0.36, 1
+  );
+}
+
+.auth-flip-card.is-flipped {
+  transform: rotateY(180deg);
+}
+
+.auth-flip-face {
+  grid-area: 1 / 1;
+  width: 100%;
+  min-width: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.auth-flip-front {
+  transform: rotateY(0deg);
+}
+
+.auth-flip-back {
+  transform: rotateY(180deg);
+}
+
+.auth-flip-face[aria-hidden="true"] {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.auth-flip-card.is-flipped .auth-flip-front {
+  visibility: hidden;
+}
+
+.auth-flip-card:not(.is-flipped) .auth-flip-back {
+  visibility: hidden;
+}
+
+/* Registration card */
+
+.auth-register-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-register-form .form-group {
+  margin-bottom: 13px;
+}
+
+.auth-register-form .input-shell {
+  height: 50px;
+}
+
+.auth-register-form .login-heading {
+  margin-bottom: 18px;
+}
+
+.auth-register-form .login-heading h2 {
+  font-size: clamp(29px, 2.3vw, 38px);
+}
+
+.auth-register-form .login-submit {
+  margin-top: 5px;
+}
+
+.auth-switch-btn {
+  width: 100%;
+  margin-top: 15px;
+  padding: 10px;
+  border: 0;
+  background: transparent;
+  color: #2563eb;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.auth-switch-btn:hover {
+  text-decoration: underline;
+}
+
+.auth-otp-hint {
+  margin: 0 0 15px;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.auth-success {
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid #bbf7d0;
+  border-radius: 11px;
+  background: #f0fdf4;
+  color: #166534;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+@media (max-width: 820px) {
+  .auth-flip-scene {
+    perspective: 1100px;
+  }
+
+  .auth-flip-card {
+    transition-duration: 0.65s;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auth-flip-card {
+    transition-duration: 0.01ms;
+  }
+}
+
+
+
+/* Keep the 3D rotation visible during transitions */
+.auth-flip-face[aria-hidden="true"],
+.auth-flip-card.is-flipped .auth-flip-front,
+.auth-flip-card:not(.is-flipped) .auth-flip-back {
+  visibility: visible;
+}
+
+/* Allow long registration forms to scroll */
+.login-panel {
+  overflow-y: auto;
+}
+
+.auth-flip-scene {
+  min-height: 0;
+}
+
+.auth-flip-card {
+  align-items: start;
+}
+
+.auth-flip-face {
+  align-self: start;
+}
+
+@media (max-width: 820px) {
+  .login-panel {
+    overflow-y: visible;
+  }
+}

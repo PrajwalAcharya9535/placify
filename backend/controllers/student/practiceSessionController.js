@@ -1,3 +1,4 @@
+
 const PracticeQuestion = require("../../models/PracticeQuestion");
 const PracticeSession = require("../../models/PracticeSession");
 const PracticeAttempt = require("../../models/PracticeAttempt");
@@ -35,22 +36,52 @@ const startPracticeSession = async (req, res) => {
       });
     }
 
+    // ==============================
+    // FILTER QUESTIONS
+    // ==============================
     const filter = {
       isActive: true,
     };
 
-    if (category !== "Mixed") {
-      filter.category = category;
+    // Frontend difficulty to MongoDB difficulty
+    const difficultyMap = {
+      Beginner: "Easy",
+      Intermediate: "Medium",
+      Advanced: "Hard",
+    };
+
+    const normalizedDifficulty =
+  difficulty && difficulty !== "Mixed"
+    ? difficultyMap[difficulty] || difficulty
+    : undefined;
+
+    if (difficulty && difficulty !== "Mixed") {
+      filter.difficulty =
+        difficultyMap[difficulty] || difficulty;
     }
 
-    if (difficulty !== "Mixed") {
-      filter.difficulty = difficulty;
+    // Frontend category to MongoDB category
+    if (category && category !== "Mixed") {
+      if (category === "Programming") {
+        filter.category = "Coding";
+      } else if (category === "DSA") {
+        filter.category = "Technical";
+        filter.subCategory = "DSA";
+      } else if (category === "Technical Subject") {
+        filter.category = "Technical";
+        filter.subCategory = { $ne: "DSA" };
+      } else {
+        filter.category = category;
+      }
     }
 
-    if (questionType !== "Mixed") {
+    if (questionType && questionType !== "Mixed") {
       filter.questionType = questionType;
     }
 
+    // ==============================
+    // FETCH RANDOM QUESTIONS
+    // ==============================
     const questions = await PracticeQuestion.aggregate([
       {
         $match: filter,
@@ -69,17 +100,23 @@ const startPracticeSession = async (req, res) => {
       });
     }
 
+    // ==============================
+    // CALCULATE TOTAL MARKS
+    // ==============================
     const totalMarks = questions.reduce(
       (total, question) =>
         total + (question.marks || 0),
       0
     );
 
+    // ==============================
+    // CREATE SESSION
+    // ==============================
     const session = await PracticeSession.create({
       user: req.user.id,
       title,
       category,
-      difficulty,
+difficulty: normalizedDifficulty,
       questionType,
       questions: questions.map(
         (question) => question._id
@@ -91,6 +128,9 @@ const startPracticeSession = async (req, res) => {
       startedAt: new Date(),
     });
 
+    // ==============================
+    // SAFE QUESTION RESPONSE
+    // ==============================
     const safeQuestions = questions.map(
       (question) => ({
         _id: question._id,

@@ -223,6 +223,13 @@ function StudentOpportunities() {
     useState(false);
 
   const [announcements, setAnnouncements] = useState([]);
+  const [adminOpportunities, setAdminOpportunities] = useState([]);
+  const [adminLoading, setAdminLoading] = useState(true);
+  const [adminError, setAdminError] = useState("");
+  const [trackingId, setTrackingId] = useState(null);
+  const [trackedOpportunityIds, setTrackedOpportunityIds] = useState([]);
+  const [trackedOpportunityStages, setTrackedOpportunityStages] = useState({});
+
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [savingId, setSavingId] = useState(null);
@@ -267,6 +274,112 @@ function StudentOpportunities() {
     load();
     return () => { active = false; };
   }, []);
+
+  // Admin-published placement opportunities use the existing student-only endpoint.
+  useEffect(() => {
+    const controller = new AbortController();
+    async function loadAdminOpportunities() {
+      setAdminLoading(true);
+      setAdminError("");
+      try {
+        const token = localStorage.getItem("placifyToken");
+        const response = await fetch("http://localhost:5000/api/student/opportunities", {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+        });
+        const payload = await response.json();
+        if (!response.ok || payload.success === false) {
+          throw new Error(payload.message || "Unable to load published opportunities");
+        }
+        const items = Array.isArray(payload) ? payload :
+          (payload.opportunities || payload.data || []);
+        if (!Array.isArray(items)) throw new Error("Unexpected opportunities response");
+        setAdminOpportunities(items);
+      } catch (error) {
+        if (error.name !== "AbortError") setAdminError(error.message);
+      } finally {
+        if (!controller.signal.aborted) setAdminLoading(false);
+      }
+    }
+    loadAdminOpportunities();
+    return () => controller.abort();
+  }, []);
+
+  // Load existing tracker entries so already-saved opportunities are recognized.
+  useEffect(() => {
+    const controller = new AbortController();
+    async function loadTrackedOpportunities() {
+      try {
+        const token = localStorage.getItem("placifyToken");
+        const response = await fetch("http://localhost:5000/api/student/placement-tracker", {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+        });
+        if (!response.ok) return;
+        const payload = await response.json();
+        if (!controller.signal.aborted && Array.isArray(payload.applications)) {
+          const trackedEntries = payload.applications
+            .map((entry) => ({
+              id: entry.opportunity?._id || entry.opportunity,
+              stage: entry.currentStage || entry.stage || entry.status || "Interested",
+            }))
+            .filter((entry) => entry.id);
+          setTrackedOpportunityIds(trackedEntries.map((entry) => String(entry.id)));
+          setTrackedOpportunityStages(Object.fromEntries(
+            trackedEntries.map((entry) => [String(entry.id), entry.stage])
+          ));
+        }
+      } catch (error) {
+        if (error.name !== "AbortError") console.error("Tracker lookup failed:", error);
+      }
+    }
+    loadTrackedOpportunities();
+    window.addEventListener("focus", loadTrackedOpportunities);
+    return () => {
+      window.removeEventListener("focus", loadTrackedOpportunities);
+      controller.abort();
+    };
+  }, []);
+
+  const handleAdminApply = async (item, url) => {
+    if (trackingId) return;
+    // Reserve the tab during the click to avoid browser popup blockers.
+    const tab = window.open("", "_blank");
+    if (tab) tab.opener = null;
+    setTrackingId(item._id);
+    try {
+      if (!trackedOpportunityIds.includes(String(item._id))) {
+        const token = localStorage.getItem("placifyToken");
+        const response = await fetch(
+          `http://localhost:5000/api/student/placement-tracker/${encodeURIComponent(item._id)}`,
+          { method: "POST", headers: { Authorization: `Bearer ${token}` } }
+        );
+        const payload = await response.json();
+        const duplicate = response.status === 400 &&
+          /already in your placement tracker/i.test(payload.message || "");
+        if (!response.ok && !duplicate) {
+          throw new Error(payload.message || "Unable to add opportunity to tracker");
+        }
+        setTrackedOpportunityIds((previous) =>
+          previous.includes(String(item._id)) ? previous : [...previous, String(item._id)]
+        );
+        if (!duplicate) {
+          setTrackedOpportunityStages((previous) => ({
+            ...previous,
+            [String(item._id)]: payload.application?.currentStage || payload.application?.stage || "Interested",
+          }));
+        }
+      }
+      if (tab) tab.location.replace(url);
+      else setFeedback("Opportunity tracked. Please allow pop-ups to open the application link.");
+      if (tab) setFeedback("Application link opened. Update your stage in Applications after submitting.");
+    } catch (error) {
+      if (tab) tab.close();
+      setFeedback(error.message || "Could not add opportunity to tracker");
+    } finally {
+      setTrackingId(null);
+    }
+  };
 
   useEffect(() => {
     try {
@@ -371,6 +484,17 @@ function StudentOpportunities() {
       );
     });
   }, [announcements, search, typeFilter, showUnreadOnly, readIds, responseFilter]);
+
+  const filteredAdminOpportunities = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    return adminOpportunities.filter((item) => {
+      const matchesSearch = !term || [item.title, item.companyName, item.jobRole,
+        item.location, item.description, ...(item.requiredSkills || [])]
+        .join(" ").toLowerCase().includes(term);
+      const matchesType = typeFilter === "All" || typeFilter === "New Opportunity";
+      return matchesSearch && matchesType;
+    });
+  }, [adminOpportunities, search, typeFilter]);
 
   // Keep the selected company within the filtered results.
   useEffect(() => {
@@ -777,8 +901,9 @@ function StudentOpportunities() {
                 </strong>
 
                 <span>
-                  {filteredAnnouncements.length} announcements
-                  · {newOpportunityCount} new drives
+                  {activeTab === "telegram"
+                    ? `${filteredAnnouncements.length} announcements · ${newOpportunityCount} new drives`
+                    : `${filteredAdminOpportunities.length} published opportunities`}
                 </span>
               </div>
 
@@ -794,7 +919,7 @@ function StudentOpportunities() {
 
           {/* ONLY THIS AREA SCROLLS */}
 
-          {maximized && !expandedId && !loading && !loadError && filteredAnnouncements.length > 0 && (
+          {activeTab === "telegram" && maximized && !expandedId && !loading && !loadError && filteredAnnouncements.length > 0 && (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "5px 16px", borderBottom: "1px solid #e4eaf4" }}>
               <strong style={{ color: "#15355d" }}>Company {currentIndex + 1} of {filteredAnnouncements.length}</strong>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -808,13 +933,63 @@ function StudentOpportunities() {
           <div className="opportunities-list" ref={listRef}
             style={maximized ? { overflowY: "auto", maxHeight: "calc(100dvh - 265px)", minHeight: 0, paddingTop: 4 } : undefined}>
             {activeTab === "all" && (
-              <div className="opportunities-tab-notice">
-                Showing verified Telegram placement opportunities. Admin-created
-                opportunities can be integrated separately.
-              </div>
+              adminLoading ? (
+                <div className="opportunities-empty"><h3>Loading published opportunities...</h3></div>
+              ) : adminError ? (
+                <div className="opportunities-empty"><h3>Unable to load published opportunities</h3><p>{adminError}</p></div>
+              ) : filteredAdminOpportunities.length === 0 ? (
+                <div className="opportunities-empty"><h3>No published opportunities found</h3><p>Try changing the search filter.</p></div>
+              ) : (
+                <div style={{ display: "grid", gap: 16, padding: 12 }}>
+                  {filteredAdminOpportunities.map((item) => {
+                    const url = getSafeUrl(item.applicationUrl);
+                    const deadlinePassed = item.applicationDeadline &&
+                      new Date(item.applicationDeadline).getTime() < Date.now();
+                    return (
+                      <article key={item._id} className="opportunity-card" style={{ padding: 20 }}>
+                        <div className="opportunity-card-top">
+                          <div className="opportunity-company-avatar">{(item.companyName || "?").charAt(0).toUpperCase()}</div>
+                          <div className="opportunity-card-heading">
+                            <div className="opportunity-card-labels"><span className="opportunity-source">Placify Admin</span></div>
+                            <h3>{item.title || item.jobRole || "Placement Opportunity"}</h3>
+                            <p>{item.companyName || "Company not specified"}</p>
+                          </div>
+                          <span className="opportunity-response">{item.status || "Active"}</span>
+                        </div>
+                        <div className="opportunity-details-grid">
+                          {[
+                            ["Job Role", item.jobRole],
+                            ["Type", item.opportunityType],
+                            ["Location", item.location],
+                            ["Work Mode", item.workMode],
+                            ["Minimum CGPA", item.minimumCGPA],
+                            ["Required Skills", Array.isArray(item.requiredSkills) ? item.requiredSkills.join(", ") : item.requiredSkills],
+                            ["Application Deadline", formatDate(item.applicationDeadline)],
+                          ].map(([label, value]) => (
+                            <div key={label}><span>{label}</span><strong>{value === undefined || value === null || value === "" ? NOT_ANNOUNCED : String(value)}</strong></div>
+                          ))}
+                        </div>
+                        {item.description && <div className="opportunity-message-preview"><div className="opportunity-message-preview-heading"><span>Job Description</span></div><p style={{ whiteSpace: "pre-wrap" }}>{item.description}</p></div>}
+                        {deadlinePassed && <div className="opportunity-deadline-status danger">Application deadline passed</div>}
+                        <div className="opportunity-card-actions">
+                          {url && !deadlinePassed ? (
+                            <button type="button" className="opportunity-apply-button"
+                               disabled={Boolean(trackingId)}
+                               onClick={() => handleAdminApply(item, url)}>
+                               {trackingId === item._id ? "Saving..." : "Apply ↗"}
+                             </button>
+                          ) : <span>{deadlinePassed ? "Applications closed" : "Application link not provided"}</span>}
+                          {trackedOpportunityIds.includes(String(item._id)) &&
+                            <span style={{ fontSize: 13, color: "#1855bc", fontWeight: 700 }}>In tracker · {trackedOpportunityStages[String(item._id)] || "Interested"} / update in Applications</span>}
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+              )
             )}
 
-            {loading ? (
+            {activeTab === "telegram" && (loading ? (
               <div className="opportunities-empty"><h3>Loading opportunities...</h3></div>
             ) : loadError ? (
               <div className="opportunities-empty"><h3>Unable to load opportunities</h3><p>{loadError}</p></div>
@@ -1068,7 +1243,7 @@ function StudentOpportunities() {
                   );
                 }
               )
-            )}
+            ))}
           </div>
         </div>
 

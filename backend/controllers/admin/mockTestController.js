@@ -1,3 +1,4 @@
+
 const MockTest = require("../../models/MockTest");
 
 // ==============================
@@ -62,6 +63,8 @@ const createMockTest = async (req, res) => {
       "Technical",
       "Coding",
       "SQL",
+      "Communication",
+      "Interview",
     ];
 
     for (const round of rounds) {
@@ -164,22 +167,16 @@ const createMockTest = async (req, res) => {
 // ==============================
 // GET ALL MOCK TESTS
 // ==============================
-const getMockTests = async (
-  req,
-  res
-) => {
+const getMockTests = async (req, res) => {
   try {
-    const mockTests =
-      await MockTest.find()
-        .sort({
-          createdAt: -1,
-        });
+    const mockTests = await MockTest.find().sort({
+      createdAt: -1,
+    });
 
     res.status(200).json({
       message:
         "Mock placement tests fetched successfully",
-      totalMockTests:
-        mockTests.length,
+      totalMockTests: mockTests.length,
       mockTests,
     });
   } catch (error) {
@@ -194,15 +191,11 @@ const getMockTests = async (
 // ==============================
 // GET MOCK TEST BY ID
 // ==============================
-const getMockTestById = async (
-  req,
-  res
-) => {
+const getMockTestById = async (req, res) => {
   try {
-    const mockTest =
-      await MockTest.findById(
-        req.params.id
-      );
+    const mockTest = await MockTest.findById(
+      req.params.id
+    );
 
     if (!mockTest) {
       return res.status(404).json({
@@ -228,15 +221,11 @@ const getMockTestById = async (
 // ==============================
 // DEACTIVATE MOCK TEST
 // ==============================
-const deactivateMockTest = async (
-  req,
-  res
-) => {
+const deactivateMockTest = async (req, res) => {
   try {
-    const mockTest =
-      await MockTest.findById(
-        req.params.id
-      );
+    const mockTest = await MockTest.findById(
+      req.params.id
+    );
 
     if (!mockTest) {
       return res.status(404).json({

@@ -1882,3 +1882,15 @@
     grid-template-columns: 1fr;
   }
 }
+
+.debugging-submit-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.debugging-submit-actions button {
+  width: auto;
+  min-width: 125px;
+}

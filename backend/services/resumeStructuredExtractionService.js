@@ -75,7 +75,7 @@ const uniqueStrings = (items = []) => {
 // ==============================
 const SECTION_PATTERNS = {
   summary: [
-    "summary",
+    "summary","a little about me",
     "professional summary",
     "profile",
     "profile summary",
@@ -85,7 +85,7 @@ const SECTION_PATTERNS = {
   ],
 
   education: [
-    "education",
+    "education","my studies",
     "academic details",
     "academic background",
     "educational qualification",
@@ -111,7 +111,7 @@ const SECTION_PATTERNS = {
 ],
 
   projects: [
-  "projects",
+  "projects","something i made",
   "project",
   "academic projects",
   "personal projects",
@@ -962,6 +962,15 @@ const extractStructuredResume = ({
   } = splitIntoSections(
     resumeText
   );
+
+  console.log("===== RESUME SECTION DEBUG =====");
+
+console.log("EDUCATION:", sections.education);
+console.log("PROJECTS:", sections.projects);
+console.log("HEADER:", sections.header);
+console.log("OTHER:", sections.other);
+
+console.log("==============================");
 
     const email =
       extractEmail(

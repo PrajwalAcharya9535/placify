@@ -696,3 +696,145 @@
     font-size: 20px;
   }
 }
+
+/* =========================================
+   FLOATING DASHBOARD NAVIGATION
+   ========================================= */
+
+.student-floating-dashboard {
+  position: fixed;
+ right: 28px;
+top: 92px;
+  z-index: 100;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  width: 54px;
+  height: 54px;
+  padding: 7px;
+
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+
+  background: linear-gradient(135deg, #1554c0, #2589f0);
+  color: #ffffff;
+
+  box-shadow:
+    0 8px 25px rgba(37, 99, 235, 0.25),
+    0 3px 8px rgba(15, 23, 42, 0.12);
+
+  font-family: inherit;
+  cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+
+  transition:
+    width 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
+  animation: studentDashboardPop 0.5s ease-out both;
+}
+
+.student-floating-dashboard-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+
+  width: 38px;
+  height: 38px;
+
+  font-size: 23px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.student-floating-dashboard-label {
+  max-width: 0;
+  opacity: 0;
+  overflow: hidden;
+
+  font-size: 13px;
+  font-weight: 750;
+
+  transition:
+    max-width 0.3s ease,
+    opacity 0.2s ease;
+}
+
+.student-floating-dashboard:hover,
+.student-floating-dashboard:focus-visible {
+  width: 155px;
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 14px 30px rgba(37, 99, 235, 0.3),
+    0 5px 12px rgba(15, 23, 42, 0.12);
+}
+
+.student-floating-dashboard:hover
+.student-floating-dashboard-label,
+.student-floating-dashboard:focus-visible
+.student-floating-dashboard-label {
+  max-width: 100px;
+  opacity: 1;
+}
+
+.student-floating-dashboard:active {
+  transform: scale(0.96);
+}
+
+@keyframes studentDashboardPop {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.8);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 760px) {
+  .student-floating-dashboard {
+    right: 16px;
+    top: 80px;
+    bottom: auto;
+    width: 48px;
+    height: 48px;
+  }
+
+  .student-floating-dashboard-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 21px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .student-floating-dashboard {
+    animation: none;
+    transition: none;
+  }
+
+  .student-floating-dashboard-label {
+    transition: none;
+  }
+}
+
+
+/* Temporary Dashboard visibility test */
+.student-floating-dashboard {
+  position: fixed !important;
+  top: 90px !important;
+  right: 20px !important;
+  bottom: auto !important;
+  z-index: 99999 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  display: flex !important;
+}

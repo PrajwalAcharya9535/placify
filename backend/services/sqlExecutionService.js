@@ -73,10 +73,10 @@ const validateQuery = (query) => {
 
   // Student SQL Lab currently allows
   // read-only SELECT queries.
-  if (
-    !upperQuery.startsWith("SELECT ") &&
-    !upperQuery.startsWith("WITH ")
-  ) {
+ if (
+  !/^SELECT\b/i.test(normalizedQuery) &&
+  !/^WITH\b/i.test(normalizedQuery)
+) {
     return {
       valid: false,
       message:

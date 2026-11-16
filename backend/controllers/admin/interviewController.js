@@ -1,300 +1,442 @@
-const InterviewQuestion = require(
-  "../../models/InterviewQuestion"
-);
 
-const CodingProblem = require(
-  "../../models/CodingProblem"
-);
+const mongoose = require("mongoose");
 
-const SqlProblem = require(
-  "../../models/SqlProblem"
-);
+const InterviewQuestion = require("../../models/InterviewQuestion");
+const CodingProblem = require("../../models/CodingProblem");
+const SqlProblem = require("../../models/SqlProblem");
+
+const ALLOWED_FIELDS = [
+  "question",
+  "interviewType",
+  "questionMode",
+  "codingProblem",
+  "sqlProblem",
+  "category",
+  "targetRole",
+  "targetCompany",
+  "difficulty",
+  "expectedKeywords",
+  "sampleAnswer",
+  "evaluationPoints",
+  "maxScore",
+  "isActive",
+];
+
+const INTERVIEW_TYPES = [
+  "Technical",
+  "HR",
+  "Behavioral",
+  "Communication",
+];
+
+const QUESTION_MODES = ["Theory", "Coding", "SQL"];
+const DIFFICULTIES = ["Easy", "Medium", "Hard"];
+
+const pickAllowedFields = (body = {}) => {
+  const result = {};
+
+  for (const field of ALLOWED_FIELDS) {
+    if (body[field] !== undefined) {
+      result[field] = body[field];
+    }
+  }
+
+  return result;
+};
+
+const sendError = (res, error, message) => {
+  const isValidationError = [
+    "ValidationError",
+    "CastError",
+  ].includes(error.name);
+
+  return res.status(isValidationError ? 400 : 500).json({
+    success: false,
+    message: isValidationError ? error.message : message,
+    error: error.message,
+  });
+};
+
+// ==============================
+// VALIDATE QUESTION DATA
+// ==============================
+
+const validateQuestionData = async (data) => {
+  if (
+    typeof data.question !== "string" ||
+    !data.question.trim()
+  ) {
+    return "Question is required";
+  }
+
+  if (!INTERVIEW_TYPES.includes(data.interviewType)) {
+    return "Invalid interview type";
+  }
+
+  if (!QUESTION_MODES.includes(data.questionMode)) {
+    return "Invalid question mode";
+  }
+
+  if (!DIFFICULTIES.includes(data.difficulty)) {
+    return "Invalid difficulty level";
+  }
+
+  if (
+    ["Coding", "SQL"].includes(data.questionMode) &&
+    data.interviewType !== "Technical"
+  ) {
+    return "Coding and SQL questions are allowed only for Technical interviews";
+  }
+
+  const score = Number(data.maxScore);
+
+  if (!Number.isFinite(score) || score < 1) {
+    return "Max score must be at least 1";
+  }
+
+  data.maxScore = score;
+
+  for (const field of [
+    "expectedKeywords",
+    "evaluationPoints",
+  ]) {
+    if (!Array.isArray(data[field])) {
+      return `${field} must be an array`;
+    }
+
+    if (
+      data[field].some(
+        (item) => typeof item !== "string"
+      )
+    ) {
+      return `${field} must contain only strings`;
+    }
+  }
+
+  if (data.questionMode === "Theory") {
+    data.codingProblem = null;
+    data.sqlProblem = null;
+  }
+
+  if (data.questionMode === "Coding") {
+    if (
+      !mongoose.isValidObjectId(data.codingProblem)
+    ) {
+      return "Valid coding problem ID is required";
+    }
+
+    const exists = await CodingProblem.exists({
+      _id: data.codingProblem,
+      isActive: true,
+    });
+
+    if (!exists) {
+      return "Active coding problem not found";
+    }
+
+    data.sqlProblem = null;
+  }
+
+  if (data.questionMode === "SQL") {
+    if (!mongoose.isValidObjectId(data.sqlProblem)) {
+      return "Valid SQL problem ID is required";
+    }
+
+    const exists = await SqlProblem.exists({
+      _id: data.sqlProblem,
+      isActive: true,
+    });
+
+    if (!exists) {
+      return "Active SQL problem not found";
+    }
+
+    data.codingProblem = null;
+  }
+
+  return null;
+};
 
 // ==============================
 // CREATE INTERVIEW QUESTION
 // ==============================
-const createInterviewQuestion = async (
-  req,
-  res
-) => {
+
+const createInterviewQuestion = async (req, res) => {
   try {
-    const {
-      question,
-      interviewType,
-      questionMode,
-      codingProblem,
-      sqlProblem,
-      category,
-      targetRole,
-      targetCompany,
-      difficulty,
-      expectedKeywords,
-      sampleAnswer,
-      evaluationPoints,
-      maxScore,
-    } = req.body;
+    const data = {
+      questionMode: "Theory",
+      difficulty: "Medium",
+      expectedKeywords: [],
+      evaluationPoints: [],
+      maxScore: 10,
+      isActive: true,
+      ...pickAllowedFields(req.body),
+    };
 
-    // ==============================
-    // BASIC VALIDATION
-    // ==============================
-    if (!question || !interviewType) {
+    const error = await validateQuestionData(data);
+
+    if (error) {
       return res.status(400).json({
         success: false,
-        message:
-          "Question and interview type are required",
+        message: error,
       });
     }
 
-    const allowedInterviewTypes = [
-      "Technical",
-      "HR",
-      "Behavioral",
-      "Communication",
-    ];
-
-    if (
-      !allowedInterviewTypes.includes(
-        interviewType
-      )
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Invalid interview type",
-      });
-    }
-
-    const allowedDifficulties = [
-      "Easy",
-      "Medium",
-      "Hard",
-    ];
-
-    if (
-      difficulty &&
-      !allowedDifficulties.includes(
-        difficulty
-      )
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Invalid difficulty level",
-      });
-    }
-
-    // ==============================
-    // QUESTION MODE VALIDATION
-    // ==============================
-    const selectedQuestionMode =
-      questionMode || "Theory";
-
-    const allowedQuestionModes = [
-      "Theory",
-      "Coding",
-      "SQL",
-    ];
-
-    if (
-      !allowedQuestionModes.includes(
-        selectedQuestionMode
-      )
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Invalid question mode",
-      });
-    }
-
-    // Coding and SQL are only allowed
-    // for Technical interviews.
-    if (
-      ["Coding", "SQL"].includes(
-        selectedQuestionMode
-      ) &&
-      interviewType !== "Technical"
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Coding and SQL questions are allowed only for Technical interviews",
-      });
-    }
-
-    let validatedCodingProblem = null;
-    let validatedSqlProblem = null;
-
-    // ==============================
-    // CODING PROBLEM VALIDATION
-    // ==============================
-    if (
-      selectedQuestionMode === "Coding"
-    ) {
-      if (!codingProblem) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Coding problem is required for Coding interview questions",
-        });
-      }
-
-      const existingCodingProblem =
-        await CodingProblem.findOne({
-          _id: codingProblem,
-          isActive: true,
-        });
-
-      if (!existingCodingProblem) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Active coding problem not found",
-        });
-      }
-
-      validatedCodingProblem =
-        existingCodingProblem._id;
-    }
-
-    // ==============================
-    // SQL PROBLEM VALIDATION
-    // ==============================
-    if (
-      selectedQuestionMode === "SQL"
-    ) {
-      if (!sqlProblem) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "SQL problem is required for SQL interview questions",
-        });
-      }
-
-      const existingSqlProblem =
-        await SqlProblem.findOne({
-          _id: sqlProblem,
-          isActive: true,
-        });
-
-      if (!existingSqlProblem) {
-        return res.status(404).json({
-          success: false,
-          message:
-            "Active SQL problem not found",
-        });
-      }
-
-      validatedSqlProblem =
-        existingSqlProblem._id;
-    }
-
-    // ==============================
-    // MAX SCORE VALIDATION
-    // ==============================
-    const parsedMaxScore =
-      maxScore !== undefined
-        ? Number(maxScore)
-        : 10;
-
-    if (
-      !Number.isFinite(parsedMaxScore) ||
-      parsedMaxScore < 1
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Max score must be a number greater than or equal to 1",
-      });
-    }
-
-    // ==============================
-    // CREATE QUESTION
-    // ==============================
-    const interviewQuestion =
-      await InterviewQuestion.create({
-        question: question.trim(),
-
-        interviewType,
-
-        questionMode:
-          selectedQuestionMode,
-
-        codingProblem:
-          validatedCodingProblem,
-
-        sqlProblem:
-          validatedSqlProblem,
-
-        category:
-          category || null,
-
-        targetRole:
-          targetRole || null,
-
-        targetCompany:
-          targetCompany || null,
-
-        difficulty:
-          difficulty || "Medium",
-
-        expectedKeywords:
-          Array.isArray(expectedKeywords)
-            ? expectedKeywords
-            : [],
-
-        sampleAnswer:
-          sampleAnswer || null,
-
-        evaluationPoints:
-          Array.isArray(evaluationPoints)
-            ? evaluationPoints
-            : [],
-
-        maxScore:
-          parsedMaxScore,
-
-        isActive: true,
-      });
+    const question = await InterviewQuestion.create(data);
 
     return res.status(201).json({
       success: true,
-      message:
-        "Interview question created successfully",
-      question: interviewQuestion,
+      message: "Interview question created successfully",
+      question,
     });
   } catch (error) {
-    // Invalid MongoDB ObjectId
-    if (
-      error.name === "CastError"
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "Invalid problem ID",
-      });
+    return sendError(
+      res,
+      error,
+      "Failed to create interview question"
+    );
+  }
+};
+
+// ==============================
+// LIST INTERVIEW QUESTIONS
+// ==============================
+
+const getAllInterviewQuestions = async (req, res) => {
+  try {
+    const {
+      search,
+      interviewType,
+      questionMode,
+      difficulty,
+      category,
+      isActive,
+    } = req.query;
+
+    const filter = {};
+
+    if (interviewType) {
+      if (!INTERVIEW_TYPES.includes(interviewType)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid interview type",
+        });
+      }
+
+      filter.interviewType = interviewType;
     }
 
-    // Mongoose schema validation
-    if (
-      error.name === "ValidationError"
-    ) {
-      return res.status(400).json({
-        success: false,
-        message:
-          error.message,
-      });
+    if (questionMode) {
+      if (!QUESTION_MODES.includes(questionMode)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid question mode",
+        });
+      }
+
+      filter.questionMode = questionMode;
     }
 
-    return res.status(500).json({
-      success: false,
-      message:
-        "Failed to create interview question",
-      error: error.message,
+    if (difficulty) {
+      if (!DIFFICULTIES.includes(difficulty)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid difficulty",
+        });
+      }
+
+      filter.difficulty = difficulty;
+    }
+
+    if (category) filter.category = category;
+
+    if (isActive !== undefined) {
+      if (!["true", "false"].includes(isActive)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid status filter",
+        });
+      }
+
+      filter.isActive = isActive === "true";
+    }
+
+    if (typeof search === "string" && search.trim()) {
+      const escaped = search
+        .trim()
+        .replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+      filter.question = {
+        $regex: escaped,
+        $options: "i",
+      };
+    }
+
+    const questions = await InterviewQuestion.find(filter)
+      .select("-sampleAnswer -expectedKeywords -evaluationPoints")
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return res.status(200).json({
+      success: true,
+      totalQuestions: questions.length,
+      questions,
     });
+  } catch (error) {
+    return sendError(
+      res,
+      error,
+      "Failed to fetch interview questions"
+    );
+  }
+};
+
+// ==============================
+// GET INTERVIEW QUESTION BY ID
+// ==============================
+
+const getInterviewQuestionById = async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid interview question ID",
+      });
+    }
+
+    const question = await InterviewQuestion.findById(
+      req.params.id
+    )
+      .populate("codingProblem", "title difficulty language isActive")
+      .populate("sqlProblem", "title difficulty category isActive");
+
+    if (!question) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview question not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      question,
+    });
+  } catch (error) {
+    return sendError(
+      res,
+      error,
+      "Failed to fetch interview question"
+    );
+  }
+};
+
+// ==============================
+// UPDATE INTERVIEW QUESTION
+// ==============================
+
+const updateInterviewQuestion = async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid interview question ID",
+      });
+    }
+
+    const question = await InterviewQuestion.findById(
+      req.params.id
+    );
+
+    if (!question) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview question not found",
+      });
+    }
+
+    const updates = pickAllowedFields(req.body);
+
+    const data = {
+      ...question.toObject(),
+      ...updates,
+    };
+
+    const error = await validateQuestionData(data);
+
+    if (error) {
+      return res.status(400).json({
+        success: false,
+        message: error,
+      });
+    }
+
+    for (const field of ALLOWED_FIELDS) {
+      if (data[field] !== undefined) {
+        question[field] = data[field];
+      }
+    }
+
+    await question.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Interview question updated successfully",
+      question,
+    });
+  } catch (error) {
+    return sendError(
+      res,
+      error,
+      "Failed to update interview question"
+    );
+  }
+};
+
+// ==============================
+// DEACTIVATE INTERVIEW QUESTION
+// ==============================
+
+const deactivateInterviewQuestion = async (req, res) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid interview question ID",
+      });
+    }
+
+    const question = await InterviewQuestion.findById(
+      req.params.id
+    );
+
+    if (!question) {
+      return res.status(404).json({
+        success: false,
+        message: "Interview question not found",
+      });
+    }
+
+    question.isActive = false;
+    await question.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Interview question deactivated successfully",
+      question,
+    });
+  } catch (error) {
+    return sendError(
+      res,
+      error,
+      "Failed to deactivate interview question"
+    );
   }
 };
 
 module.exports = {
   createInterviewQuestion,
+  getAllInterviewQuestions,
+  getInterviewQuestionById,
+  updateInterviewQuestion,
+  deactivateInterviewQuestion,
 };

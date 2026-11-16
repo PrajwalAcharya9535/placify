@@ -103,8 +103,10 @@ const getDebuggingProblemById = async (req, res) => {
         category: problem.category,
         language: problem.language,
 
-        buggyCode: problem.buggyCode,
+buggyCode: problem.buggyCode,
 
+// Used by Paste Code to complete the starter program.
+completionCode: problem.expectedFixedCode || "",
         bugDescription: problem.bugDescription,
 
         inputFormat: problem.inputFormat,

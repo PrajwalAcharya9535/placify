@@ -27,6 +27,16 @@ function SQLPractice() {
   const [submittedQuery, setSubmittedQuery] = useState("");
   const [result, setResult] = useState(null);
 
+  const [showSolution, setShowSolution] = useState(false);
+
+const pasteSolution = () => {
+  if (!selectedProblem?.expectedQuery) return;
+
+  setSubmittedQuery(selectedProblem.expectedQuery.trim());
+  setResult(null);
+  setWorkspaceError("");
+};
+
   const getToken = () => {
     return localStorage.getItem("placifyToken");
   };
@@ -146,6 +156,7 @@ function SQLPractice() {
       setWorkspaceError("");
       setResult(null);
       setSubmittedQuery("");
+      setShowSolution(false);
 
       const response = await axios.get(
         `${API_BASE}/sql/problems/${problemId}`,
@@ -179,6 +190,7 @@ function SQLPractice() {
 
   const closeWorkspace = () => {
     setSelectedProblem(null);
+    setShowSolution(false);
     setSubmittedQuery("");
     setResult(null);
     setWorkspaceError("");
@@ -871,6 +883,18 @@ function SQLPractice() {
               </span>
             </div>
 
+
+{showSolution && (
+  <div className="sql-solution-panel">
+    <strong>Correct SQL Query</strong>
+    <pre>{selectedProblem.expectedQuery}</pre>
+
+    {selectedProblem.explanation && (
+      <p>{selectedProblem.explanation}</p>
+    )}
+  </div>
+)}
+
             <textarea
               className="sql-editor"
               value={submittedQuery}
@@ -890,25 +914,36 @@ function SQLPractice() {
               disabled={submitting}
             />
 
-            <div className="sql-submit-bar">
-              <span>
-                Your query will be executed
-                against the problem dataset.
-              </span>
+        <div className="sql-submit-bar">
+  <div className="sql-submit-actions">
+    <button
+      type="button"
+      className="sql-view-btn"
+      onClick={() => setShowSolution((prev) => !prev)}
+      disabled={submitting || !selectedProblem?.expectedQuery}
+    >
+      {showSolution ? "Hide Solution" : "View Solution"}
+    </button>
 
-              <button
-                type="button"
-                disabled={
-                  submitting ||
-                  !submittedQuery.trim()
-                }
-                onClick={submitQuery}
-              >
-                {submitting
-                  ? "Evaluating..."
-                  : "Run & Submit"}
-              </button>
-            </div>
+    <button
+      type="button"
+      className="sql-paste-btn"
+      onClick={pasteSolution}
+      disabled={submitting || !selectedProblem?.expectedQuery}
+    >
+      Paste Solution
+    </button>
+
+    <button
+      type="button"
+      className="sql-run-btn"
+      disabled={submitting || !submittedQuery.trim()}
+      onClick={submitQuery}
+    >
+      {submitting ? "Evaluating..." : "Run & Submit"}
+    </button>
+  </div>
+</div>
 
             {result && (
               <div className="sql-result-panel">

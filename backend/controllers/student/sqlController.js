@@ -109,7 +109,7 @@ const getSqlProblemById = async (req, res) => {
     const problem = await SqlProblem.findOne({
       _id: req.params.id,
       isActive: true,
-    }).select("-expectedQuery -expectedResult");
+    }).select("-expectedResult");
 
     if (!problem) {
       return res.status(404).json({

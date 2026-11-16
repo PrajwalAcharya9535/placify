@@ -247,6 +247,20 @@ function CodingPractice() {
   // SUBMIT CODE
   // ========================================================
 
+  const handlePasteDemoCode = () => {
+  const solution = selectedProblem?.demoSolutions?.[language];
+
+  if (!solution) {
+    setError("Demo solution not available for this problem and language.");
+    return;
+  }
+
+  setSourceCode(solution);
+  setResult(null);
+  setError("");
+  editorRef.current?.focus();
+};
+
   const submitCode = async () => {
     if (!selectedProblem?._id) {
       setError("Please select a coding problem.");
@@ -874,6 +888,15 @@ function CodingPractice() {
                   public and hidden test cases.
                 </span>
               </div>
+
+              <button
+  type="button"
+  onClick={handlePasteDemoCode}
+  disabled={submitting || !selectedProblem || !language}
+  title="Insert a sample solution for demonstration"
+>
+  Paste Demo Code
+</button>
 
               <button
                 type="button"

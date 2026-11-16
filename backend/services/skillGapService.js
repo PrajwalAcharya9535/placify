@@ -83,9 +83,10 @@ gdSessions,
   // CURRENT SKILLS
   // ==========================================
 
-  const currentSkills = skills.map((skill) =>
-    skill.name.toLowerCase()
-  );
+ const currentSkills = skills
+  .map((skill) => skill.name)
+  .filter((name) => typeof name === "string" && name.trim())
+  .map((name) => name.trim().toLowerCase());
 
   const missingSkills = [];
   const weakAreas = [];

@@ -1,3 +1,4 @@
+
 const express = require("express");
 
 // ==============================
@@ -12,6 +13,7 @@ const {
   getApplicationStageAnalytics,
   getCompanyApplicationAnalytics,
   getPlacementPackageAnalytics,
+  getMockPlacementAnalytics,
 } = require("../controllers/admin/dashboardController");
 
 // ==============================
@@ -29,6 +31,10 @@ const {
 
 const {
   createLearningTopic,
+  getAllLearningTopics,
+  getLearningTopicById,
+  updateLearningTopic,
+  deactivateLearningTopic,
 } = require("../controllers/admin/learningController");
 
 // ==============================
@@ -37,6 +43,10 @@ const {
 
 const {
   createPracticeQuestion,
+  getAllPracticeQuestions,
+  getPracticeQuestionById,
+  updatePracticeQuestion,
+  deactivatePracticeQuestion,
 } = require("../controllers/admin/practiceController");
 
 // ==============================
@@ -45,6 +55,10 @@ const {
 
 const {
   createCodingProblem,
+  getAllCodingProblems,
+  getCodingProblemById,
+  updateCodingProblem,
+  deactivateCodingProblem,
 } = require("../controllers/admin/codingController");
 
 // ==============================
@@ -53,6 +67,10 @@ const {
 
 const {
   createSqlProblem,
+  getAllSqlProblems,
+  getSqlProblemById,
+  updateSqlProblem,
+  deactivateSqlProblem,
 } = require("../controllers/admin/sqlController");
 
 // ==============================
@@ -61,6 +79,10 @@ const {
 
 const {
   createDebuggingProblem,
+  getAllDebuggingProblems,
+  getDebuggingProblemById,
+  updateDebuggingProblem,
+  deactivateDebuggingProblem,
 } = require("../controllers/admin/debuggingController");
 
 // ==============================
@@ -71,6 +93,7 @@ const {
   createMockTest,
   getMockTests,
   getMockTestById,
+  deactivateMockTest,
 } = require("../controllers/admin/mockTestController");
 
 // ==============================
@@ -79,6 +102,10 @@ const {
 
 const {
   createInterviewQuestion,
+  getAllInterviewQuestions,
+  getInterviewQuestionById,
+  updateInterviewQuestion,
+  deactivateInterviewQuestion,
 } = require("../controllers/admin/interviewController");
 
 // ==============================
@@ -189,6 +216,7 @@ router.get(
 // ADMIN LEARNING MODULE
 // ==============================
 
+// Create learning topic
 router.post(
   "/learning",
   protect,
@@ -196,10 +224,43 @@ router.post(
   createLearningTopic
 );
 
+// Get all learning topics
+router.get(
+  "/learning",
+  protect,
+  authorizeRoles("admin"),
+  getAllLearningTopics
+);
+
+// Get single learning topic
+router.get(
+  "/learning/:id",
+  protect,
+  authorizeRoles("admin"),
+  getLearningTopicById
+);
+
+// Update learning topic
+router.put(
+  "/learning/:id",
+  protect,
+  authorizeRoles("admin"),
+  updateLearningTopic
+);
+
+// Deactivate learning topic
+router.patch(
+  "/learning/:id/deactivate",
+  protect,
+  authorizeRoles("admin"),
+  deactivateLearningTopic
+);
+
 // ==============================
 // ADMIN PRACTICE MODULE
 // ==============================
 
+// Create practice question
 router.post(
   "/practice/questions",
   protect,
@@ -207,15 +268,80 @@ router.post(
   createPracticeQuestion
 );
 
+// Get all practice questions
+router.get(
+  "/practice/questions",
+  protect,
+  authorizeRoles("admin"),
+  getAllPracticeQuestions
+);
+
+// Get single practice question
+router.get(
+  "/practice/questions/:id",
+  protect,
+  authorizeRoles("admin"),
+  getPracticeQuestionById
+);
+
+// Update practice question
+router.put(
+  "/practice/questions/:id",
+  protect,
+  authorizeRoles("admin"),
+  updatePracticeQuestion
+);
+
+// Deactivate practice question
+router.patch(
+  "/practice/questions/:id/deactivate",
+  protect,
+  authorizeRoles("admin"),
+  deactivatePracticeQuestion
+);
+
 // ==============================
 // ADMIN CODING MODULE
 // ==============================
 
+// Create coding problem
 router.post(
   "/coding/problems",
   protect,
   authorizeRoles("admin"),
   createCodingProblem
+);
+
+// Get all coding problems
+router.get(
+  "/coding/problems",
+  protect,
+  authorizeRoles("admin"),
+  getAllCodingProblems
+);
+
+// Get single coding problem
+router.get(
+  "/coding/problems/:id",
+  protect,
+  authorizeRoles("admin"),
+  getCodingProblemById
+);
+
+// Update coding problem
+router.put(
+  "/coding/problems/:id",
+  protect,
+  authorizeRoles("admin"),
+  updateCodingProblem
+);
+
+// Deactivate coding problem
+router.patch(
+  "/coding/problems/:id/deactivate",
+  protect,
+  authorizeRoles("admin"),
+  deactivateCodingProblem
 );
 
 // ==============================
@@ -229,6 +355,39 @@ router.post(
   createSqlProblem
 );
 
+
+// Get all SQL problems
+router.get(
+  "/sql/problems",
+  protect,
+  authorizeRoles("admin"),
+  getAllSqlProblems
+);
+
+// Get single SQL problem
+router.get(
+  "/sql/problems/:id",
+  protect,
+  authorizeRoles("admin"),
+  getSqlProblemById
+);
+
+// Update SQL problem
+router.put(
+  "/sql/problems/:id",
+  protect,
+  authorizeRoles("admin"),
+  updateSqlProblem
+);
+
+// Deactivate SQL problem
+router.patch(
+  "/sql/problems/:id/deactivate",
+  protect,
+  authorizeRoles("admin"),
+  deactivateSqlProblem
+);
+
 // ==============================
 // ADMIN DEBUGGING LAB MODULE
 // ==============================
@@ -240,10 +399,27 @@ router.post(
   createDebuggingProblem
 );
 
+
+// Get all debugging problems
+router.get("/debugging/problems", getAllDebuggingProblems);
+
+// Get debugging problem details
+router.get("/debugging/problems/:id", getDebuggingProblemById);
+
+// Update debugging problem
+router.put("/debugging/problems/:id", updateDebuggingProblem);
+
+// Deactivate debugging problem
+router.patch(
+  "/debugging/problems/:id/deactivate",
+  deactivateDebuggingProblem
+);
+
 // ==============================
 // ADMIN MOCK PLACEMENT MODULE
 // ==============================
 
+// Create mock test
 router.post(
   "/mock-tests",
   protect,
@@ -251,6 +427,7 @@ router.post(
   createMockTest
 );
 
+// Get all mock tests
 router.get(
   "/mock-tests",
   protect,
@@ -258,11 +435,29 @@ router.get(
   getMockTests
 );
 
+// Get mock placement analytics
+// IMPORTANT: Keep this above /mock-tests/:id
+router.get(
+  "/mock-tests/analytics/summary",
+  protect,
+  authorizeRoles("admin"),
+  getMockPlacementAnalytics
+);
+
+// Get mock test by ID
 router.get(
   "/mock-tests/:id",
   protect,
   authorizeRoles("admin"),
   getMockTestById
+);
+
+// Deactivate mock test
+router.patch(
+  "/mock-tests/:id/deactivate",
+  protect,
+  authorizeRoles("admin"),
+  deactivateMockTest
 );
 
 // ==============================
@@ -275,6 +470,23 @@ router.post(
   authorizeRoles("admin"),
   createInterviewQuestion
 );
+
+
+// Get all interview questions
+router.get("/interview/questions", getAllInterviewQuestions);
+
+// Get interview question by ID
+router.get("/interview/questions/:id", getInterviewQuestionById);
+
+// Update interview question
+router.put("/interview/questions/:id", updateInterviewQuestion);
+
+// Deactivate interview question
+router.patch(
+  "/interview/questions/:id/deactivate",
+  deactivateInterviewQuestion
+);
+
 
 // ==============================
 // ADMIN GROUP DISCUSSION MODULE
@@ -331,4 +543,4 @@ router.patch(
   closePlacementOpportunity
 );
 
-module.exports = router;  
+module.exports = router;

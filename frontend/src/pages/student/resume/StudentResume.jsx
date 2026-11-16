@@ -495,6 +495,7 @@ const [isPlacifyImprovedUpload, setIsPlacifyImprovedUpload] =
 
 // Field references used to automatically move
 // the student through Role → Company → JD.
+const resumePreviewRef = useRef(null);
 const roleInputRef = useRef(null);
 const companyInputRef = useRef(null);
 
@@ -1688,6 +1689,15 @@ const handleGenerateProjectResult = () => {
                 null
             );
 
+            if (response.data.preview) {
+    setTimeout(() => {
+        resumePreviewRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+        });
+    }, 150);
+}
+
             setGeneratedResume(null);
 
             await fetchResume({
@@ -1705,12 +1715,16 @@ const handleGenerateProjectResult = () => {
             return;
             }
 
-            setError(
-            getErrorMessage(
-                err,
-                "Failed to prepare resume preview."
-            )
-            );
+           const missing = err.response?.data?.missingRequiredData;
+
+setError(
+    Array.isArray(missing) && missing.length
+        ? `Resume preview needs verified: ${missing.join(", ")}`
+        : getErrorMessage(
+              err,
+              "Failed to prepare resume preview."
+          )
+);
         } finally {
             setPreviewing(false);
         }
@@ -4045,8 +4059,71 @@ onClick={() => {
             );
         })}
     </div>
+) : field.fieldType === "url" ? (
+    <div>
+        <div className="resume-multi-select">
+            {[
+              { label: "GitHub", url: "https://github.com/PrajwalAcharya9535" },
+{ label: "LinkedIn", url: "https://www.linkedin.com/in/prajwalacharya2001/" },
+{ label: "Portfolio Website", url: "https://" },
+            ].map((option) => (
+                <button
+                    type="button"
+                    key={option.label}
+                    className="resume-select-option"
+                    onClick={() =>
+                        handleImprovementChange(field.key, option.url)
+                    }
+                >
+                    + {option.label}
+                </button>
+            ))}
+        </div>
+
+        <input
+            type="url"
+            value={improvementValues[field.key] || ""}
+            onChange={(event) =>
+                handleImprovementChange(field.key, event.target.value)
+            }
+            placeholder={field.placeholder || "https://"}
+        />
+    </div>
 ) : field.fieldType === "textarea" ? (
-    <textarea
+
+    <div>
+    {field.key === "professionalSummary" && (
+        <div className="resume-multi-select">
+            {[
+                {
+                    label: "Java Developer",
+                    value: "Motivated MCA graduate with a strong foundation in Java, object-oriented programming, SQL, and data structures. Skilled in problem-solving, debugging, and building software applications. Seeking an entry-level Java Developer role to contribute to reliable, scalable solutions.",
+                },
+                {
+                    label: "Full Stack Developer",
+                    value: "MCA graduate with hands-on experience developing full-stack web applications using React.js, Node.js, Express.js, and MongoDB. Built Placify, an AI-powered placement preparation platform. Passionate about creating responsive, efficient applications and solving real-world problems.",
+                },
+                {
+                    label: "Software Developer",
+                    value: "Detail-oriented MCA graduate proficient in Java, Python, JavaScript, SQL, and web development. Experienced in academic project development, debugging, and problem-solving. Seeking an entry-level Software Developer opportunity to apply technical skills and grow professionally.",
+                },
+            ].map((option) => (
+                <button
+                    type="button"
+                    key={option.label}
+                    className="resume-select-option"
+                    onClick={() =>
+                        handleImprovementChange(field.key, option.value)
+                    }
+                >
+                    + {option.label}
+                </button>
+            ))}
+        </div>
+    )}
+    
+    <textarea 
+    
         rows="5"
         value={
             improvementValues[field.key] || ""
@@ -4059,6 +4136,7 @@ onClick={() => {
         }
         placeholder={field.placeholder || ""}
     />
+    </div>
 ) : (
     <input
         type={
@@ -4271,7 +4349,7 @@ onClick={() => {
                     </div>
 
                     {preview && (
-                    <div className="resume-preview-shell">
+                    <div className="resume-preview-shell" ref={resumePreviewRef}>
                         <div className="resume-preview-toolbar">
                         <div>
                             <span>

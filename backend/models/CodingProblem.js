@@ -78,6 +78,22 @@ const codingProblemSchema = new mongoose.Schema(
 
     testCases: [testCaseSchema],
 
+    // =====================================
+    // DEMO SOLUTIONS (JAVA + PYTHON)
+    // =====================================
+
+    demoSolutions: {
+      Java: {
+        type: String,
+        default: "",
+      },
+
+      Python: {
+        type: String,
+        default: "",
+      },
+    },
+
     marks: {
       type: Number,
       min: 1,

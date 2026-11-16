@@ -1,8 +1,10 @@
+
 const mongoose = require("mongoose");
 
 const User = require("../../models/User");
 const PlacementOpportunity = require("../../models/PlacementOpportunity");
 const PlacementApplication = require("../../models/PlacementApplication");
+const MockAttempt = require("../../models/MockAttempt");
 
 // ==============================
 // GET ADMIN DASHBOARD OVERVIEW
@@ -53,18 +55,15 @@ const getAdminDashboardOverview = async (req, res) => {
           totalStudents,
           totalAdmins,
         },
-
         opportunities: {
           total: totalOpportunities,
           active: activeOpportunities,
         },
-
         applications: {
           total: totalApplications,
           active: activeApplications,
           rejected: rejectedApplications,
         },
-
         placements: {
           placedStudents: placedStudents.length,
         },
@@ -87,10 +86,7 @@ const getAdminDashboardOverview = async (req, res) => {
 const getRecentPlacementApplications = async (req, res) => {
   try {
     const applications = await PlacementApplication.find()
-      .populate(
-        "student",
-        "name email"
-      )
+      .populate("student", "name email")
       .populate(
         "opportunity",
         "title companyName jobRole location opportunityType status"
@@ -122,10 +118,7 @@ const getRecentPlacementApplications = async (req, res) => {
 const getAllPlacementApplications = async (req, res) => {
   try {
     const applications = await PlacementApplication.find()
-      .populate(
-        "student",
-        "name email"
-      )
+      .populate("student", "name email")
       .populate(
         "opportunity",
         "title companyName jobRole location opportunityType status"
@@ -167,10 +160,7 @@ const getPlacementApplicationById = async (req, res) => {
     const application = await PlacementApplication.findById(
       applicationId
     )
-      .populate(
-        "student",
-        "name email"
-      )
+      .populate("student", "name email")
       .populate(
         "opportunity",
         "title companyName description opportunityType jobRole location workMode applicationDeadline testDate selectionRounds status"
@@ -276,19 +266,15 @@ const getCompanyApplicationAnalytics = async (req, res) => {
           as: "opportunityDetails",
         },
       },
-
       {
         $unwind: "$opportunityDetails",
       },
-
       {
         $group: {
           _id: "$opportunityDetails.companyName",
-
           totalApplications: {
             $sum: 1,
           },
-
           placedApplications: {
             $sum: {
               $cond: [
@@ -298,7 +284,6 @@ const getCompanyApplicationAnalytics = async (req, res) => {
               ],
             },
           },
-
           rejectedApplications: {
             $sum: {
               $cond: [
@@ -308,7 +293,6 @@ const getCompanyApplicationAnalytics = async (req, res) => {
               ],
             },
           },
-
           activeApplications: {
             $sum: {
               $cond: [
@@ -320,7 +304,6 @@ const getCompanyApplicationAnalytics = async (req, res) => {
           },
         },
       },
-
       {
         $project: {
           _id: 0,
@@ -331,7 +314,6 @@ const getCompanyApplicationAnalytics = async (req, res) => {
           rejectedApplications: 1,
         },
       },
-
       {
         $sort: {
           totalApplications: -1,
@@ -369,29 +351,23 @@ const getPlacementPackageAnalytics = async (req, res) => {
           "offerDetails.package": { $gt: 0 },
         },
       },
-
       {
         $group: {
           _id: null,
-
           totalPlacedOffers: {
             $sum: 1,
           },
-
           averagePackage: {
             $avg: "$offerDetails.package",
           },
-
           highestPackage: {
             $max: "$offerDetails.package",
           },
-
           lowestPackage: {
             $min: "$offerDetails.package",
           },
         },
       },
-
       {
         $project: {
           _id: 0,
@@ -430,6 +406,136 @@ const getPlacementPackageAnalytics = async (req, res) => {
   }
 };
 
+// ==============================
+// GET MOCK PLACEMENT ANALYTICS
+// ==============================
+
+const getMockPlacementAnalytics = async (req, res) => {
+  try {
+    const attemptStatuses = [
+      "Not Started",
+      "In Progress",
+      "Completed",
+      "Auto Submitted",
+      "Disqualified",
+    ];
+
+    const resultTypes = [
+      "Pending",
+      "Passed",
+      "Failed",
+      "Disqualified",
+    ];
+
+    const [statusAggregation, resultAggregation, scoreAggregation] =
+      await Promise.all([
+        MockAttempt.aggregate([
+          {
+            $group: {
+              _id: "$status",
+              count: { $sum: 1 },
+            },
+          },
+        ]),
+        MockAttempt.aggregate([
+          {
+            $group: {
+              _id: "$result",
+              count: { $sum: 1 },
+            },
+          },
+        ]),
+        MockAttempt.aggregate([
+          {
+            $match: {
+              status: {
+                $in: ["Completed", "Auto Submitted"],
+              },
+            },
+          },
+          {
+            $group: {
+              _id: null,
+              averagePercentage: {
+                $avg: "$overallPercentage",
+              },
+            },
+          },
+        ]),
+      ]);
+
+    const statusCounts = {};
+    const resultCounts = {};
+
+    attemptStatuses.forEach((status) => {
+      statusCounts[status] = 0;
+    });
+
+    resultTypes.forEach((result) => {
+      resultCounts[result] = 0;
+    });
+
+    statusAggregation.forEach((item) => {
+      if (Object.prototype.hasOwnProperty.call(statusCounts, item._id)) {
+        statusCounts[item._id] = item.count;
+      }
+    });
+
+    resultAggregation.forEach((item) => {
+      if (Object.prototype.hasOwnProperty.call(resultCounts, item._id)) {
+        resultCounts[item._id] = item.count;
+      }
+    });
+
+    const totalAttempts = statusAggregation.reduce(
+      (total, item) => total + item.count,
+      0
+    );
+
+    const completedAttempts = statusCounts["Completed"];
+    const autoSubmittedAttempts = statusCounts["Auto Submitted"];
+    const inProgressAttempts = statusCounts["In Progress"];
+    const notStartedAttempts = statusCounts["Not Started"];
+    const disqualifiedAttempts = statusCounts["Disqualified"];
+
+    const passedAttempts = resultCounts["Passed"];
+    const failedAttempts = resultCounts["Failed"];
+
+    const averagePercentage = Number(
+      (scoreAggregation[0]?.averagePercentage || 0).toFixed(2)
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Mock placement analytics fetched successfully",
+      analytics: {
+        totalAttempts,
+        completedAttempts,
+        inProgressAttempts,
+        passedAttempts,
+        failedAttempts,
+        averagePercentage,
+        notStartedAttempts,
+        autoSubmittedAttempts,
+        disqualifiedAttempts,
+        statusCounts,
+        resultCounts,
+      },
+    });
+  } catch (error) {
+    console.error("Get mock placement analytics error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch mock placement analytics",
+    });
+  }
+};
+
+// ==============================
+// EXPORT CONTROLLERS
+// ==============================
+
 module.exports = {
   getAdminDashboardOverview,
   getRecentPlacementApplications,
@@ -438,4 +544,5 @@ module.exports = {
   getApplicationStageAnalytics,
   getCompanyApplicationAnalytics,
   getPlacementPackageAnalytics,
+  getMockPlacementAnalytics,
 };

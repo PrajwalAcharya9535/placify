@@ -121,6 +121,11 @@ const getCodingProblemById = async (req, res) => {
         timeLimitSeconds: problem.timeLimitSeconds,
         skillsCovered: problem.skillsCovered,
         companyTags: problem.companyTags,
+        // Demo solutions are exposed only for practice problems.
+demoSolutions: {
+  Java: problem.demoSolutions?.Java || "",
+  Python: problem.demoSolutions?.Python || "",
+},
       },
     });
   } catch (error) {

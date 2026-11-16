@@ -413,7 +413,7 @@ function StudentDashboard() {
                 <div className="skill-overview-item">
                   <span>Current Skills</span>
 
-                  <strong>{skills.length}</strong>
+                  <strong>{summary?.totalSkills ?? skills.length}</strong>
                 </div>
 
                 <div className="skill-overview-item">
@@ -671,6 +671,12 @@ function StudentDashboard() {
               </div>
 
               <div className="profile-details">
+                <div>
+  <span>College</span>
+  <strong>
+    {profile?.college || "Not added"}
+  </strong>
+</div>
                 <div>
                   <span>Course</span>
                   <strong>

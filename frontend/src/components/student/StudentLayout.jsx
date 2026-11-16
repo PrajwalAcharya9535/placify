@@ -170,26 +170,30 @@ function StudentLayout({ children }) {
             Dashboard
           </NavLink>
 
-          <p className="student-nav-label">PREPARATION</p>
-          <NavLink to="/student/learning" className="student-nav-item">
-            <span className="student-nav-icon">▤</span>
-            Learning
+          <p className="student-nav-label">GETTING STARTED</p>
+          <NavLink to="/student/resume" className="student-nav-item">
+            <span className="student-nav-icon">▧</span>
+            Resume & ATS
           </NavLink>
+
+          <p className="student-nav-label">PREPARATION</p>
           <NavLink to="/student/roadmap" className="student-nav-item">
             <span className="student-nav-icon">↟</span>
             Roadmap
+          </NavLink>
+          <NavLink to="/student/learning" className="student-nav-item">
+            <span className="student-nav-icon">▤</span>
+            Learning
           </NavLink>
           <NavLink to="/student/practice" className="student-nav-item">
             <span className="student-nav-icon">✓</span>
             Practice
           </NavLink>
+
+          <p className="student-nav-label">ASSESSMENTS</p>
           <NavLink to="/student/mock-placement" className="student-nav-item">
             <span className="student-nav-icon">◇</span>
             Mock Placement
-          </NavLink>
-          <NavLink to="/student/resume" className="student-nav-item">
-            <span className="student-nav-icon">▧</span>
-            Resume & ATS
           </NavLink>
           <NavLink to="/student/interview" className="student-nav-item">
             <span className="student-nav-icon">◉</span>
@@ -232,6 +236,7 @@ function StudentLayout({ children }) {
             <span className="student-nav-icon">▣</span>
             Applications
           </NavLink>
+          <p className="student-nav-label">PROGRESS & PLANNING</p>
           <NavLink to="/student/analytics" className="student-nav-item">
             <span className="student-nav-icon">↗</span>
             Analytics
@@ -320,7 +325,12 @@ function StudentLayout({ children }) {
               )}
             </button>
 
-            <button type="button" className="student-profile-button">
+            <button
+  type="button"
+  className="student-profile-button"
+  onClick={() => navigate("/student/profile")}
+  title="View Student Profile"
+>
               <span className="student-profile-avatar">
                 {user?.name?.charAt(0)?.toUpperCase() || "S"}
               </span>
@@ -332,6 +342,20 @@ function StudentLayout({ children }) {
           </div>
         </header>
         <main className="student-content">{children}</main>
+        {location.pathname !== "/student/dashboard" && (
+  <button
+    type="button"
+    className="student-floating-dashboard"
+    onClick={() => navigate("/student/dashboard")}
+    title="Back to Dashboard"
+    aria-label="Back to Dashboard"
+  >
+    <span className="student-floating-dashboard-icon">D</span>
+    <span className="student-floating-dashboard-label">
+      Dashboard
+    </span>
+  </button>
+)}
       </div>
     </div>
   );

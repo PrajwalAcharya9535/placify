@@ -1,21 +1,17 @@
+
 // ==========================================
 // IMPROVED RESUME BUILDER SERVICE
 // ==========================================
-//
-// Purpose:
-// Build a clean, structured resume object from
-// verified extracted data + student-provided
-// improvement information.
-//
-// IMPORTANT:
-// This service does NOT invent experience,
-// projects, achievements, certifications,
-// skills, or measurable results.
-// ==========================================
+
+// Build a structured resume using verified
+// extracted data and student improvements.
+// Never invent experience, projects, skills,
+// achievements, or certifications.
 
 // ==========================================
 // BASIC HELPERS
 // ==========================================
+
 const cleanText = (value) => {
   return String(value || "")
     .replace(/\s+/g, " ")
@@ -51,6 +47,7 @@ const uniqueStrings = (values = []) => {
 // ==========================================
 // GET STUDENT IMPROVEMENT VALUE
 // ==========================================
+
 const getImprovementValue = (resume, key) => {
   const fields =
     resume?.advancedReview?.improvementFields || [];
@@ -69,6 +66,7 @@ const getImprovementValue = (resume, key) => {
 // ==========================================
 // BUILD CONTACT INFORMATION
 // ==========================================
+
 const buildContact = (resume) => {
   return {
     name: cleanText(resume?.contact?.name),
@@ -98,6 +96,7 @@ const buildContact = (resume) => {
 // ==========================================
 // BUILD PROFESSIONAL SUMMARY
 // ==========================================
+
 const buildSummary = (resume) => {
   return cleanText(
     resume?.summary ||
@@ -111,6 +110,7 @@ const buildSummary = (resume) => {
 // ==========================================
 // BUILD SKILLS
 // ==========================================
+
 const buildSkills = (resume) => {
   return uniqueStrings(
     resume?.extractedSkills || []
@@ -120,21 +120,18 @@ const buildSkills = (resume) => {
 // ==========================================
 // BUILD LANGUAGES
 // ==========================================
+
 const buildLanguages = (resume) => {
-  const existingLanguages =
-    uniqueStrings(
-      resume?.languages || []
-    );
+  const existingLanguages = uniqueStrings(
+    resume?.languages || []
+  );
 
   if (existingLanguages.length) {
     return existingLanguages;
   }
 
   const improvementValue =
-    getImprovementValue(
-      resume,
-      "languages"
-    );
+    getImprovementValue(resume, "languages");
 
   if (!improvementValue) {
     return [];
@@ -148,21 +145,22 @@ const buildLanguages = (resume) => {
 // ==========================================
 // BUILD PROJECTS
 // ==========================================
-// ==========================================
-// BUILD PROJECTS
-// ==========================================
+
 const buildProjects = (resume) => {
   console.log(
     "\n===== RESUME BUILDER PROJECT DEBUG ====="
   );
+
   console.log(
     "resume.projects:",
     resume?.projects
   );
+
   console.log(
     "resume.projectImpact:",
     resume?.projectImpact
   );
+
   console.log(
     "improvement projectImpact:",
     getImprovementValue(
@@ -170,6 +168,7 @@ const buildProjects = (resume) => {
       "projectImpact"
     )
   );
+
   console.log(
     "========================================\n"
   );
@@ -178,75 +177,39 @@ const buildProjects = (resume) => {
     resume?.projects || []
   );
 
-  let projectImpact =
-    cleanText(
-      resume?.projectImpact ||
-        getImprovementValue(
-          resume,
-          "projectImpact"
-        )
+  let projectImpact = cleanText(
+    resume?.projectImpact ||
+      getImprovementValue(
+        resume,
+        "projectImpact"
+      )
+  );
+
+  // Merge a verified continuation of
+  // an incomplete project impact sentence.
+
+  if (projectImpact && projects.length) {
+    const lastProjectItem = cleanText(
+      projects[projects.length - 1]
     );
 
-  // ========================================
-  // PROJECT IMPACT CONTINUATION FIX
-  // ========================================
-  //
-  // Some extracted resumes may split a
-  // Project Impact sentence across lines.
-  //
-  // Example:
-  //
-  // projectImpact:
-  // "... enabling users to"
-  //
-  // final project item:
-  // "manage placement and bookstore-related
-  // data efficiently."
-  //
-  // Only merge when the impact appears
-  // incomplete and the final project item
-  // looks like its continuation.
-  // ========================================
-
-  if (
-    projectImpact &&
-    projects.length
-  ) {
-    const lastProjectItem =
-      cleanText(
-        projects[
-          projects.length - 1
-        ]
-      );
-
     const impactLooksIncomplete =
-      !/[.!?]$/.test(
-        projectImpact
-      );
+      !/[.!?]$/.test(projectImpact);
 
     const continuationLooksValid =
       lastProjectItem &&
-      /^[a-z]/.test(
-        lastProjectItem
-      ) &&
-      /[.!?]$/.test(
-        lastProjectItem
-      );
+      /^[a-z]/.test(lastProjectItem) &&
+      /[.!?]$/.test(lastProjectItem);
 
     if (
       impactLooksIncomplete &&
       continuationLooksValid
     ) {
-      projectImpact =
-        cleanText(
-          `${projectImpact} ${lastProjectItem}`
-        );
+      projectImpact = cleanText(
+        `${projectImpact} ${lastProjectItem}`
+      );
 
-      projects =
-        projects.slice(
-          0,
-          -1
-        );
+      projects = projects.slice(0, -1);
     }
   }
 
@@ -263,8 +226,7 @@ const buildProjects = (resume) => {
   return {
     items: projects,
 
-    studentProvidedImpact:
-      projectImpact,
+    studentProvidedImpact: projectImpact,
 
     hasStudentProvidedImpact:
       Boolean(projectImpact),
@@ -274,6 +236,7 @@ const buildProjects = (resume) => {
 // ==========================================
 // BUILD OPTIONAL SECTIONS
 // ==========================================
+
 const buildOptionalSections = (resume) => {
   return {
     internships: cleanArray(
@@ -301,6 +264,7 @@ const buildOptionalSections = (resume) => {
 // ==========================================
 // DETERMINE INCLUDED SECTIONS
 // ==========================================
+
 const buildIncludedSections = ({
   summary,
   education,
@@ -327,27 +291,19 @@ const buildIncludedSections = ({
     sections.push("Projects");
   }
 
-  if (
-    optionalSections.internships.length
-  ) {
+  if (optionalSections.internships.length) {
     sections.push("Internships");
   }
 
-  if (
-    optionalSections.experience.length
-  ) {
+  if (optionalSections.experience.length) {
     sections.push("Experience");
   }
 
-  if (
-    optionalSections.certifications.length
-  ) {
+  if (optionalSections.certifications.length) {
     sections.push("Certifications");
   }
 
-  if (
-    optionalSections.achievements.length
-  ) {
+  if (optionalSections.achievements.length) {
     sections.push("Achievements");
   }
 
@@ -355,9 +311,7 @@ const buildIncludedSections = ({
     sections.push("Languages");
   }
 
-  if (
-    optionalSections.interests.length
-  ) {
+  if (optionalSections.interests.length) {
     sections.push("Interests");
   }
 
@@ -367,6 +321,7 @@ const buildIncludedSections = ({
 // ==========================================
 // BUILD IMPROVED RESUME
 // ==========================================
+
 const buildImprovedResume = ({
   resume,
   template = "Classic ATS",
@@ -391,25 +346,19 @@ const buildImprovedResume = ({
         ? template
         : "Classic ATS";
 
-    const contact =
-      buildContact(resume);
+    const contact = buildContact(resume);
 
-    const summary =
-      buildSummary(resume);
+    const summary = buildSummary(resume);
 
-    const education =
-      cleanArray(
-        resume.education || []
-      );
+    const education = cleanArray(
+      resume.education || []
+    );
 
-    const skills =
-      buildSkills(resume);
+    const skills = buildSkills(resume);
 
-    const languages =
-      buildLanguages(resume);
+    const languages = buildLanguages(resume);
 
-    const projects =
-      buildProjects(resume);
+    const projects = buildProjects(resume);
 
     const optionalSections =
       buildOptionalSections(resume);
@@ -427,30 +376,23 @@ const buildImprovedResume = ({
     // ======================================
     // MINIMUM DATA VALIDATION
     // ======================================
+
     const missingRequiredData = [];
 
     if (!contact.name) {
-      missingRequiredData.push(
-        "Name"
-      );
+      missingRequiredData.push("Name");
     }
 
     if (!contact.email) {
-      missingRequiredData.push(
-        "Email"
-      );
+      missingRequiredData.push("Email");
     }
 
     if (!education.length) {
-      missingRequiredData.push(
-        "Education"
-      );
+      missingRequiredData.push("Education");
     }
 
     if (!skills.length) {
-      missingRequiredData.push(
-        "Skills"
-      );
+      missingRequiredData.push("Skills");
     }
 
     if (missingRequiredData.length) {
@@ -458,7 +400,7 @@ const buildImprovedResume = ({
         success: false,
 
         errorMessage:
-          "Resume does not contain enough verified information to generate an improved resume",
+          `Cannot generate improved resume. Missing verified information: ${missingRequiredData.join(", ")}. Please provide these details in your resume and try again.`,
 
         missingRequiredData,
       };
@@ -467,19 +409,17 @@ const buildImprovedResume = ({
     // ======================================
     // FINAL STRUCTURED RESUME
     // ======================================
+
     const improvedResume = {
-      template:
-        selectedTemplate,
+      template: selectedTemplate,
 
-      targetRole:
-        cleanText(
-          resume.targetRole
-        ),
+      targetRole: cleanText(
+        resume.targetRole
+      ),
 
-      targetCompany:
-        cleanText(
-          resume.targetCompany
-        ),
+      targetCompany: cleanText(
+        resume.targetCompany
+      ),
 
       contact,
 
@@ -514,16 +454,14 @@ const buildImprovedResume = ({
         source:
           "Placify Resume Improvement",
 
-        generatedFromVerifiedData:
-          true,
+        generatedFromVerifiedData: true,
 
         studentProvidedProjectImpact:
           projects.hasStudentProvidedImpact,
 
-        originalPageCount:
-          Number(
-            resume.pageCount || 0
-          ),
+        originalPageCount: Number(
+          resume.pageCount || 0
+        ),
 
         recommendedPageCount:
           resume?.advancedReview
@@ -540,8 +478,7 @@ const buildImprovedResume = ({
   } catch (error) {
     return {
       success: false,
-      errorMessage:
-        error.message,
+      errorMessage: error.message,
     };
   }
 };

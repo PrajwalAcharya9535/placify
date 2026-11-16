@@ -921,9 +921,13 @@ skillGap,
       // OVERALL DASHBOARD SUMMARY
       // ==============================
 
-      summary: {
-        totalSkills:
-          skills.length,
+     summary: {
+  totalSkills: new Set(
+    [
+      ...skills.map((skill) => skill.name).filter(Boolean),
+      ...(profile?.skills || []),
+    ].map((skill) => skill.trim().toLowerCase())
+  ).size,
 
         profileCompleted:
           !!profile,

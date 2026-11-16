@@ -1,9 +1,10 @@
-  import { Routes, Route } from "react-router-dom";
+  import { Routes, Route, useNavigate } from "react-router-dom";
 
   import Login from "./pages/auth/Login";
   import ProtectedRoute from "./components/ProtectedRoute";
 
   import StudentDashboard from "./pages/student/StudentDashboard";
+  import StudentProfile from "./pages/student/StudentProfile";
   import StudentLearning from "./pages/student/learning/StudentLearning";
   import StudentLearningTopic from "./pages/student/learning/StudentLearningTopic";
   import StudentPractice from "./pages/student/practice/StudentPractice";
@@ -26,11 +27,13 @@
   import AIInterviewRoom from "./pages/student/interview/AIInterviewRoom";
   import AIInterviewResult from "./pages/student/interview/AIInterviewResult";
 
-
+import AdminDashboard from "./pages/admin/AdminDashboard";
   import "./App.css";
 
-  function HomePage() {
-    return (
+function HomePage() {
+  const navigate = useNavigate();
+
+  return (
       <div className="placify-app">
 
         {/* =========================
@@ -78,12 +81,13 @@
             </nav>
 
             <div className="nav-actions">
-              <button
-                className="login-btn"
-                type="button"
-              >
-                Log in
-              </button>
+            <button
+  className="login-btn"
+  type="button"
+  onClick={() => navigate("/login")}
+>
+  Log in
+</button>
 
               <button
                 className="get-started-btn"
@@ -698,6 +702,19 @@
         />
 
         {/* =========================
+    STUDENT PROFILE
+========================= */}
+
+<Route
+  path="/student/profile"
+  element={
+    <ProtectedRoute allowedRole="student">
+      <StudentProfile />
+    </ProtectedRoute>
+  }
+/>
+
+        {/* =========================
             STUDENT LEARNING
         ========================== */}
 
@@ -945,6 +962,19 @@
   element={
     <ProtectedRoute allowedRole="student">
       <StudentCalendar />
+    </ProtectedRoute>
+  }
+/>
+
+{/* =========================
+    ADMIN DASHBOARD
+========================= */}
+
+<Route
+  path="/admin/dashboard"
+  element={
+    <ProtectedRoute allowedRole="admin">
+      <AdminDashboard />
     </ProtectedRoute>
   }
 />

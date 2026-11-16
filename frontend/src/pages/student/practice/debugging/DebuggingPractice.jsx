@@ -185,10 +185,9 @@ function DebuggingPractice() {
 
       setSelectedProblem(problem);
 
-      // Start the editor with the buggy code.
-      setFixedCode(
-        problem?.buggyCode || ""
-      );
+    // Start with an empty editor.
+// Students can paste the starter code using the button.
+setFixedCode(problem?.buggyCode || "");
     } catch (err) {
       if (
         err.response?.status === 401 ||
@@ -222,19 +221,16 @@ function DebuggingPractice() {
   // RESET BUGGY CODE
   // =========================================================
 
-  const resetCode = () => {
-    if (!selectedProblem) {
-      return;
-    }
+const pasteCode = () => {
+  if (!selectedProblem?.completionCode) {
+    setWorkspaceError("Completion code is not available.");
+    return;
+  }
 
-    setFixedCode(
-      selectedProblem.buggyCode || ""
-    );
-
-    setResult(null);
-    setWorkspaceError("");
-  };
-
+  setFixedCode(selectedProblem.completionCode);
+  setResult(null);
+  setWorkspaceError("");
+};
   // =========================================================
   // SUBMIT FIXED CODE
   // =========================================================
@@ -918,13 +914,7 @@ function DebuggingPractice() {
                 </strong>
               </div>
 
-              <button
-                type="button"
-                disabled={submitting}
-                onClick={resetCode}
-              >
-                Reset Buggy Code
-              </button>
+           
             </div>
 
             <div className="debugging-editor-shell">
@@ -966,26 +956,29 @@ function DebuggingPractice() {
               />
             </div>
 
-            <div className="debugging-submit-bar">
-              <span>
-                Fix the buggy code and
-                validate it against all test
-                cases.
-              </span>
+         <div className="debugging-submit-bar">
+  <span>
+    Complete the missing code and execute it against all test cases.
+  </span>
 
-              <button
-                type="button"
-                disabled={
-                  submitting ||
-                  !fixedCode.trim()
-                }
-                onClick={submitFixedCode}
-              >
-                {submitting
-                  ? "Evaluating..."
-                  : "Submit Fix"}
-              </button>
-            </div>
+  <div className="debugging-submit-actions">
+    <button
+      type="button"
+      onClick={pasteCode}
+      disabled={submitting}
+    >
+      Paste Code
+    </button>
+
+    <button
+      type="button"
+      disabled={submitting || !fixedCode.trim()}
+      onClick={submitFixedCode}
+    >
+      {submitting ? "Evaluating..." : "Submit Fix"}
+    </button>
+  </div>
+</div>
 
             {result && (
               <div className="debugging-result-panel">

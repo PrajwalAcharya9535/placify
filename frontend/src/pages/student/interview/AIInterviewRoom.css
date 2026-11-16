@@ -3271,3 +3271,85 @@ body,
   opacity: 0.4;
   cursor: not-allowed;
 }
+
+
+/* PLACIFY — DEMO ANSWER */
+
+.demo-answer-box {
+  flex: 0 0 auto;
+  align-self: flex-end;
+  width: min(100%, 320px);
+  max-height: 100px;
+  margin-top: 8px;
+  padding: 9px 12px;
+  overflow-y: auto;
+
+  border: 1px solid rgba(149, 107, 255, 0.35);
+  border-radius: 11px;
+  background: rgba(149, 107, 255, 0.09);
+}
+
+.demo-answer-title {
+  margin-bottom: 4px;
+  color: #cbb7ff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.demo-answer-text {
+  margin: 0;
+  color: #edf0ff;
+  font-size: 11px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 700px) {
+  .demo-answer-box {
+    width: 100%;
+    max-height: 95px;
+  }
+}
+
+/* DEMO ANSWER — BOTTOM RIGHT */
+.demo-answer-floating {
+  position: static;
+  width: 400px;
+  max-width: 100%;
+  flex-shrink: 1;
+  pointer-events: auto;
+}
+
+.demo-answer-floating .demo-answer-box {
+  width: 100%;
+  max-height: 120px;
+  margin: 0;
+  pointer-events: auto;
+}
+
+@media (max-width: 700px) {
+  .demo-answer-floating {
+    right: 12px;
+    bottom: 110px;
+    width: min(300px, calc(100vw - 24px));
+  }
+}
+
+/* Keep Demo Answer fully visible inside bottom bar */
+.interview-control-bar:has(.demo-answer-floating) {
+  min-height: 120px;
+}
+
+.interview-control-bar .demo-answer-floating {
+  position: static;
+  transform: none;
+  width: 400px;
+  max-width: 100%;
+  flex-shrink: 1;
+}
+
+.interview-control-bar .demo-answer-box {
+  max-height: none;
+  overflow: visible;
+}

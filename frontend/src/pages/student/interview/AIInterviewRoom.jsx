@@ -2156,6 +2156,8 @@ const resetTranscript = () => {
                   )}
                 </div>
 
+             
+
                 {(speechError ||
                   answerSubmitError ||
                   completeInterviewError) && (
@@ -2189,6 +2191,10 @@ const resetTranscript = () => {
                   </div>
                 )}
 
+                
+
+
+
                 <div className="transcript-bottom-hint">
                   <span>
                     {isRecording
@@ -2205,12 +2211,16 @@ const resetTranscript = () => {
               </section>
             </div>
           </section>
-        </main>
+              </main>
+
+
       </div>
 
       {/* =====================================
           FIXED BOTTOM CONTROL BAR
       ====================================== */}
+
+  
 
       <div className="interview-control-wrap">
         <div
@@ -2277,6 +2287,18 @@ const resetTranscript = () => {
               <small>{controlSubtitle}</small>
             </div>
           </div>
+          {currentQuestion?.demoAnswer && (
+  <div className="demo-answer-floating">
+    <div className="demo-answer-box">
+      <div className="demo-answer-title">
+        DEMO ANSWER · 5–8 SECONDS
+      </div>
+      <p className="demo-answer-text">
+        {currentQuestion.demoAnswer}
+      </p>
+    </div>
+  </div>
+)}
 
           <div className="control-answer-state">
             <div className="control-answer-copy">

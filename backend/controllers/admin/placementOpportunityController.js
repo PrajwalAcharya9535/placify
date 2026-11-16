@@ -2,6 +2,12 @@ const PlacementOpportunity = require(
   "../../models/PlacementOpportunity"
 );
 
+const User = require("../../models/User");
+
+const {
+  createNotification,
+} = require("../../services/notificationService");
+
 // ==============================
 // CREATE PLACEMENT OPPORTUNITY
 // ==============================
@@ -219,6 +225,69 @@ const createPlacementOpportunity = async (
         createdBy:
           req.user.id,
       });
+
+      // ========================================
+    // NOTIFY STUDENTS ABOUT NEW OPPORTUNITY
+    // ========================================
+
+    if (
+      opportunity.status === "Active" &&
+      opportunity.isActive === true &&
+      new Date(opportunity.applicationDeadline) >= new Date()
+    ) {
+      try {
+        const students = await User.find({
+          role: "student",
+        }).select("_id");
+
+        const results = await Promise.allSettled(
+          students.map((student) =>
+            createNotification({
+              user: student._id,
+
+              title: `New Opportunity: ${opportunity.companyName}`,
+
+              message:
+                `${opportunity.jobRole} position at ` +
+                `${opportunity.companyName} is now available. ` +
+                `Check eligibility and apply before the deadline.`,
+
+              type: "Opportunity",
+
+              priority: "High",
+
+              relatedEntityType: "PlacementOpportunity",
+
+              relatedEntityId: opportunity._id,
+
+              actionUrl: "/student/opportunities",
+
+              metadata: {
+                opportunityId: opportunity._id,
+                companyName: opportunity.companyName,
+                jobRole: opportunity.jobRole,
+                applicationDeadline:
+                  opportunity.applicationDeadline,
+                source: "Admin",
+              },
+            })
+          )
+        );
+
+        const failed = results.filter(
+          (result) => result.status === "rejected"
+        ).length;
+
+        console.log(
+          `Opportunity notifications: ${results.length - failed} sent, ${failed} failed`
+        );
+      } catch (notificationError) {
+        console.error(
+          "Opportunity notification error:",
+          notificationError
+        );
+      }
+    }
 
     res.status(201).json({
       success: true,

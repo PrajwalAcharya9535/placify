@@ -1,3 +1,4 @@
+
 const mongoose = require("mongoose");
 
 const practiceSessionSchema = new mongoose.Schema(
@@ -25,13 +26,28 @@ const practiceSessionSchema = new mongoose.Schema(
         "SQL",
         "Debugging",
         "Mixed",
+
+        // Frontend MCQ categories
+        "Programming",
+        "DSA",
+        "Technical Subject",
       ],
       default: "Mixed",
     },
 
     difficulty: {
       type: String,
-      enum: ["Easy", "Medium", "Hard", "Mixed"],
+      enum: [
+        "Easy",
+        "Medium",
+        "Hard",
+        "Mixed",
+
+        // Frontend difficulty labels
+        "Beginner",
+        "Intermediate",
+        "Advanced",
+      ],
       default: "Mixed",
     },
 
