@@ -35,7 +35,7 @@ function StudentRoadmap() {
         setError("");
 
         const response = await axios.get(
-          "http://localhost:5000/api/student/roadmap",
+          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/student/roadmap`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

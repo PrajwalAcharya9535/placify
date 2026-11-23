@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import StudentLayout from "../../components/student/StudentLayout";
 
-const API = "http://localhost:5000/api/student/profile";
-const GOAL_API = "http://localhost:5000/api/student/goal";
+const API = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/student/profile`;
+const GOAL_API = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/student/goal`;
 
 const emptyProfile = {
   phone: "",

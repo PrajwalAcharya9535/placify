@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "./MockTestDetails.css";
 
-const API_BASE_URL = "http://localhost:5000/api/student";
+const API_BASE_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/student`;
 
 // ==========================================
 // HELPERS

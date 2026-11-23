@@ -26,7 +26,7 @@ function StudentDashboard() {
         setError("");
 
         const response = await axios.get(
-          "http://localhost:5000/api/student/dashboard",
+          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/student/dashboard`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

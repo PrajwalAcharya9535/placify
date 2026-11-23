@@ -38,7 +38,7 @@ import MockCodingWorkspace from "./MockCodingWorkspace";
 
 const API_BASE_URL =
 
-  "http://localhost:5000/api/student";
+  `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/student`;
 
 const MCQ_ROUND_TYPES = [
 

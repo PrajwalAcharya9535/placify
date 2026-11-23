@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import StudentLayout from "../../../components/student/StudentLayout";
 import "./StudentCalendar.css";
 
-const API = "http://localhost:5000/api/student";
+const API = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/student`;
 
 const EVENT_TYPES = [
   "General",

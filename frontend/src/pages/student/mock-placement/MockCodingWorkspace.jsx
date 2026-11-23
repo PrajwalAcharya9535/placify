@@ -8,7 +8,7 @@ import axios from "axios";
 import "./MockCodingWorkspace.css";
 
 const API_BASE_URL =
-  "http://localhost:5000/api/student";
+  `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/student`;
 
 /* ==========================================
    LANGUAGE LABELS

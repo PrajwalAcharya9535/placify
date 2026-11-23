@@ -213,8 +213,8 @@ export default function StudentAnalytics() {
       try {
         if (!token) throw new Error("Student login required.");
         const [topicsResponse, progressResponse] = await Promise.all([
-          axios.get("http://localhost:5000/api/student/learning", config),
-          axios.get("http://localhost:5000/api/student/learning-progress", config),
+          axios.get(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/learning`, config),
+          axios.get(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/learning-progress`, config),
         ]);
         const topics = topicsResponse.data?.topics;
         const completed = progressResponse.data?.summary?.completedTopics;
@@ -235,7 +235,7 @@ export default function StudentAnalytics() {
     async function loadRoadmap() {
       try {
         if (!token) throw new Error("Student login required.");
-        const response = await axios.get("http://localhost:5000/api/student/roadmap", config);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/roadmap`, config);
         const progress = response.data?.roadmap?.summary?.overallProgress;
         if (progress === null || progress === undefined || !Number.isFinite(Number(progress))) {
           throw new Error("Roadmap progress unavailable.");
@@ -260,7 +260,7 @@ export default function StudentAnalytics() {
       try {
         const token = localStorage.getItem("placifyToken");
         if (!token) throw new Error("Student login required.");
-        const response = await axios.get("http://localhost:5000/api/student/mock-history", {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/mock-history`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!Array.isArray(response.data?.attempts)) {
@@ -288,8 +288,8 @@ export default function StudentAnalytics() {
         if (!token) throw new Error("Student login required.");
         const config = { headers: { Authorization: `Bearer ${token}` } };
         const [historyResponse, problemsResponse] = await Promise.all([
-          axios.get("http://localhost:5000/api/student/coding/history", config),
-          axios.get("http://localhost:5000/api/student/coding/problems", config),
+          axios.get(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/coding/history`, config),
+          axios.get(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/coding/problems`, config),
         ]);
 
         const attempts = historyResponse.data?.attempts;
@@ -341,7 +341,7 @@ export default function StudentAnalytics() {
       try {
         const token = localStorage.getItem("placifyToken");
         if (!token) throw new Error("Student login required.");
-        const response = await axios.get("http://localhost:5000/api/student/ai-interview/history", {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/ai-interview/history`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (!Array.isArray(response.data?.interviews)) {
@@ -369,7 +369,7 @@ export default function StudentAnalytics() {
         const token = localStorage.getItem("placifyToken");
         if (!token) throw new Error("Student login required.");
 
-        const response = await axios.get("http://localhost:5000/api/student/skill-gap", {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/skill-gap`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = response.data;
@@ -400,7 +400,7 @@ export default function StudentAnalytics() {
         const token = localStorage.getItem("placifyToken");
         if (!token) throw new Error("Student login required.");
         const config = { headers: { Authorization: `Bearer ${token}` } };
-        const response = await axios.get("http://localhost:5000/api/student/opportunities", config);
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/opportunities`, config);
         if (!response.data?.success || !Array.isArray(response.data.opportunities)) {
           throw new Error("Invalid placement opportunities response.");
         }
@@ -422,7 +422,7 @@ export default function StudentAnalytics() {
             if (!id) { failedCount++; continue; }
             try {
               const matchResponse = await axios.get(
-                `http://localhost:5000/api/student/opportunities/${encodeURIComponent(id)}/match`,
+                `${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/opportunities/${encodeURIComponent(id)}/match`,
                 config
               );
               const payload = matchResponse.data;
@@ -476,7 +476,7 @@ export default function StudentAnalytics() {
         const token = localStorage.getItem("placifyToken");
         if (!token) throw new Error("Student login required.");
 
-        const response = await axios.get("http://localhost:5000/api/student/readiness", {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/readiness`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const record = response.data?.readiness;
@@ -510,7 +510,7 @@ export default function StudentAnalytics() {
       const token = localStorage.getItem("placifyToken");
       if (!token) throw new Error("Student login required.");
       const response = await axios.post(
-        "http://localhost:5000/api/student/readiness/calculate",
+        `${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/readiness/calculate`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -31,7 +31,7 @@ import "./StudentInterview.css";
 
 const API_BASE =
   import.meta.env.VITE_API_URL ||
-  "http://localhost:5000/api";
+  `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api`;
 
 const ROLES = [
   "Java Developer",

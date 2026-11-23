@@ -6,7 +6,7 @@ import axios from "axios";
 import StudentLayout from "../../../components/student/StudentLayout";
 import "./StudentNotifications.css";
 
-const API_URL = "http://localhost:5000/api/student";
+const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/student`;
 
 const NOTIFICATION_TYPES = [
   "All",

@@ -95,7 +95,7 @@ function StudentLayout({ children }) {
 
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/student/notifications/unread-count",
+          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/student/notifications/unread-count`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

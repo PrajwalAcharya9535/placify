@@ -283,7 +283,7 @@ function StudentOpportunities() {
       setAdminError("");
       try {
         const token = localStorage.getItem("placifyToken");
-        const response = await fetch("http://localhost:5000/api/student/opportunities", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/opportunities`, {
           headers: { Authorization: `Bearer ${token}` },
           signal: controller.signal,
         });
@@ -311,7 +311,7 @@ function StudentOpportunities() {
     async function loadTrackedOpportunities() {
       try {
         const token = localStorage.getItem("placifyToken");
-        const response = await fetch("http://localhost:5000/api/student/placement-tracker", {
+        const response = await fetch(`${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/placement-tracker`, {
           headers: { Authorization: `Bearer ${token}` },
           signal: controller.signal,
         });
@@ -351,7 +351,7 @@ function StudentOpportunities() {
       if (!trackedOpportunityIds.includes(String(item._id))) {
         const token = localStorage.getItem("placifyToken");
         const response = await fetch(
-          `http://localhost:5000/api/student/placement-tracker/${encodeURIComponent(item._id)}`,
+          `${import.meta.env.VITE_API_URL || `${import.meta.env.VITE_API_URL || "http://localhost:5000"}`}/api/student/placement-tracker/${encodeURIComponent(item._id)}`,
           { method: "POST", headers: { Authorization: `Bearer ${token}` } }
         );
         const payload = await response.json();

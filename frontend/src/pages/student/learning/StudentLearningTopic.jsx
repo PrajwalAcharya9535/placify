@@ -12,7 +12,7 @@
 
     import axios from "axios";
 
-    const API = "http://localhost:5000/api/student";
+    const API = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/student`;
 
     const TABS = [
     ["lessons", "Lessons"],

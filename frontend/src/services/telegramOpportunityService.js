@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const API_URL =
-  "http://localhost:5000/api/student/telegram-opportunities";
+  `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/student/telegram-opportunities`;
 
 function getAuthHeaders() {
   const token = localStorage.getItem("placifyToken");

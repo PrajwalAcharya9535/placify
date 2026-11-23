@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const API = "http://localhost:5000/api/admin/debugging/problems";
+const API = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/admin/debugging/problems`;
 const input = { width: "100%", padding: 10, border: "1px solid #cbd5e1", borderRadius: 8, boxSizing: "border-box" };
 const overlay = { position: "fixed", inset: 0, background: "rgba(15,23,42,.6)", zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 };
 const panel = { background: "white", borderRadius: 14, padding: 24, maxWidth: 850, width: "100%", maxHeight: "90vh", overflowY: "auto" };

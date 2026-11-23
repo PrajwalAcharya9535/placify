@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 
-const API = "http://localhost:5000/api/admin/coding/problems";
+const API = `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/admin/coding/problems`;
 const languages = ["Java", "JavaScript", "Python", "C", "C++"];
 const field = { width: "100%", boxSizing: "border-box", padding: 10, border: "1px solid #cbd5e1", borderRadius: 8 };
 const overlay = { position: "fixed", inset: 0, background: "rgba(15,23,42,.55)", zIndex: 1200, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 };
