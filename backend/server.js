@@ -29,6 +29,11 @@ const {
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  process.env.FRONTEND_URL,
+].filter(Boolean);  
+
 // ==============================
 // HTTP SERVER
 // ==============================
@@ -41,7 +46,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
   },
 });
@@ -72,7 +77,7 @@ io.use(socketAuthMiddleware);
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: allowedOrigins,
     methods: [
       "GET",
       "POST",
